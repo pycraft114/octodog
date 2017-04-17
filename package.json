@@ -1,0 +1,22 @@
+{
+  "name": "octodog",
+  "version": "1.0.0",
+  "description": "Octodog에 오신걸 환엽합니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pycraft114/octodog.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pycraft114/octodog/issues"
+  },
+  "homepage": "https://github.com/pycraft114/octodog#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
