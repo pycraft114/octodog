@@ -4,6 +4,7 @@
    <link rel="stylesheet" href="../css/reset.css">
    <link rel="stylesheet" href="../css/main.css">
    <title>Profile</title>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -17,23 +18,26 @@
         </header>
         <section>
             <article class="left">
-              <img src="" alt="">
-              <div id="uid"></div>
-              <div id="email"></div>
-              <div id="joindate"></div>
-              <div id="ranking"></div>
-              <div id="point"></div>
+              <div id="left-content"></div>
               <button>button</button>
             </article>
             <article class="right">
+              <canvas id="myChart" width="400" height="300"></canvas>
             </article>
         </section>
         <footer>
            <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
         </footer>
     </div>
-    <script type="text/javascript" src="../js/profile.js">
-      
+    <script type="template" id="left-template">
+      <img src="">
+      id : <div id="id">{id}</div>
+      emain : <div id="email">{email}</div>
+      play : <div id="play">{play}</div>
+      rank : <div id="rank">{rank}</div>
+      topscore : <div id="topscore">{topscore}</div>
+      totalscore : <div id="totalscore">{totalscore}</div>
     </script>
+    <script type="text/javascript" src="../js/profile.js"></script>
 </body>
 </html>
