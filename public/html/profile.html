@@ -3,6 +3,7 @@
 <head>
    <link rel="stylesheet" href="../css/reset.css">
    <link rel="stylesheet" href="../css/main.css">
+   <link href="https://fonts.googleapis.com/css?family=Rubik+Mono+One" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400" rel="stylesheet">
    <title>Profile</title>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
@@ -10,12 +11,12 @@
 <body>
     <div class="container">
         <header>
-           <ul>
-               <li>picture</li>
-               <li>ID</li>
-               <li>Octodog</li>
-               <li>Logout</li>
-           </ul>
+          <div class="hd-left">
+                <img src="../img/profile_img1.jpg">
+                <div class="user-id">id</div>
+          </div>
+          <div class="hd-center"><h1>Octodog</h1></div>
+          <div class="hd-right"><h1>Logout</h1></div>
         </header>
         <section>
             <article class="left">
@@ -36,7 +37,11 @@
               </div>
             </article>
             <article class="right">
-                    <canvas id="myChart" width="400" height="300"></canvas>
+                    <div class="right-content">
+                        <div class="chart-wrap">
+                            <canvas id="myChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
             </article>
         </section>
         <footer>
