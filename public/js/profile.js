@@ -53,7 +53,8 @@ var myBarChart = new Chart(ctx, {
     options: options
 });
 
-var button = document.querySelector('button');
+var button = document.querySelector('.btn');
+console.log( button);
 
 button.addEventListener("click", function() {
     sendAjax('http://localhost:3000/profile/user');
@@ -77,7 +78,7 @@ function sendAjax(url) {
 // 왼쪽 사이드 렌더링 함수
 function leftSideRender(resultData){
   var template = document.getElementById("left-template").innerHTML;
-  var leftContent = document.getElementById("left-content");
+  var leftContent = document.querySelector(".left-content");
   var user = resultData.user;
   var chartScore = resultData.chartscore;
 

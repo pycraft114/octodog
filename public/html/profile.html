@@ -3,6 +3,7 @@
 <head>
    <link rel="stylesheet" href="../css/reset.css">
    <link rel="stylesheet" href="../css/main.css">
+   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400" rel="stylesheet">
    <title>Profile</title>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
 </head>
@@ -18,11 +19,24 @@
         </header>
         <section>
             <article class="left">
-              <div id="left-content"></div>
-              <button>button</button>
+              <div class="left-content">
+                  <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
+                  <div id="id"><h1>{id}</h1></div>
+                  <div class="user-information">
+                      <p>email</p> <div id="email">{email}</div>
+                      <p>play</p> <div id="play">{play}</div>
+                      <p>rank</p> <div id="rank">{rank}</div>
+                      <p>topscore</p> <div id="topscore">{topscore}</div>
+                      <p>totalscore</p> <div id="totalscore">{totalscore}</div>
+                  </div>
+                  <div class="button-wrap">
+                      <button class="btn img-change">프로필사진 변경</button>
+                      <button class="btn pw-change">비밀번호 변경</button>
+                  </div>
+              </div>
             </article>
             <article class="right">
-              <canvas id="myChart" width="400" height="300"></canvas>
+                    <canvas id="myChart" width="400" height="300"></canvas>
             </article>
         </section>
         <footer>
@@ -30,13 +44,19 @@
         </footer>
     </div>
     <script type="template" id="left-template">
-      <img src="">
-      id : <div id="id">{id}</div>
-      emain : <div id="email">{email}</div>
-      play : <div id="play">{play}</div>
-      rank : <div id="rank">{rank}</div>
-      topscore : <div id="topscore">{topscore}</div>
-      totalscore : <div id="totalscore">{totalscore}</div>
+      <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
+                  <div id="id"><h1>{id}</h1></div>
+                  <div class="user-information">
+                      <p>email</p> <div id="email">{email}</div>
+                      <p>play</p> <div id="play">{play}</div>
+                      <p>rank</p> <div id="rank">{rank}</div>
+                      <p>topscore</p> <div id="topscore">{topscore}</div>
+                      <p>totalscore</p> <div id="totalscore">{totalscore}</div>
+                  </div>
+                  <div class="button-wrap">
+                      <button class="btn img-change">프로필사진 변경</button>
+                      <button class="btn pw-change">비밀번호 변경</button>
+                  </div>
     </script>
     <script type="text/javascript" src="../js/profile.js"></script>
 </body>
