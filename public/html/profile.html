@@ -20,7 +20,48 @@
         </header>
         <section>
             <article class="left">
-              <div class="left-content">
+
+            </article>
+            <article class="right">
+                    <div class="right-content">
+                        <div class="chart-wrap">
+                            <canvas id="myChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+            </article>
+        </section>
+        <!-- The Modal -->
+      <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p class="modal-haeder">Change Password</p>
+            <form class="content">
+              <div class="form-row">
+                <input type="text" class="input-text" id="Memail" placeholder="Email" />
+                <label class="label-helper" for="Memail">Email</label>
+              </div>
+
+              <div class="form-row" >
+                <input type="email" class="input-text" id="Mpw" placeholder="Password" />
+                <label class="label-helper" for="Mpw">Password</label>
+              </div>
+
+              <div class="form-row" >
+                <input type="password" class="input-text" id="Mrepw" placeholder="Password Confirm" />
+                <label class="label-helper" for="Mrepw">Password  Confirm</label>
+              </div>
+          </form> <!-- end .content -->
+      </div>
+
+      </div>
+        <footer>
+           <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
+        </footer>
+    </div>
+    <script type="template" id="left-template">
+                <div class="left-content">
                   <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
                   <div id="id"><h1>{id}</h1></div>
                   <div class="user-information">
@@ -34,34 +75,7 @@
                       <button class="btn img-change">프로필사진 변경</button>
                       <button class="btn pw-change">비밀번호 변경</button>
                   </div>
-              </div>
-            </article>
-            <article class="right">
-                    <div class="right-content">
-                        <div class="chart-wrap">
-                            <canvas id="myChart" width="400" height="300"></canvas>
-                        </div>
-                    </div>
-            </article>
-        </section>
-        <footer>
-           <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
-        </footer>
-    </div>
-    <script type="template" id="left-template">
-      <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
-                  <div id="id"><h1>{id}</h1></div>
-                  <div class="user-information">
-                      <p>email</p> <div id="email">{email}</div>
-                      <p>play</p> <div id="play">{play}</div>
-                      <p>rank</p> <div id="rank">{rank}</div>
-                      <p>topscore</p> <div id="topscore">{topscore}</div>
-                      <p>totalscore</p> <div id="totalscore">{totalscore}</div>
-                  </div>
-                  <div class="button-wrap">
-                      <button class="btn img-change">프로필사진 변경</button>
-                      <button class="btn pw-change">비밀번호 변경</button>
-                  </div>
+                </div>
     </script>
     <script type="text/javascript" src="../js/profile.js"></script>
 </body>

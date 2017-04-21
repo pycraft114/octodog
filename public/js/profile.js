@@ -53,13 +53,30 @@ var myBarChart = new Chart(ctx, {
     options: options
 });
 
-var button = document.querySelector('.btn');
-console.log( button);
+// modal part
+// Get the modal
+var modal = document.getElementById('myModal');
 
-button.addEventListener("click", function() {
-    sendAjax('http://localhost:3000/profile/user');
-})
+// When the user clicks on the button, open the modal
+function pwClickHandler(){
+    modal.style.display = "block";
+    console.log("click")
+}
 
+// When the user clicks on <span> (x), close the modal
+function closeClickHandler(){
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+// chart part Ajax request
 function sendAjax(url) {
     var oReq = new XMLHttpRequest();
     var result;
@@ -76,28 +93,41 @@ function sendAjax(url) {
 }
 
 // 왼쪽 사이드 렌더링 함수
-function leftSideRender(resultData){
-  var template = document.getElementById("left-template").innerHTML;
-  var leftContent = document.querySelector(".left-content");
-  var user = resultData.user;
-  var chartScore = resultData.chartscore;
+function leftSideRender(resultData) {
+    var template = document.getElementById("left-template").innerHTML;
+    var leftContent = document.querySelector(".left");
+    var user = resultData.user;
+    var chartScore = resultData.chartscore;
 
-  // template 변환 - email, id, img, play, rank, topscore, totalscore
-  template = template.replace("{id}",user.id).replace("{email}",user.email).replace("{play}",user.play);
-  template = template.replace("{rank}",user.rank).replace("{topscore}",user.topscore).replace("{totalscore}",user.totalscore);
+    // template 변환 - email, id, img, play, rank, topscore, totalscore
+    template = template.replace("{id}", user.id).replace("{email}", user.email).replace("{play}", user.play);
+    template = template.replace("{rank}", user.rank).replace("{topscore}", user.topscore).replace("{totalscore}", user.totalscore);
 
-  leftContent.innerHTML = template;
+    leftContent.innerHTML = template;
+
+    // add button click handler
+    // Get the button that opens the modal
+    var btn_pw = document.getElementsByClassName("pw-change")[0];
+    // Get the <span> element that closes the modal
+    var btn_close = document.getElementsByClassName("close")[0];
+
+    btn_pw.onclick = pwClickHandler;
+    btn_close.addEventListener("click", closeClickHandler);
 }
 
 // 오른쪽 사이드 렌더링 함수
-function rightSideRender(resultData){
-  var score = resultData.chartscore;
-  var comp_data = data.datasets[0].data;
-  console.log(resultData);
-  for (var i = 0; i < comp_data.length; i++) {
-      comp_data[i] = score[i];
-  }
+function rightSideRender(resultData) {
+    var score = resultData.chartscore;
+    var comp_data = data.datasets[0].data;
 
-  data.datasets[0].data = comp_data;
-  myBarChart.update();
+    for (var i = 0; i < comp_data.length; i++) {
+        comp_data[i] = score[i];
+    }
+
+    data.datasets[0].data = comp_data;
+    myBarChart.update();
 }
+
+document.addEventListener("DOMContentLoaded", function(){
+    sendAjax('http://localhost:3000/profile/user');
+});
