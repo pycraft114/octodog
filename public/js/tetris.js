@@ -1,10 +1,26 @@
 var tetris = {};
 
+tetris.model = {
+	gameCanvas: document.querySelector(".game"),
+	gameContext: this.gameCanvas.getContext("2d"),
+	W: gameCanvas.width,
+	H: gameCanvas.height,
+	COLS: 10,
+	ROWS: 20,
+	bWidth: this.W / this.COLS,
+	bHeight: this.H / this.ROWS
+
+};
+
 tetris.render = {
 
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
+		var width = this.model.W / this.model.COLS;
+		var height = this.model.H / this.model.ROWS;
 
+		context.fillRect(width * x, height * y, width - 1, height - 1);
+		context.strokeRect(width * x, height * y, width - 1, height - 1);
 	},
 
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
