@@ -41,5 +41,5 @@
 
 ---
 
-[팀프로젝트 ](https://docs.google.com/spreadsheets/d/1oPLFLu_U_ucES-F0btmBFMH5qA_QX_94bG3SrktzNlM/edit#gid=0 "백로그").
+###### [백로그](https://docs.google.com/spreadsheets/d/1oPLFLu_U_ucES-F0btmBFMH5qA_QX_94bG3SrktzNlM/edit#gid=0 "백로그").
 ---
