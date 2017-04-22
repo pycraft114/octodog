@@ -1,22 +1,52 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/loginPage.css">
 </head>
 <body>
+    <div id="modal">
+        <div id="modal-content">
+            <div class="signup-input">
+                <p>ID</p>
+                <input type="text" class="input-form">
+            </div>
+
+            <div class="signup-input">
+                <p>Password</p>
+                <input type="text" class="input-form">
+            </div>
+
+            <div class="signup-input">
+                <p>Password confirm</p>
+                <input type="text" class="input-form">
+            </div>
+
+            <div class="signup-input">
+                <p>Email</p>
+                <input type="text" class="input-form">
+            </div>
+            <div class="warning-list">
+                <ul>
+                </ul>
+            </div>
+
+            <button class="main-button" id="submit">Submit</button>
+        </div>
+    </div>
     <div class="container">
         <section>
             <h1 class='octoDog'>octoDog</h1>
 
-            <input type="text" placeholder="ID" id="idInput">
+            <input type="text" placeholder="아이디" class="input-form">
 
-            <input type="text" placeholder="PW" id="pwInput">
+            <input type="text" placeholder="비밀번호" class="input-form">
 
-            <button id="login">Login</button>
+            <button class="main-button" id="login">Login</button>
 
-            <button id="frog">frog</button>
-            <a id="signUp">회원가입</a>
+            <button class="main-button" id="frog">frog</button>
+            <a id="signup">회원가입</a>
         </section>
         <footer>
             <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
