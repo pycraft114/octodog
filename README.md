@@ -38,3 +38,8 @@
 3. Push후 이슈가 완료되었다면 프로젝트에서 이슈 카드를 Done에 위치시킨다.
 4. 다음 작업할 이슈를 Doing으로 가져온다.
 5. 작업이 끝날때 까지 무한 반복
+
+---
+
+[팀프로젝트 ](https://docs.google.com/spreadsheets/d/1oPLFLu_U_ucES-F0btmBFMH5qA_QX_94bG3SrktzNlM/edit#gid=0 "백로그").
+---
