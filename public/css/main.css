@@ -19,7 +19,9 @@ header {
     /*    background-color: #ffcf06;*/
 }
 
-header .hd-left, header .hd-right, header .hd-center {
+header .hd-left,
+header .hd-right,
+header .hd-center {
     height: 100%;
     float: left;
 }
@@ -87,15 +89,15 @@ header .hd-right h1 {
 }
 
 section {
-    height: 74%;
-    border-bottom: 1px solid black;
+    height: 80%;
+    border-bottom: 1px solid gray;
 }
 
 section .left {
     width: 50%;
     height: 100%;
     float: left;
-    border-right: 1px solid black;
+    border-right: 2px solid gray;
 }
 
 section .right {
@@ -109,7 +111,7 @@ section .right:after {
 }
 
 footer {
-    height: 13%;
+    height: 7%;
     text-align: center;
     background-color: #f5f5f5;
 }
@@ -119,6 +121,7 @@ footer h1 {
     top: 50%;
     transform: translateY(-50%);
     font-family: 'Source Sans Pro', sans-serif;
+    color: gray;
 }
 
 
@@ -234,6 +237,13 @@ footer h1 {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.right-content .chart-wrap h1{
+  text-align: center;
+  font-family: 'Rubik Mono One', sans-serif;
+  font-size:2rem;
+  margin-bottom: 1rem;
 }
 
 .right-content .chart-wrap #myChart {

@@ -8,7 +8,7 @@ var profile = require("./profile/profile");
 
 // localhost:3000번으로 접근시 default page
 router.get("/", function(req, res){
-  res.sendFile(path.join(__dirname, "../public/html/main.html"));
+  res.sendFile(path.join(__dirname, "../public/html/template.html"));
 })
 
 // import 된 경로를 라우팅 해준다.

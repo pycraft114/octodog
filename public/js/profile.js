@@ -1,7 +1,7 @@
 // 차트 렌더링 설정 객체
 var data = {
     labels: [
-        "1", "2", "3", "4", "5"
+        "", "", "", "", "recent"
     ],
     datasets: [
         {
@@ -117,7 +117,7 @@ function leftSideRender(resultData) {
 
 // 오른쪽 사이드 렌더링 함수
 function rightSideRender(resultData) {
-    var score = resultData.chartscore;
+    var score = resultData.chartscore.reverse();
     var comp_data = data.datasets[0].data;
 
     for (var i = 0; i < comp_data.length; i++) {
