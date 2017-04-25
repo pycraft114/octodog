@@ -41,7 +41,7 @@ section{
     background-color: #399CDD;
     color:#ffffff;
 }
-.main-button#frog{
+.main-button#anonymous{
     background-color: #d3d3d3;
 }
 
@@ -118,7 +118,7 @@ button{
     width:300px;
 }
 
-.warning-list{
+#warning-list{
     width:74%;
     height:118px;
 }

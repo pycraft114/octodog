@@ -10,24 +10,24 @@
         <div id="modal-content">
             <div class="signup-input">
                 <p>ID</p>
-                <input type="text" class="input-form">
+                <input type="text" class="input-form" id="signup-id" name="signup-id">
             </div>
 
             <div class="signup-input">
                 <p>Password</p>
-                <input type="text" class="input-form">
+                <input type="text" class="input-form" id="signup-password" name="signup-password">
             </div>
 
             <div class="signup-input">
                 <p>Password confirm</p>
-                <input type="text" class="input-form">
+                <input type="text" class="input-form" id="signup-confirm">
             </div>
 
             <div class="signup-input">
                 <p>Email</p>
-                <input type="text" class="input-form">
+                <input type="text" class="input-form" id="signup-email">
             </div>
-            <div class="warning-list">
+            <div id="warning-list">
                 <ul>
                 </ul>
             </div>
@@ -39,18 +39,19 @@
         <section>
             <h1 class='octoDog'>octoDog</h1>
 
-            <input type="text" placeholder="아이디" class="input-form">
+            <input type="text" placeholder="아이디" class="input-form" id="login-id">
 
-            <input type="text" placeholder="비밀번호" class="input-form">
+            <input type="text" placeholder="비밀번호" class="input-form" id="login-password">
 
             <button class="main-button" id="login">Login</button>
 
-            <button class="main-button" id="frog">frog</button>
+            <button class="main-button" id="anonymous">anonymous</button>
             <a id="signup">회원가입</a>
         </section>
         <footer>
             <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
         </footer>
     </div>
+    <script src="../js/loginPage.js"></script>
 </body>
 </html>
