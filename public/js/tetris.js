@@ -1,26 +1,135 @@
+document.addEventListener("DOMContentLoaded", function(){
+	var shapeMap = [];
+
+	/*[0]
+	0000 1000 1110 0010
+	0100 1100 0100 0110
+	1110 1000 0000 0010
+	0000 0000 0000 0000
+	*/
+	shapeMap[0] = [
+		"0000010011100000",
+		"1000110010000000",
+		"1110010000000000",
+		"0010011000100000"
+	];
+	/*[1]
+	1100 0010
+	0110 0110
+	0000 0100
+	0000 0000
+	*/
+	shapeMap[1] = [
+		"1100011000000000",
+		"0010011001000000"
+	];
+	/*[2]
+	0110 0100
+	1100 0110
+	0000 0010
+	0000 0000
+	*/
+	shapeMap[2] = [
+		"0110110000000000",
+		"0100011000100000"
+	];
+	/* [3]
+	0100 0000
+	0100 1111
+	0100 0000
+	0100 0000
+	*/
+	shapeMap[3] = [
+		"0100010001000100",
+		"0000111100000000"
+	];
+	/*[4] 
+	1000 1110 0110 0000
+	1000 1000 0010 0010
+	1100 1000 0010 1110
+	0000 0000 0000 0000
+	*/
+	shapeMap[4] = [
+		"1000100011000000",
+		"1110100000000000",
+		"0110001000100000",
+		"0000001011100000"
+	];
+	/*[5]
+	0010 0000 1110 1100
+	0010 1000 0010 1000
+	0110 1110 0010 1000
+	0000 0000 0000 0000	
+	*/
+	shapeMap[5] = [
+		"0010001001100000",
+		"0000100011100000",
+		"1110001000000000",
+		"1100100010000000"
+	];
+	/*[6]
+	1100
+	1100
+	0000
+	0000
+	*/
+	shapeMap[6] = [ 
+		"1100110000000000"
+	];
+
+	var model = Object.assign({},Object.create(tetris.model),{
+		gameCanvas: document.querySelector(".game"),
+		viewCanvas: document.querySelector(".view"),
+		COLS: 10,
+		ROWS: 20,
+		ms: 300,
+		shapes: shapeMap,
+		colors: ["red", "orange", "yellow", "green", "blue", "navy", "purple"]
+	});
+
+	var render = Object.assign({},Object.create(tetris.render));
+	render.model = model;
+
+	var game = Object.assign({}, Object.create(tetris.game));
+	game.model = model;
+
+});
+
 var tetris = {};
 
 tetris.model = {
-	gameCanvas: document.querySelector(".game"),
+	gameCanvas,
 	gameContext: this.gameCanvas.getContext("2d"),
+	gameBoard:[],
+	viewCanvas,
+	viewContext: this.viewCanvas.getContext("2d"),
 	W: gameCanvas.width,
 	H: gameCanvas.height,
-	COLS: 10,
-	ROWS: 20,
-	bWidth: this.W / this.COLS,
-	bHeight: this.H / this.ROWS
-
+	COLS,
+	ROWS,
+	blockWidth: this.W / this.COLS,
+	blockHeight: this.H / this.ROWS,
+	score,
+	goToNextLevel:0,
+	lose,
+	interval,
+	curr,
+	currIdx,
+	currRotate,
+	nextIdx,
+	currX,
+	currY,
+	shapes,
+	colors,
+	ms
 };
 
 tetris.render = {
-
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
-		var width = this.model.W / this.model.COLS;
-		var height = this.model.H / this.model.ROWS;
-
-		context.fillRect(width * x, height * y, width - 1, height - 1);
-		context.strokeRect(width * x, height * y, width - 1, height - 1);
+		var m = this.model;
+		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
+		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
 	},
 
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
@@ -61,7 +170,7 @@ tetris.game = {
 
 	},
 
-	//키입력에 현재블럭을 이동시켜주는 함수
+	//키입력에 따라 현재블럭을 이동시켜주는 함수
 	keyPress: function(key) {
 
 	},
@@ -77,4 +186,6 @@ tetris.game = {
 	}
 
 };
+
+tetris.controller = {};
 
