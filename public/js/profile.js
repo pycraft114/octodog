@@ -1,3 +1,21 @@
+function Profile(){
+  //chart dom
+  this.ctx = document.getElementById("myChart").getContext('2d');
+  // modal dom
+  this.modal = $('#myModal');
+  this.input = $(".input-text")
+  this.modalPw = $("#Mpw");
+  this.modalChangePw = $("#Mrepw");
+  this.modalChangePwConfirm = $("#Mrerepw");
+  this.warning = $(".warning");
+
+  function $(element){
+    return document.querySelector(element);
+  }
+}
+
+var profile =  new Profile();
+
 // chart rendering set object
 var data = {
     labels: [
@@ -54,7 +72,7 @@ var myBarChart = new Chart(ctx, {
 });
 
 // modal part
-// Get the modal
+// Get the modal,
 var modal = document.getElementById('myModal');
 
 // When the user clicks on the button, open the modal
