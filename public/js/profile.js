@@ -1,4 +1,4 @@
-// 차트 렌더링 설정 객체
+// chart rendering set object
 var data = {
     labels: [
         "", "", "", "", "recent"
@@ -66,6 +66,10 @@ function pwClickHandler(){
 // When the user clicks on <span> (x), close the modal
 function closeClickHandler(){
     modal.style.display = "none";
+    modalPw.value='';
+    modalChangePw.value='';
+    modalChangePwConfirm.value='';
+    warning.innerHTML = '';
 }
 
 // When the user clicks anywhere outside of the modal, close it
@@ -77,22 +81,46 @@ window.onclick = function(event) {
 
 
 // chart part Ajax request
-function sendAjax(url) {
+function sendAjax(url, expression, data) {
     var oReq = new XMLHttpRequest();
     var result;
 
     oReq.open('POST', url);
     oReq.setRequestHeader('Content-Type', "application/json");
-    oReq.send();
+    if(data!==undefined){
+        var data = {'password' : data};
+        data =  JSON.stringify(data);
+        oReq.send(data);
+    }else{
+        oReq.send();
+    }
 
     oReq.addEventListener('load', function() {
         result = JSON.parse(oReq.responseText);
-        leftSideRender(result);
-        rightSideRender(result);
+        switch (expression) {
+          case "init":
+            leftSideRender(result);
+            rightSideRender(result);
+            break;
+          case "confirm":
+            if(result.msg==="no"){
+              warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다"
+            }
+            else{
+              var password = JSON.parse(data).password;
+              sendAjax('http://localhost:3000/profile/change', null , password);
+              closeClickHandler();
+            }
+            console.log(result);
+            break;
+          default:
+
+        }
+
     })
 }
 
-// 왼쪽 사이드 렌더링 함수
+// left side rendering function
 function leftSideRender(resultData) {
     var template = document.getElementById("left-template").innerHTML;
     var leftContent = document.querySelector(".left");
@@ -115,7 +143,7 @@ function leftSideRender(resultData) {
     btn_close.addEventListener("click", closeClickHandler);
 }
 
-// 오른쪽 사이드 렌더링 함수
+// right side rendering function
 function rightSideRender(resultData) {
     var score = resultData.chartscore.reverse();
     var comp_data = data.datasets[0].data;
@@ -128,6 +156,33 @@ function rightSideRender(resultData) {
     myBarChart.update();
 }
 
+// modal key press event
+var input = document.getElementsByClassName("input-text")
+var modalPw = document.getElementById("Mpw");
+var modalChangePw = document.getElementById("Mrepw");
+var modalChangePwConfirm = document.getElementById("Mrerepw");
+var warning = document.getElementsByClassName("warning")[0];
+
+for(var i = 0; i < input.length; i++){
+  input[i].addEventListener("keypress", function(event){
+    var password = {"pw1":modalPw.value, "pw2":modalChangePw.value};
+
+    if(event.keyCode===13){
+        if((modalPw.value==='')||(modalChangePw.value==='')||(modalChangePwConfirm.value==='')){
+          warning.innerHTML = "모든 항목을 입력해주세요"
+        }
+        else if(modalChangePw.value!==modalChangePwConfirm.value){
+          warning.innerHTML = "비밀 번호 확인이 다릅니다"
+        }
+        else{
+          warning.innerHTML = '';
+          sendAjax('http://localhost:3000/profile/confirm', "confirm" ,password);
+        }
+    }
+  })
+}
+
+// after loaded event trigger
 document.addEventListener("DOMContentLoaded", function(){
-    sendAjax('http://localhost:3000/profile/user');
+    sendAjax('http://localhost:3000/profile/user', "init");
 });

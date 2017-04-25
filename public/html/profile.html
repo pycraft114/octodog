@@ -40,19 +40,20 @@
         <p class="modal-haeder">Change Password</p>
             <form class="content">
               <div class="form-row">
-                <input type="text" class="input-text" id="Memail" placeholder="Email" />
-                <label class="label-helper" for="Memail">Email</label>
+                <input type="password" class="input-text" id="Mpw" placeholder="Original Password" />
+                <label class="label-helper" for="Mpw">Original Password</label>
               </div>
 
               <div class="form-row" >
-                <input type="email" class="input-text" id="Mpw" placeholder="Password" />
-                <label class="label-helper" for="Mpw">Password</label>
+                <input type="password" class="input-text" id="Mrepw" placeholder="Change Password" />
+                <label class="label-helper" for="Mrepw">Change Password</label>
               </div>
 
               <div class="form-row" >
-                <input type="password" class="input-text" id="Mrepw" placeholder="Password Confirm" />
-                <label class="label-helper" for="Mrepw">Password  Confirm</label>
+                <input type="password" class="input-text" id="Mrerepw" placeholder="Change Password confirm" />
+                <label class="label-helper" for="Mrerepw">Change Password  Confirm</label>
               </div>
+              <div class="warning"></div>
           </form> <!-- end .content -->
       </div>
 
@@ -78,6 +79,7 @@
                   </div>
                 </div>
     </script>
+    <script type="text/javascript" src="../js/octodog.js"></script>
     <script type="text/javascript" src="../js/profile.js"></script>
 </body>
 </html>

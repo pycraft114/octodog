@@ -71,4 +71,38 @@ router.post('/user', function(req, res){
   });
 });
 
+router.post('/change',function(req, res){
+  var password = req.body.password;
+  var pw2 = password.pw2;
+  var query = "update user set password="+ pw2 +" where id="+ id +";"
+
+  connection.query(query, function(err,rows){
+    if(err) throw err;
+    var responseData = {"msg":"ok"};
+    res.json(responseData);
+  })
+})
+
+router.post('/confirm', function(req, res){
+  var password = req.body.password;
+  var pw1 = password.pw1;
+  var responseData = {};
+  var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";"
+
+  connection.query(query, function(err,rows){
+    if(err) throw err;
+    var confirm = rows[0]["count(*)"];
+
+    if(confirm){
+        responseData = {"msg":"ok"};
+        res.json(responseData);
+    }else{
+        responseData = {"msg":"no"};
+        res.json(responseData);
+    }
+
+  })
+
+})
+
 module.exports = router;

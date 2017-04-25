@@ -417,3 +417,9 @@ footer h1 {
     line-height: 1;
     padding-left: 12px;
 }
+
+.modal-content .warning{
+    color: #fd4c88;
+    font-size: 0.8rem;
+    text-align: center;
+}
