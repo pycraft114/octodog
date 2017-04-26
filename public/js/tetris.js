@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(){
-	var shapeMap = [];
+	const shapeMap = [];
 
 	/*[0]
 	0000 1000 1110 0010
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		"1100110000000000"
 	];
 
-	var model = Object.assign({},Object.create(tetris.model),{
+	const model = Object.assign({},Object.create(tetris.model),{
 		startBtn: document.querySelector(".start"),
 		gameCanvas: document.querySelector(".game"),
 		viewCanvas: document.querySelector(".view"),
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	var render = Object.assign({},Object.create(tetris.render));
 	render.model = model;
 */
-	var game = Object.assign({}, Object.create(tetris.game));
+	const game = Object.assign({}, Object.create(tetris.game));
 	game.model = model;
 
 /*
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function(){
 */
 });
 
-var tetris = {};
+const tetris = {};
 
 tetris.model = {
 	gameCanvas,
@@ -157,7 +157,7 @@ tetris.render = {
 tetris.game = {
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
-		var m = this.model;
+		const m = this.model;
 		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
 		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
 	},
@@ -173,10 +173,10 @@ tetris.game = {
 
 	//캔버스의 2d컨텍스트의 초기화
 	init: function() {
-		var m = this.model;
-		for(var y = 0; y < m.ROWS; y++) {
+		const m = this.model;
+		for(let y = 0; y < m.ROWS; y++) {
 			m.gameBoard[y] = [];
-			for(var x = 0; x < m.COLS; x++) {
+			for(let x = 0; x < m.COLS; x++) {
 				m.gameBoard[y][x] = 0;
 			}
 		}
@@ -190,10 +190,10 @@ tetris.game = {
 
 	//내려오던 블럭이 바닥이나 이미 정지해 있는 블럭과 닿으면 정지시켜줌
 	freeze: function() {
-		var m = this.model;
-		for(var i = 0; i < 16; i++) {
-			var x = i % 4;
-			var y = (i - x) / 4;
+		const m = this.model;
+		for(let i = 0; i < 16; i++) {
+			const x = i % 4;
+			const y = (i - x) / 4;
 			if(m.curr[i]) {
 				m.gameBoard[y + m.currY][x + m.currX] = m.curr[i];
 			}
@@ -202,13 +202,13 @@ tetris.game = {
 
 	//현재 블럭을 회전시켜주는 함수
 	rotate: function() {
-		var m = this.model;
+		const m = this.model;
 		if(m.shapeMap[m.currIdx][m.currRotate + 1]) {
 			m.currRotate++;
 		}else{
 			m.currRotate = 0;
 		}
-		var newCurr = shapeMap[m.currIdx][m.currRotate].split('').map(function(v){
+		const newCurr = shapeMap[m.currIdx][m.currRotate].split('').map(function(v){
 			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
 		})
 		return newCurr;
@@ -221,7 +221,7 @@ tetris.game = {
 
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
 	keyPress: function(key) {
-		var m = this.model;
+		const m = this.model;
 		switch(key) {
 			case 'left':
 				if(this.valid(-1)) {
@@ -244,7 +244,7 @@ tetris.game = {
 				}
 				break;
 			case 'rotate':
-				var rotated = this.rotate();
+				const rotated = this.rotate();
 				if(this.valid(0, 0, rotated)) {
 					m.curr = rotated;
 				}
@@ -260,16 +260,16 @@ tetris.game = {
 
 	//블럭이 이동할수 있는지 검사해주는 함수
 	valid: function(offsetX, offsetY, newCurr) {
-		var m = this.model;
+		const m = this.model;
 		offsetX = offsetX || 0;
 		offsetY = offsetY || 0;
 		offsetX += m.currX;
 		offsetY += m.currY;
 		newCurr = newCurr || m.curr;
 
-		for(var i = 0; i < 16; i++) {
-			var x = i % 4;
-			var y = (i - x) / 4;
+		for(let i = 0; i < 16; i++) {
+			const x = i % 4;
+			const y = (i - x) / 4;
 			if(newCurr[i]) {
 				if(typeof m.board[y + offsetY] === "undefined"
 				|| m.board[y + offsetY][x + offsetX]
@@ -290,7 +290,7 @@ tetris.game = {
 
 	//게임을 시작할때 호출할 함수
 	newGame: function() {
-		var m = this.model;
+		const m = this.model;
 		clearInterval(m.interval);
 		this.init();
 		this.newShape();
@@ -300,7 +300,7 @@ tetris.game = {
 
 	//이벤트 등록
 	addEvent: function() {
-		var keys = {
+		const keys = {
 			37: 'left',
 			39: 'right',
 			40: 'down',
