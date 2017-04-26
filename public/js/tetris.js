@@ -78,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	];
 
 	var model = Object.assign({},Object.create(tetris.model),{
+		startBtn: document.querySelector(".start"),
 		gameCanvas: document.querySelector(".game"),
 		viewCanvas: document.querySelector(".view"),
 		COLS: 10,
@@ -297,7 +298,7 @@ tetris.game = {
 				this.render();
 			}
 		}.bind(this));
-		document.addEventListener("click", function(){
+		this.model.startBtn.addEventListener("click", function(){
 			this.newGame();
 		});
 	}
