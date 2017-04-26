@@ -8,7 +8,7 @@ function _$(element){
   return document.querySelectorAll(element);
 }
 
-function ChartView(){
+function ChartData(){
   this.ctx = $("#myChart").getContext('2d');
 
   // chart rendering set object
@@ -60,160 +60,171 @@ function ChartView(){
   };
 }
 
-var chartView =  new ChartView()
-
-
-var myBarChart = new Chart(chartView.ctx, {
-    type: 'bar',
-    data: chartView.data,
-    options: chartView.options
-});
-
 // modal part
-// Get the modal,
-function modal(){
+function Modal(){
+  // dom componet
   this.modal = $('#myModal');
   this.input = _$(".input-text")
   this.modalPw = $("#Mpw");
   this.modalChangePw = $("#Mrepw");
   this.modalChangePwConfirm = $("#Mrerepw");
   this.warning = $(".warning");
-}
-var modal = document.getElementById('myModal');
+  this.btn_close = $(".close");
 
-// When the user clicks on the button, open the modal
-function pwClickHandler(){
-    modal.style.display = "block";
-    console.log("click")
-}
+  // addEvent
+  this.btn_close.addEventListener("click", this.closeClickHandler.bind(this));
+  // When the user clicks anywhere outside of the modal, close it
+  window.addEventListener('click', this.windowClickHandler.bind(this));
 
-// When the user clicks on <span> (x), close the modal
-function closeClickHandler(){
-    modal.style.display = "none";
-    modalPw.value='';
-    modalChangePw.value='';
-    modalChangePwConfirm.value='';
-    warning.innerHTML = '';
+  for(var i = 0; i < this.input.length; i++){
+    this.input[i].addEventListener("keypress", this.enterEventHandler.bind(this))
+  }
+
 }
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
+Modal.prototype = {
 
+  enterEventHandler : function(event){
+    var originPw = this.modalPw.value
+    var changePw = this.modalChangePw.value
+    var changePwConfirm = this.modalChangePwConfirm.value
+    var password = {"pw1":originPw, "pw2":changePw};
 
-// chart part Ajax request
-function sendAjax(url, expression, data) {
-    var oReq = new XMLHttpRequest();
-    var result;
-
-    oReq.open('POST', url);
-    oReq.setRequestHeader('Content-Type', "application/json");
-    if(data!==undefined){
-        var data = {'password' : data};
-        data =  JSON.stringify(data);
-        oReq.send(data);
-    }else{
-        oReq.send();
-    }
-
-    oReq.addEventListener('load', function() {
-        result = JSON.parse(oReq.responseText);
-        switch (expression) {
-          case "init":
-            leftSideRender(result);
-            rightSideRender(result);
-            break;
-          case "confirm":
-            if(result.msg==="no"){
-              warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다"
-            }
-            else{
-              var password = JSON.parse(data).password;
-              sendAjax('http://localhost:3000/profile/change', null , password);
-              closeClickHandler();
-            }
-            console.log(result);
-            break;
-          default:
-
+    if(event.keyCode===13){
+        if((originPw==='')||(changePw==='')||(changePwConfirm==='')){
+          this.warning.innerHTML = "모든 항목을 입력해주세요"
         }
-
-    })
-}
-
-// left side rendering function
-function leftSideRender(resultData) {
-    var template = document.getElementById("left-template").innerHTML;
-    var leftContent = document.querySelector(".left");
-    var user = resultData.user;
-    var chartScore = resultData.chartscore;
-
-    // template 변환 - email, id, img, play, rank, topscore, totalscore
-    template = template.replace("{id}", user.id).replace("{email}", user.email).replace("{play}", user.play);
-    template = template.replace("{rank}", user.rank).replace("{topscore}", user.topscore).replace("{totalscore}", user.totalscore);
-
-    leftContent.innerHTML = template;
-
-    // add button click handler
-    // Get the button that opens the modal
-    var btn_pw = document.getElementsByClassName("pw-change")[0];
-    // Get the <span> element that closes the modal
-    var btn_close = document.getElementsByClassName("close")[0];
-
-    btn_pw.addEventListener("click", pwClickHandler);
-    btn_close.addEventListener("click", closeClickHandler);
-}
-
-// right side rendering function
-function rightSideRender(resultData) {
-    var score = resultData.chartscore.reverse();
-    var comp_data = chartView.data.datasets[0].data;
-
-    for (var i = 0; i < comp_data.length; i++) {
-        comp_data[i] = score[i];
+        else if(changePw!==changePwConfirm){
+          this.warning.innerHTML = "비밀 번호 확인이 다릅니다"
+        }
+        else{
+          this.warning.innerHTML = '';
+          util.sendAjax("post", 'http://localhost:3000/profile/confirm', "confirm" ,password);
+        }
     }
+  },
 
-    chartView.data.datasets[0].data = comp_data;
-    myBarChart.update();
+  windowClickHandler:function(event){
+    if (event.target == this.modal) {
+        this.modal.style.display = "none";
+    }
+  },
+
+  // When the user clicks on <span> (x), close the modal
+  closeClickHandler : function(){
+      this.modal.style.display = "none";
+      this.modalPw.value='';
+      this.modalChangePw.value='';
+      this.modalChangePwConfirm.value='';
+      this.warning.innerHTML = '';
+  }
+
 }
 
-// modal key press event
-var input = document.getElementsByClassName("input-text")
-var modalPw = document.getElementById("Mpw");
-var modalChangePw = document.getElementById("Mrepw");
-var modalChangePwConfirm = document.getElementById("Mrerepw");
-var warning = document.getElementsByClassName("warning")[0];
+var util = {
+  // chart part Ajax request
+   sendAjax : function(method, url, expression, data) {
+      var oReq = new XMLHttpRequest();
+      var result;
 
+      oReq.open(method, url);
+      oReq.setRequestHeader('Content-Type', "application/json");
+      if(data!==undefined){
+          data =  JSON.stringify(data);
+          oReq.send(data);
+      }else{
+          oReq.send();
+      }
 
-function addEnterEvent(){
-  for(var i = 0; i < input.length; i++){
-    input[i].addEventListener("keypress", enterEventHandler)
+      oReq.addEventListener('load', function() {
+          result = JSON.parse(oReq.responseText);
+          switch (expression) {
+            case "init":
+                this.renderBothSide(renderProfile, result);
+              break;
+            case "confirm":
+                this.passwordConfirm(modal, data, result.msg);
+              break;
+            default:
+          }
+      }.bind(this))
+  },
+
+  renderBothSide : function(obj, result){
+    obj.leftSideRender(result);
+    obj.rightSideRender(result, chartData);
+  },
+
+  passwordConfirm:function(obj, data, msg){
+    if(msg==="no"){
+      obj.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다"
+    }
+    else{
+      var password = JSON.parse(data);
+      this.sendAjax("post" ,'http://localhost:3000/profile/change', null , password);
+      obj.closeClickHandler();
+    }
   }
 }
 
-function enterEventHandler(event){
-  var originPw = modalPw.value
-  var changePw = modalChangePw.value
-  var changePwConfirm = modalChangePwConfirm.value
-  var password = {"pw1":originPw, "pw2":changePw};
 
-  if(event.keyCode===13){
-      if((originPw==='')||(changePw==='')||(changePwConfirm==='')){
-        warning.innerHTML = "모든 항목을 입력해주세요"
+
+function RenderProfile(){
+    this.modal = $('#myModal');
+    this.leftContent = $(".left");
+    this.template = $("#left-template")
+}
+
+RenderProfile.prototype = {
+  // left side rendering function
+  leftSideRender : function (resultData) {
+      var template = this.template.innerHTML;
+      var user = resultData.user;
+      var chartScore = resultData.chartscore;
+
+      // template 변환 - email, id, img, play, rank, topscore, totalscore
+      template = template.replace("{id}", user.id).replace("{email}", user.email).replace("{play}", user.play);
+      template = template.replace("{rank}", user.rank).replace("{topscore}", user.topscore).replace("{totalscore}", user.totalscore);
+
+      this.leftContent.innerHTML = template;
+
+      // add button click handler
+      // Get the button that opens the modal
+      var btn_pw = $(".pw-change");
+
+
+      btn_pw.addEventListener("click", this.pwClickHandler.bind(this));
+  },
+
+  // When the user clicks on the button, open the modal
+  pwClickHandler : function(){
+      this.modal.style.display = "block";
+      console.log("click")
+  },
+
+  // right side rendering function
+  rightSideRender : function(resultData, chartObj) {
+      var score = resultData.chartscore.reverse();
+      var dataSets = chartObj.data.datasets[0];
+      var comp_data = dataSets.data;
+
+      for (var i = 0; i < comp_data.length; i++) {
+          comp_data[i] = score[i];
       }
-      else if(changePw!==changePwConfirm){
-        warning.innerHTML = "비밀 번호 확인이 다릅니다"
-      }
-      else{
-        warning.innerHTML = '';
-        sendAjax('http://localhost:3000/profile/confirm', "confirm" ,password);
-      }
+
+      dataSets.data = comp_data;
+      myBarChart.update();
   }
 }
 
+var renderProfile = new RenderProfile();
+var modal = new Modal();
+var chartData =  new ChartData()
+var myBarChart = new Chart(chartData.ctx, {
+    type: 'bar',
+    data: chartData.data,
+    options: chartData.options
+});
 
-    sendAjax('http://localhost:3000/profile/user', "init");
+    util.sendAjax("post" ,'http://localhost:3000/profile/user', "init");
 });
