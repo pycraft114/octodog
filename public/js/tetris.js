@@ -195,7 +195,16 @@ tetris.game = {
 
 	//현재 블럭을 회전시켜주는 함수
 	rotate: function() {
-
+		var m = this.model;
+		if(m.shapeMap[m.currIdx][m.currRotate + 1]) {
+			m.currRotate++;
+		}else{
+			m.currRotate = 0;
+		}
+		var newCurr = shapeMap[m.currIdx][m.currRotate].split('').map(function(v){
+			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
+		})
+		return newCurr;
 	},
 
 	//열이 블럭으로 가득차면 지워주는 함수
