@@ -190,7 +190,14 @@ tetris.game = {
 
 	//내려오던 블럭이 바닥이나 이미 정지해 있는 블럭과 닿으면 정지시켜줌
 	freeze: function() {
-
+		var m = this.model;
+		for(var i = 0; i < 16; i++) {
+			var x = i % 4;
+			var y = (i - x) / 4;
+			if(m.curr[i]) {
+				m.gameBoard[y + m.currY][x + m.currX] = m.curr[i];
+			}
+		}
 	},
 
 	//현재 블럭을 회전시켜주는 함수
