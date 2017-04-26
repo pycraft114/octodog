@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	const model = Object.assign({},Object.create(tetris.model),{
 		startBtn: document.querySelector(".start"),
 		gameCanvas: document.querySelector(".game"),
-		viewCanvas: document.querySelector(".view"),
+		nextCanvas: document.querySelector(".next"),
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
@@ -115,10 +115,13 @@ tetris.model = {
 	gameCanvas,
 	gameContext: this.gameCanvas.getContext("2d"),
 	gameBoard:[],
-	viewCanvas,
-	viewContext: this.viewCanvas.getContext("2d"),
-	W: gameCanvas.width,
-	H: gameCanvas.height,
+	nextBoard:[],
+	nextCanvas,
+	nextContext: this.viewCanvas.getContext("2d"),
+	W: this.gameCanvas.width,
+	H: this.gameCanvas.height,
+	nW: this.nextCanvas.width,
+	nH: this.nextCanvas.height,
 	COLS,
 	ROWS,
 	blockWidth: this.W / this.COLS,
@@ -128,7 +131,7 @@ tetris.model = {
 	lose,
 	interval,
 	curr,
-	next,
+	next: null,
 	currIdx,
 	currRotate,
 	nextIdx,
@@ -165,19 +168,56 @@ tetris.game = {
 
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
 	render: function() {
-
-	},	
-
-	//새 블록을 만든다
-	newShape: function() {
 		const m = this.model;
-		if(m.nextIdx !== "undefined") {
-			m.currIdx = m.nextIdx;
-			m.nextIdx = Math.floor(Math.random() * m.shapeMap.length);
+		m.gameContext.clearRect(0, 0, m.W, m.H);
+		m.gameContext.strokeStyle = "gray";
+		for(let x = 0; x < m.COLS; x++) {
+			for(let y = 0; y < m.ROWS; y++) {
+				if(m.gameBoard[y][x]) {
+					m.gameContext.fillStyle = m.colors[m.gameBoard[y][x] - 1];
+					this.drawBlock(m.gameContext, x, y);
+				}
+			}
 		}
 
-		m.curr = m.shapeMap[m.currIdx][0].split('').map(function(v){
-			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
+		m.gameContext.fillStyle = m.colors[m.currIdx];
+		m.gameContext.strokeStyle = "gray";
+		for(let i = 0; i < 16; i++) {
+			const x = i % 4;
+			const y = (i - x) / 4;
+			if(m.curr[i]) {
+				this.drawBlock(m.gameContext, m.currX + x, m.currY + y);
+			}
+		}
+
+		m.nextContext.clearRect(0, 0, m.nW, m.nH);
+		for(let i = 0; i < 16; i++) {
+			const x = i % 4;
+			const y = (i - x) / 4;
+			if(m.next[i]) {
+				m.nextContext.fillStyle = m.colors[m.next[i] - 1];
+				this.drawBlock(m.nextContext, x + 1, y + 1);
+			} 
+		}
+		
+	},	
+
+	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
+	newShape: function() {
+		const m = this.model;
+		if(m.nextIdx !== null) {
+			m.curr = m.next;
+			m.currIdx = m.nextIdx;
+			m.nextIdx = Math.floor(Math.random() * m.shapeMap.length);
+		}else{
+			m.currIdx = Math.floor(Math.random() * m.shapeMap.length);
+			m.curr = m.shapeMap[m.currIdx][0].split("").map(function(v){
+				return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
+			});
+			m.nextIdx = Math.floor(Math.random() * m.shapeMap.length);
+		}
+		m.next = m.shapeMap[m.nextIdx][0].split("").map(function(v){
+			return Number(v) === 0 ? Number(v) : Number(v) + m.nextIdx;
 		});
 		m.currX = 5;
 		m.currY = 0;
@@ -299,14 +339,14 @@ tetris.game = {
 			const x = i % 4;
 			const y = (i - x) / 4;
 			if(newCurr[i]) {
-				if(typeof m.board[y + offsetY] === "undefined"
-				|| m.board[y + offsetY][x + offsetX]
+				if(typeof m.gameBoard[y + offsetY] === "undefined"
+				|| m.gameBoard[y + offsetY][x + offsetX]
 				|| x + offsetX < 0
 				|| y + offsetY >= m.ROWS
 				|| x + offsetX >= m.COLS ) {
 					return false;
 				}
-				if(typeof m.board[y + offsetY][x + offsetX] === "undefined") {
+				if(typeof m.gameBoard[y + offsetY][x + offsetX] === "undefined") {
 					if(x + offsetX > 0 && x + offsetX < m.COLS && offsetY === 1) {
 						m.lose = true;
 					}
