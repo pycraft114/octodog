@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function(){
 function $(element){
   return document.querySelector(element);
 }
+function _$(element){
+  return document.querySelectorAll(element);
+}
 
 function ChartView(){
   this.ctx = $("#myChart").getContext('2d');
@@ -68,6 +71,14 @@ var myBarChart = new Chart(chartView.ctx, {
 
 // modal part
 // Get the modal,
+function modal(){
+  this.modal = $('#myModal');
+  this.input = _$(".input-text")
+  this.modalPw = $("#Mpw");
+  this.modalChangePw = $("#Mrepw");
+  this.modalChangePwConfirm = $("#Mrerepw");
+  this.warning = $(".warning");
+}
 var modal = document.getElementById('myModal');
 
 // When the user clicks on the button, open the modal
@@ -152,7 +163,7 @@ function leftSideRender(resultData) {
     // Get the <span> element that closes the modal
     var btn_close = document.getElementsByClassName("close")[0];
 
-    btn_pw.onclick = pwClickHandler;
+    btn_pw.addEventListener("click", pwClickHandler);
     btn_close.addEventListener("click", closeClickHandler);
 }
 
@@ -176,23 +187,31 @@ var modalChangePw = document.getElementById("Mrepw");
 var modalChangePwConfirm = document.getElementById("Mrerepw");
 var warning = document.getElementsByClassName("warning")[0];
 
-for(var i = 0; i < input.length; i++){
-  input[i].addEventListener("keypress", function(event){
-    var password = {"pw1":modalPw.value, "pw2":modalChangePw.value};
 
-    if(event.keyCode===13){
-        if((modalPw.value==='')||(modalChangePw.value==='')||(modalChangePwConfirm.value==='')){
-          warning.innerHTML = "모든 항목을 입력해주세요"
-        }
-        else if(modalChangePw.value!==modalChangePwConfirm.value){
-          warning.innerHTML = "비밀 번호 확인이 다릅니다"
-        }
-        else{
-          warning.innerHTML = '';
-          sendAjax('http://localhost:3000/profile/confirm', "confirm" ,password);
-        }
-    }
-  })
+function addEnterEvent(){
+  for(var i = 0; i < input.length; i++){
+    input[i].addEventListener("keypress", enterEventHandler)
+  }
+}
+
+function enterEventHandler(event){
+  var originPw = modalPw.value
+  var changePw = modalChangePw.value
+  var changePwConfirm = modalChangePwConfirm.value
+  var password = {"pw1":originPw, "pw2":changePw};
+
+  if(event.keyCode===13){
+      if((originPw==='')||(changePw==='')||(changePwConfirm==='')){
+        warning.innerHTML = "모든 항목을 입력해주세요"
+      }
+      else if(changePw!==changePwConfirm){
+        warning.innerHTML = "비밀 번호 확인이 다릅니다"
+      }
+      else{
+        warning.innerHTML = '';
+        sendAjax('http://localhost:3000/profile/confirm', "confirm" ,password);
+      }
+  }
 }
 
 
