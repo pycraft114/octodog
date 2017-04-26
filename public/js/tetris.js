@@ -128,6 +128,7 @@ tetris.model = {
 	lose,
 	interval,
 	curr,
+	next,
 	currIdx,
 	currRotate,
 	nextIdx,
@@ -166,9 +167,20 @@ tetris.game = {
 	render: function() {
 
 	},	
+
 	//새 블록을 만든다
 	newShape: function() {
+		const m = this.model;
+		if(m.nextIdx !== "undefined") {
+			m.currIdx = m.nextIdx;
+			m.nextIdx = Math.floor(Math.random() * m.shapeMap.length);
+		}
 
+		m.curr = m.shapeMap[m.currIdx][0].split('').map(function(v){
+			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
+		});
+		m.currX = 5;
+		m.currY = 0;
 	},
 
 	//캔버스의 2d컨텍스트의 초기화
@@ -216,7 +228,23 @@ tetris.game = {
 
 	//열이 블럭으로 가득차면 지워주는 함수
 	clearLines: function() {
-
+		const m = this.model;
+		for(let y = m.ROWS - 1; y >= 0; y--) {
+			let filled = true;
+			for(let x = 0; x < m.COLS; x++) {
+				if(m.gameBoard[y][x] === 0) {
+					filled = false;
+					break;
+				}
+			}
+			if(filled) {
+				m.score++;
+				for(let i = y; i > 0; i--) {
+					m.gameBoard[i][x] = m.gameBoard[i - 1][x];
+				}
+			}
+			y--;
+		}
 	},
 
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
@@ -279,7 +307,7 @@ tetris.game = {
 					return false;
 				}
 				if(typeof m.board[y + offsetY][x + offsetX] === "undefined") {
-					if(x + offsetX > 0 && x + offsetX < COLS && offsetY === 1) {
+					if(x + offsetX > 0 && x + offsetX < m.COLS && offsetY === 1) {
 						m.lose = true;
 					}
 					return false;
@@ -309,7 +337,7 @@ tetris.game = {
 			27: 'pause'
 		};
 		document.addEventListener("onkeydown", function(evt){
-			if(typeof kyes[evt.keyCode] !== 'undefined') {
+			if(typeof keys[evt.keyCode] !== 'undefined') {
 				this.keyPress(keys[evt.keyCode]);
 				this.render();
 			}
