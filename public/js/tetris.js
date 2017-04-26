@@ -87,12 +87,25 @@ document.addEventListener("DOMContentLoaded", function(){
 		colors: ["red", "orange", "yellow", "green", "blue", "navy", "purple"]
 	});
 
+/*
 	var render = Object.assign({},Object.create(tetris.render));
 	render.model = model;
-
+*/
 	var game = Object.assign({}, Object.create(tetris.game));
 	game.model = model;
 
+/*
+	var controller = Object.assign({},Object.create(tetris.controller), {
+		keys: {
+			27: 'pause',
+			37: 'left',
+			39: 'right',
+			40: 'down',
+			32: 'powerDown',
+			38: 'rotate'
+		}
+	});
+*/
 });
 
 var tetris = {};
@@ -124,6 +137,7 @@ tetris.model = {
 	ms
 };
 
+/*
 tetris.render = {
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
@@ -137,9 +151,20 @@ tetris.render = {
 
 	}
 };
+*/
 
 tetris.game = {
+	//정사각형 블럭을 그려주는함수
+	drawBlock: function(context, x, y) {
+		var m = this.model;
+		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
+		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
+	},
 
+	//drawBlock함수를 이용해 캔버스에 그려주는 함수
+	render: function() {
+
+	},	
 	//새 블록을 만든다
 	newShape: function() {
 
@@ -147,7 +172,14 @@ tetris.game = {
 
 	//캔버스의 2d컨텍스트의 초기화
 	init: function() {
-
+		var m = this.model;
+		for(var y = 0; y < m.ROWS; y++) {
+			m.gameBoard[y] = [];
+			for(var x = 0; x < m.COLS; x++) {
+				m.gameBoard[y][x] = 0;
+			}
+		}
+		m.score = 0;
 	},
 
 	//재귀호출되면서 게임진행을 해주는 함수
@@ -172,20 +204,117 @@ tetris.game = {
 
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
 	keyPress: function(key) {
-
+		var m = this.model;
+		switch(key) {
+			case 'left':
+				if(this.valid(-1)) {
+					m.currX--;
+				}
+				break;
+			case 'right':
+				if(this.valid(1)) {
+					m.currX++;
+				}
+				break;
+			case 'down':
+				if(this.valid(0, 1)) {
+					m.currY++;
+				}
+				break;
+			case 'powerDown':
+				while(this.valid(0, 1)) {
+					m.currY++;
+				}
+				break;
+			case 'rotate':
+				var rotated = this.rotate();
+				if(this.valid(0, 0, rotated)) {
+					m.curr = rotated;
+				}
+				break;
+			case 'pause':
+				if(m.pause === false) {
+					m.interval = setInterval(this.tick, m.ms);
+				}
+				m.pause = !m.pause;
+				break;
+		}
 	},
 
 	//블럭이 이동할수 있는지 검사해주는 함수
-	valid: function() {
+	valid: function(offsetX, offsetY, newCurr) {
+		var m = this.model;
+		offsetX = offsetX || 0;
+		offsetY = offsetY || 0;
+		offsetX += m.currX;
+		offsetY += m.currY;
+		newCurr = newCurr || m.curr;
 
+		for(var i = 0; i < 16; i++) {
+			var x = i % 4;
+			var y = (i - x) / 4;
+			if(newCurr[i]) {
+				if(typeof m.board[y + offsetY] === "undefined"
+				|| m.board[y + offsetY][x + offsetX]
+				|| x + offsetX < 0
+				|| y + offsetY >= m.ROWS
+				|| x + offsetX >= m.COLS ) {
+					return false;
+				}
+				if(typeof m.board[y + offsetY][x + offsetX] === "undefined") {
+					if(x + offsetX > 0 && x + offsetX < COLS && offsetY === 1) {
+						m.lose = true;
+					}
+					return false;
+				}
+			}
+		}
 	},
 
 	//게임을 시작할때 호출할 함수
 	newGame: function() {
+		var m = this.model;
+		clearInterval(m.interval);
+		this.init();
+		this.newShape();
+		m.lose = false;
+		m.interval = setInterval(this.tick, m.ms);
+	},
 
+	//이벤트 등록
+	addEvent: function() {
+		var keys = {
+			37: 'left',
+			39: 'right',
+			40: 'down',
+			38: 'rotate',
+			32: 'powerDown',
+			27: 'pause'
+		};
+		document.addEventListener("onkeydown", function(evt){
+			if(typeof kyes[evt.keyCode] !== 'undefined') {
+				this.keyPress(keys[evt.keyCode]);
+				this.render();
+			}
+		}.bind(this));
+		document.addEventListener("click", function(){
+			this.newGame();
+		});
 	}
 
 };
 
-tetris.controller = {};
+/*
+tetris.controller = {
 
+	addEvent: function() {
+		document.body.addEventListener(function(evt){
+			if( typeof this.keys[evt.keyCode] !== "undefinded") {
+				//키눌러졌을때 작동할 함수호출
+				//render함수호출 
+				// 아무래도 옵저버 패턴을 써야 할듯?
+			}
+		})
+	}
+};
+*/
