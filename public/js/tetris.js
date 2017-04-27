@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	/*[5]
 	0010 0000 1110 1100
 	0010 1000 0010 1000
-	0110 1110 0010 1000
+	0110 1110 0000 1000
 	0000 0000 0000 0000	
 	*/
 	shapeMap[5] = [
@@ -237,7 +237,18 @@ tetris.game = {
 
 	//재귀호출되면서 게임진행을 해주는 함수
 	tick: function() {
-
+		const m = this.model;
+		if(this.valid(0,1) && m.pause === false) {
+			m.currY++;
+		}else{
+			this.freeze();
+			this.clearLines();
+			if(m.lose) {
+				clearInterval(m.interval);
+				return false;
+			} 
+			this.newShape();
+		}
 	},
 
 	//내려오던 블럭이 바닥이나 이미 정지해 있는 블럭과 닿으면 정지시켜줌
