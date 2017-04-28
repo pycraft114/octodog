@@ -71,12 +71,14 @@ function Modal(){
   this.warning = $(".warning");
   this.btn_close = $(".close");
 
-  // addEvent
+  // close button click event
   this.btn_close.addEventListener("click", this.closeClickHandler.bind(this));
+
   // When the user clicks anywhere outside of the modal, close it
   window.addEventListener('click', this.windowClickHandler.bind(this));
 
-  for(var i = 0; i < this.input.length; i++){
+  // set event when you press enter key in modal input
+  for(let i = 0; i < this.input.length; i++){
     this.input[i].addEventListener("keypress", this.enterEventHandler.bind(this))
   }
 
@@ -85,10 +87,10 @@ function Modal(){
 Modal.prototype = {
 
   enterEventHandler : function(event){
-    var originPw = this.modalPw.value
-    var changePw = this.modalChangePw.value
-    var changePwConfirm = this.modalChangePwConfirm.value
-    var password = {"pw1":originPw, "pw2":changePw};
+    let originPw = this.modalPw.value
+    let changePw = this.modalChangePw.value
+    let changePwConfirm = this.modalChangePwConfirm.value
+    let password = {"pw1":originPw, "pw2":changePw};
 
     if(event.keyCode===13){
         if((originPw==='')||(changePw==='')||(changePwConfirm==='')){
@@ -121,11 +123,11 @@ Modal.prototype = {
 
 }
 
-var util = {
+let util = {
   // chart part Ajax request
    sendAjax : function(method, url, expression, data) {
-      var oReq = new XMLHttpRequest();
-      var result;
+      const oReq = new XMLHttpRequest();
+      let result;
 
       oReq.open(method, url);
       oReq.setRequestHeader('Content-Type', "application/json");
@@ -160,7 +162,7 @@ var util = {
       obj.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다"
     }
     else{
-      var password = JSON.parse(data);
+      let password = JSON.parse(data);
       this.sendAjax("post" ,'http://localhost:3000/profile/change', null , password);
       obj.closeClickHandler();
     }
@@ -178,9 +180,9 @@ function RenderProfile(){
 RenderProfile.prototype = {
   // left side rendering function
   leftSideRender : function (resultData) {
-      var template = this.template.innerHTML;
-      var user = resultData.user;
-      var chartScore = resultData.chartscore;
+      let template = this.template.innerHTML;
+      let user = resultData.user;
+      let chartScore = resultData.chartscore;
 
       // template 변환 - email, id, img, play, rank, topscore, totalscore
       template = template.replace("{id}", user.id).replace("{email}", user.email).replace("{play}", user.play);
@@ -190,8 +192,7 @@ RenderProfile.prototype = {
 
       // add button click handler
       // Get the button that opens the modal
-      var btn_pw = $(".pw-change");
-
+      let btn_pw = $(".pw-change");
 
       btn_pw.addEventListener("click", this.pwClickHandler.bind(this));
   },
@@ -204,11 +205,11 @@ RenderProfile.prototype = {
 
   // right side rendering function
   rightSideRender : function(resultData, chartObj) {
-      var score = resultData.chartscore.reverse();
-      var dataSets = chartObj.data.datasets[0];
-      var comp_data = dataSets.data;
+      let score = resultData.chartscore.reverse();
+      let dataSets = chartObj.data.datasets[0];
+      let comp_data = dataSets.data;
 
-      for (var i = 0; i < comp_data.length; i++) {
+      for(let i = 0; i < comp_data.length; i++) {
           comp_data[i] = score[i];
       }
 
@@ -217,10 +218,10 @@ RenderProfile.prototype = {
   }
 }
 
-var renderProfile = new RenderProfile();
-var modal = new Modal();
-var chartData =  new ChartData()
-var myBarChart = new Chart(chartData.ctx, {
+const renderProfile = new RenderProfile();
+const modal = new Modal();
+const chartData =  new ChartData()
+const myBarChart = new Chart(chartData.ctx, {
     type: 'bar',
     data: chartData.data,
     options: chartData.options
