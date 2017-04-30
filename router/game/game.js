@@ -28,14 +28,21 @@ router.get('/', function(req, res){
 
 router.post('/',function(req, res){
   var responseData = {};
+  var uid = [];
+  var score = [];
   var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit 10";
 
   connection.query(query, function(err,rows){
-    console.log(rows);
+      for(let i = 0; i < rows.length; i++){
+        uid.push(rows[i].uid);
+        score.push(rows[i].score);
+      }
+      responseData.uid = uid;
+      responseData.score = score;
+      JSON.stringify(responseData);
+      res.json(responseData);
   })
 
-  JSON.stringify(responseData);
-  res.json(responseData);
 })
 
 module.exports =  router;

@@ -474,13 +474,19 @@ footer h1 {
 .rank ul li{
   display: inline-block;
   text-align: center;
-  font-size:1.5rem;
+  font-size:1.2rem;
   vertical-align:middle;
   display:table-cell;
+  padding:10px;
+}
+
+.rank .numbering{
+  width: 10%;
 }
 
 .rank .rank-img{
   width: 15%;
+  padding:0px;
 }
 
 .rank .rank-img img{
@@ -489,7 +495,7 @@ footer h1 {
 }
 
 .rank .name{
-  width:50%;
+  width:40%;
 }
 
 .rank .point{
