@@ -7,10 +7,6 @@ document.addEventListener("DOMContentLoaded", function(){
     return document.querySelectorAll(element);
   }
 
-  $(".btn").addEventListener("click",function(){
-    util.sendAjax("post", 'http://localhost:3000/game', "search");
-  })
-
   let util = {
     // chart part Ajax request
      sendAjax : function(method, url, expression, data) {
@@ -29,18 +25,29 @@ document.addEventListener("DOMContentLoaded", function(){
         oReq.addEventListener('load', function() {
             result = JSON.parse(oReq.responseText);
             switch (expression) {
-              case "search" :
-              console.log(result)
+              case "rankRender" :
+                this.rankRender(result);
               break;
               default:
             }
         }.bind(this))
     },
 
-    search : function(){
+    rankRender : function(result){
+      let uid = result.uid;
+      let score =  result.score;
+      let template = $("#rank-template").innerHTML;
+      let wrap =  $(".rank-wrap");
+      let resultHtml = "";
 
+
+      for(let i =0; i < uid.length; i++){
+        resultHtml += template.replace("{num}",i+1).replace("{name}",uid[i]).replace("{score}",score[i]);
+      }
+      wrap.innerHTML = resultHtml;
     }
   }
 
+  util.sendAjax("post", 'http://localhost:3000/game', "rankRender");
 
 });
