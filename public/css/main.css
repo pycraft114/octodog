@@ -104,6 +104,7 @@ section .left {
 }
 
 section .right {
+    position:relative;
     width: 50%;
     height: 100%;
     float: left;
@@ -143,7 +144,7 @@ footer h1 {
     min-height: 540px;
     max-height: 1080px;
   }
-  .right-content{
+  section .right{
     border-top: 1px solid gray;
   }
   footer {
@@ -429,4 +430,71 @@ footer h1 {
     color: #fd4c88;
     font-size: 0.8rem;
     text-align: center;
+}
+
+
+/*game page*/
+
+.ranking {
+  position: absolute;
+  left:50%;
+  top:50%;
+  transform: translateX(-50%) translateY(-50%);
+  width:70%;
+  height: 80%;
+  border: 1px solid green;
+  padding: 10px;
+  border-radius: 5px;
+  overflow: scroll;
+}
+
+.ranking h1{
+  font-size:2rem;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.rank{
+  position: relative;
+  border-radius: 15px;
+  border: 1px solid green;
+  margin: 10px 0;
+  overflow: hidden;
+  padding:10px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.rank ul{
+  height: 100%;
+  overflow: hidden;
+  font-size: 0;
+}
+
+.rank ul li{
+  display: inline-block;
+  text-align: center;
+  font-size:1.5rem;
+  vertical-align:middle;
+  display:table-cell;
+}
+
+.rank .rank-img{
+  width: 15%;
+}
+
+.rank .rank-img img{
+  width: 100%;
+  border-radius: 50%;
+}
+
+.rank .name{
+  width:50%;
+}
+
+.rank .point{
+  width:30%;
+}
+
+.rank ul li p{
 }
