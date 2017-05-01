@@ -5,13 +5,18 @@ tetris.model = {
 	setData: function() {
 		this.gameContext = this.gameCanvas.getContext("2d");
 		this.nextContext = this.nextCanvas.getContext("2d");
-		this.W = this.gameCanvas.width;
-		this.H = this.gameCanvas.height;
-		this.nW = this.nextCanvas.width;
-		this.nH = this.nextCanvas.height;
+		this.W = this.gameCanvas.clientWidth;
+		this.H = this.gameCanvas.clientHeight;
+		this.nW = this.nextCanvas.clientWidth;
+		this.nH = this.nextCanvas.clientHeight;
+		/*
+		this.W = parseInt(window.getComputedStyle(this.gameCanvas).width);
+		this.H = parseInt(window.getComputedStyle(this.gameCanvas).height);
+		this.nW = parseInt(window.getComputedStyle(this.nextCanvas).width);
+		this.nH = parseInt(window.getComputedStyle(this.nextCanvas).height);
+		*/
 		this.blockWidth = this.W / this.COLS;
 		this.blockHeight = this.H / this.ROWS;
-
 	},
 	gameContext: null,
 	nextContext: null,
@@ -21,6 +26,7 @@ tetris.model = {
 	goToNextLevel: null,
 	lose: false,
 	interval: null,
+	renderInterval: null,
 	curr: null,
 	next: null,
 	currIdx: null,
@@ -31,7 +37,7 @@ tetris.model = {
 	shapes:[],
 	colors:[],
 	ms:null,
-	pause: false
+	pause: true
 };
 
 /*
@@ -54,6 +60,7 @@ tetris.game = {
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
 		const m = this.model;
+		context.strokeStyle = "grey";
 		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
 		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
 	},
@@ -62,7 +69,14 @@ tetris.game = {
 	render: function() {
 		const m = this.model;
 		m.gameContext.clearRect(0, 0, m.W, m.H);
-		m.gameContext.strokeStyle = "black";
+		m.gameContext.font = "25px Verdana";
+		const gradient = m.gameContext.createLinearGradient(0, 0, m.W, 0);
+		gradient.addColorStop("0","magenta");
+		gradient.addColorStop("0.5","blue");
+		gradient.addColorStop("1.0","red");
+		m.gameContext.fillStyle = gradient;
+		m.gameContext.fillText("Score  " + m.score.toString(), m.blockWidth, m.blockHeight);
+
 		for(let x = 0; x < m.COLS; x++) {
 			for(let y = 0; y < m.ROWS; y++) {
 				if(m.gameBoard[y][x]) {
@@ -73,7 +87,6 @@ tetris.game = {
 		}
 
 		m.gameContext.fillStyle = m.colors[m.currIdx];
-		m.gameContext.strokeStyle = "black";
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
@@ -83,6 +96,7 @@ tetris.game = {
 		}
 
 		m.nextContext.clearRect(0, 0, m.nW, m.nH);
+		m.nextContext.strokeStyle = 'black';
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
@@ -97,6 +111,8 @@ tetris.game = {
 	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
 	newShape: function() {
 		const m = this.model;
+		console.log(m.blockHeight, m.blockWidth);
+		console.log(m.W, m.H, m.nW, m.nH);
 		if(m.nextIdx !== null) {
 			m.curr = m.next;
 			m.currIdx = m.nextIdx;
@@ -125,7 +141,6 @@ tetris.game = {
 			}
 		}
 		m.score = 0;
-		m.scoreDiv.innerHTML = "Score:" + m.score.toString();
 	},
 
 	//재귀호출되면서 게임진행을 해주는 함수
@@ -138,6 +153,7 @@ tetris.game = {
 			this.clearLines();
 			if(m.lose) {
 				clearInterval(m.interval);
+				clearInterval(m.renderInterval);
 				return false;
 			} 
 			this.newShape();
@@ -164,7 +180,6 @@ tetris.game = {
 		}else{
 			m.currRotate = 0;
 		}
-		console.log(m.currIdx, m.currRotate);
 		const newCurr = m.shapes[m.currIdx][m.currRotate].split('').map(function(v){
 			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
 		})
@@ -184,14 +199,13 @@ tetris.game = {
 			}
 			if(filled) {
 				m.score++;
-				m.scoreDiv.innerHTML = "Score" + m.score.toString();
 				for(let i = y; i > 0; i--) {
 					for(let x = 0; x < m.COLS; x++) {
 						m.gameBoard[i][x] = m.gameBoard[i - 1][x];
 					}
 				}
+				y++;
 			}
-			y--;
 		}
 
 		
@@ -200,7 +214,8 @@ tetris.game = {
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
 	keyPress: function(key) {
 		const m = this.model;
-		switch(key) {
+		if(key !== "pause" && m.pause === true) return;
+ 		switch(key) {
 			case 'left':
 				if(this.valid(-1)) {
 					m.currX--;
@@ -230,8 +245,13 @@ tetris.game = {
 			case 'pause':
 				if(m.pause === false) {
 					clearInterval(m.interval);
+					clearInterval(m.renderInterval);
+					//아래 코드들은 작동이 안된다 왜일까
+					m.gameContext.clearRect(0, 0, m.W, m.H);
+					m.gameContext.fillText("Pause", 80, 40);
 				}else{
 					m.interval = setInterval(this.tick.bind(this), m.ms);
+					m.renderInterval = setInterval(this.render.bind(this), 30);
 				}
 				m.pause = !m.pause;
 				break;
@@ -275,9 +295,11 @@ tetris.game = {
 		this.init();
 		this.newShape();
 		clearInterval(m.interval);
+		clearInterval(m.renderInterval);
+		m.pause = false;
 		m.lose = false;
 		m.interval = setInterval(this.tick.bind(this), m.ms);
-		setInterval(this.render.bind(this), 30);
+		m.renderInterval = setInterval(this.render.bind(this), 30);
 	},
 
 	//이벤트 등록
@@ -292,7 +314,7 @@ tetris.game = {
 			27: 'pause'
 		};
 		document.addEventListener("keydown", function(evt){
-			if(typeof keys[evt.keyCode] !== 'undefined') {
+			if(typeof keys[evt.keyCode] !== 'undefined' && (this.model.interval)) {
 				this.keyPress(keys[evt.keyCode]);
 				this.render();
 			}
@@ -402,13 +424,13 @@ document.addEventListener("DOMContentLoaded", function(){
 		startBtn: document.querySelector(".start"),
 		gameCanvas: document.querySelector(".game"),
 		nextCanvas: document.querySelector(".next"),
-		scoreDiv: document.querySelector(".score"),
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
 		shapes: shapeMap,
-		colors: ["red", "orange", "yellow", "green", "blue", "navy", "purple"]
+		colors: ["rgba(255, 0, 0, 0.6)", "rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)", "rgba(255, 206, 86, 0.6)", "rgba(75, 192, 192, 0.6)", "rgba(255, 159, 64, 0.6)", "rgba(153, 102, 255, 0.6)"]
 	};
+
 	const model = Object.assign(Object.create(tetris.model), data);
 	model.setData();
 /*
