@@ -75,6 +75,14 @@ tetris.game = {
 		gradient.addColorStop("0.5","blue");
 		gradient.addColorStop("1.0","red");
 		m.gameContext.fillStyle = gradient;
+		if(m.lose) {
+			m.gameContext.font = "40px Verdana";
+			m.gameContext.fillText("GAME OVER", m.blockWidth, m.blockHeight * 10);
+			return;
+		}
+		if(m.pause) {
+			m.gameContext.fillText("PAUSE", m.blockWidth * 3, m.blockHeight * 10);
+		}
 		m.gameContext.fillText("Score  " + m.score.toString(), m.blockWidth, m.blockHeight);
 
 		for(let x = 0; x < m.COLS; x++) {
