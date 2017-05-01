@@ -1,4 +1,7 @@
 /**
+ * Created by chanwoopark on 2017. 4. 30..
+ */
+/**
  * Created by chanwoopark on 2017. 4. 25..
  */
 var express = require('express');
@@ -78,7 +81,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 
-passport.use('local-login', new LocalStrategy({
+passport.use('local-signup', new LocalStrategy({
         usernameField: 'signup-id',
         passwordField: 'signup-password',
         session:false,
@@ -114,10 +117,10 @@ passport.use('local-login', new LocalStrategy({
     )
 );
 
-router.post('/', passport.authenticate('local-login', {
+router.post('/', passport.authenticate('local-signup', {
         //클릭했을때 ajax통신을 성공했을때 ,실패했을때 리 다이렉션해서 그 url에서 res값이 ajax통해서 받은 res값
-        successRedirect: '/login/success',
-        failureRedirect: '/login/failure',
+        successRedirect: '/signup/success',
+        failureRedirect: '/signup/failure',
         failureFlash: true
     }
     )
