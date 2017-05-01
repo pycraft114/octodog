@@ -111,8 +111,6 @@ tetris.game = {
 	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
 	newShape: function() {
 		const m = this.model;
-		console.log(m.blockHeight, m.blockWidth);
-		console.log(m.W, m.H, m.nW, m.nH);
 		if(m.nextIdx !== null) {
 			m.curr = m.next;
 			m.currIdx = m.nextIdx;
@@ -146,7 +144,7 @@ tetris.game = {
 	//재귀호출되면서 게임진행을 해주는 함수
 	tick: function() {
 		const m = this.model;
-		if(this.valid(0,1) && m.pause === false) {
+		if(this.valid(0,1)) {
 			m.currY++;
 		}else{
 			this.freeze();
@@ -217,21 +215,25 @@ tetris.game = {
 		if(key !== "pause" && m.pause === true) return;
  		switch(key) {
 			case 'left':
+				//valid(-1)은 현재블럭의 왼쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(-1)) {
 					m.currX--;
 				}
 				break;
 			case 'right':
+				//valid(1)은 현재블럭의 오른쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(1)) {
 					m.currX++;
 				}
 				break;
 			case 'down':
+				//valid(0, 1)은 현재블럭의 아래쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(0, 1)) {
 					m.currY++;
 				}
 				break;
 			case 'powerDown':
+				//case 'down'에서 if를 while로 변경해서 바로 이동가능한 만큼 아래로 이동시킴
 				while(this.valid(0, 1)) {
 					m.currY++;
 				}
@@ -258,7 +260,9 @@ tetris.game = {
 		}
 	},
 
-	//블럭이 이동할수 있는지 검사해주는 함수
+	/*블럭이 이동할수 있는지 검사해주는 함수
+
+	*/
 	valid: function(offsetX, offsetY, newCurr) {
 		const m = this.model;
 		offsetX = offsetX || 0;
@@ -270,6 +274,7 @@ tetris.game = {
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
+			/*
 			if(newCurr[i]) {
 				if(typeof m.gameBoard[y + offsetY] === "undefined"
 				|| m.gameBoard[y + offsetY][x + offsetX]
@@ -279,6 +284,20 @@ tetris.game = {
 					return false;
 				}
 				if(typeof m.gameBoard[y + offsetY][x + offsetX] === "undefined") {
+					if(x + offsetX > 0 && x + offsetX < m.COLS && offsetY === 1) {
+						m.lose = true;
+					}
+					return false;
+				}
+				
+				*/
+			if(newCurr[i]) {
+				if(typeof m.gameBoard[y + offsetY] === "undefined"
+				|| typeof m.gameBoard[y + offsetY][x + offsetX] === "undefined"
+				|| m.gameBoard[y + offsetY][x + offsetX]
+				|| x + offsetX < 0
+				|| y + offsetY >= m.ROWS
+				|| x + offsetX >= m.COLS ) {
 					if(x + offsetX > 0 && x + offsetX < m.COLS && offsetY === 1) {
 						m.lose = true;
 					}
