@@ -99,6 +99,7 @@ passport.use('local-signup', new LocalStrategy({
                     //email in used
                     if(rows.length){
                         return done(null,false,{message:"fail-same-email"});
+                    //else 지울것
                     }else{
                         let email = req.body['signup-email'];
                         let sql = {'id': id, 'password': password, 'email': email};

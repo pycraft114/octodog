@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded",function(){
         this.anonymousButton = $("#anonymous");
         this.signUpButton = $("#signup");
         this.warningListNode = $("#login-warning ul");
-
+        //이벤트 등록하는것 분리
         this.signUpButton.addEventListener("click",this.openModalPage.bind(this));
         this.loginButton.addEventListener("click",this.logInButtonClicked.bind(this));
     }
@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded",function(){
             this.modal.style.display = "block";
         },
 
+        //변수 사용빈도적으면 함수내에 변수 선언
         logInButtonClicked : function(){
             let id = this.loginId.value;
             let password = this.loginPassword.value;
@@ -80,9 +81,9 @@ document.addEventListener("DOMContentLoaded",function(){
             let email = this.signUpEmail.value;
 
             if(id.length === 0 || password.length === 0 || passwordConfirm.length === 0 || email.length === 0){
-                this.warningListNode.innerHTML = "<li>내용을 입력하세요</li>"
+                this.warningListNode.innerHTML = "<li>내용을 입력하세요</li>"; //밖으로 뺄것, 로직수정하는일 없도록 , 포커스 인풋에
             }else if(password !== passwordConfirm) {
-                this.warningListNode.innerHTML = "<li>비밀번호가 일치하지 않습니다</li>"
+                this.warningListNode.innerHTML = "<li>비밀번호가 일치하지 않습니다</li>";
             }else{
                 let data = {};
                 data['signup-id'] = id;
@@ -93,6 +94,7 @@ document.addEventListener("DOMContentLoaded",function(){
                     let modal = $("#modal");
                     let warningListNode = $("#modal-warning ul");
                     console.log(this.responseText);
+                    //오브젝트 맵핑 스위치문 없애슈
                     switch(this.responseText){
                         case '["fail-same-id"]' :
                             warningListNode.innerHTML = "<li>ID ALREADY IN USE</li>";

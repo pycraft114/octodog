@@ -13,6 +13,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
 var flash = require('connect-flash');
 
+//데이터가 봐뀌면 데이터를 담당하는 그룹을 수정하게끔 , 즉 데이터를 받아서 사용하게끔 할것
+
 
 var mysqlData = {
     host: options.storageConfig.HOST,
