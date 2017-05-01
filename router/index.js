@@ -2,12 +2,13 @@ var express =  require('express');
 var app = express();
 var router = express.Router();
 var path = require("path");
-var game = require("./game/game");
+
 
 // export된 js파일의 경로를 import 함
 var profile = require("./profile/profile");
 var login = require("./login/login");
 var signup = require("./signup/signup");
+var game = require("./game/game");
 
 // localhost:3000번으로 접근시 default page
 router.get("/", function(req, res){
