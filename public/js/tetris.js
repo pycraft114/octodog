@@ -1,4 +1,4 @@
-
+//Qunit을 통한 테스트 가능한 코드로 리팩토링 setInterval보다는 setTimeout이나 requestAnimationFrame을 사용할 것
 const tetris = {};
 
 tetris.model = {
@@ -21,7 +21,6 @@ tetris.model = {
 	gameContext: null,
 	nextContext: null,
 	gameBoard:[],
-	nextBoard:[],
 	score: null,
 	goToNextLevel: null,
 	lose: false,
@@ -62,7 +61,7 @@ tetris.game = {
 		const m = this.model;
 		context.strokeStyle = "grey";
 		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
-		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
+		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
 	},
 
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
@@ -75,6 +74,7 @@ tetris.game = {
 		gradient.addColorStop("0.5","blue");
 		gradient.addColorStop("1.0","red");
 		m.gameContext.fillStyle = gradient;
+	
 		if(m.lose) {
 			m.gameContext.font = "40px Verdana";
 			m.gameContext.fillText("GAME OVER", m.blockWidth, m.blockHeight * 10);
@@ -125,6 +125,7 @@ tetris.game = {
 			m.nextIdx = Math.floor(Math.random() * m.shapes.length);
 		}else{
 			m.currIdx = Math.floor(Math.random() * m.shapes.length);
+			//split전까지 변수에 담아서 사용 할 것
 			m.curr = m.shapes[m.currIdx][0].split("").map(function(v){
 				return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
 			});
@@ -158,6 +159,7 @@ tetris.game = {
 			this.freeze();
 			this.clearLines();
 			if(m.lose) {
+				this.render();
 				clearInterval(m.interval);
 				clearInterval(m.renderInterval);
 				return false;
@@ -186,8 +188,9 @@ tetris.game = {
 		}else{
 			m.currRotate = 0;
 		}
+		//split 전까지 변수로 담아서 사용할것
 		const newCurr = m.shapes[m.currIdx][m.currRotate].split('').map(function(v){
-			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
+			return Number(v) === 0 ? Number(v) : (Number(v) + m.currIdx);
 		})
 		return newCurr;
 	},
@@ -256,9 +259,10 @@ tetris.game = {
 				if(m.pause === false) {
 					clearInterval(m.interval);
 					clearInterval(m.renderInterval);
-					//아래 코드들은 작동이 안된다 왜일까
+/*
 					m.gameContext.clearRect(0, 0, m.W, m.H);
 					m.gameContext.fillText("Pause", 80, 40);
+			*/		
 				}else{
 					m.interval = setInterval(this.tick.bind(this), m.ms);
 					m.renderInterval = setInterval(this.render.bind(this), 30);
@@ -299,6 +303,7 @@ tetris.game = {
 				}
 				
 				*/
+				//중첩된 if 문은 제거 할 수 있다. valid는 분리해봐야 할 듯. Qunit을 통한 test code로 리팩토링.
 			if(newCurr[i]) {
 				if(typeof m.gameBoard[y + offsetY] === "undefined"
 				|| typeof m.gameBoard[y + offsetY][x + offsetX] === "undefined"
