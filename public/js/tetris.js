@@ -31,6 +31,7 @@ Tetris.prototype = {
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
 		context.strokeStyle = "grey";
+<<<<<<< HEAD
 		context.fillRect(this.blockWidth * x, this.blockHeight * y, this.blockWidth - 1, this.blockHeight - 1);
 		context.strokeRect(this.blockWidth * x, this.blockHeight * y, this.blockWidth - 1, this.blockHeight - 1);
 	},
