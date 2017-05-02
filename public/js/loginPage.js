@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
         xhr.addEventListener("load", func);
     }
-//LOCATION.HREF
+//LOCATION.HREF을 통해서 ajax통신후 유저 다른 url로 보낼것
     function $(selector){
         return document.querySelector(selector)
     }
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded",function(){
         this.warningListNode = $("#login-warning ul");
         //이벤트 등록하는것 분리
         this.signUpButton.addEventListener("click",this.openModalPage.bind(this));
-        this.loginButton.addEventListener("click",this.logInButtonClicked.bind(this));
+        this.loginButton.addEventListener("click",this.loginRequest.bind(this));
     }
 
     LoginPage.prototype = {
@@ -43,14 +43,18 @@ document.addEventListener("DOMContentLoaded",function(){
         },
 
         //변수 사용빈도적으면 함수내에 변수 선언
-        logInButtonClicked : function(){
+        loginRequest : function(){
             let id = this.loginId.value;
             let password = this.loginPassword.value;
 
             if(id.length === 0 || password.length === 0){
                 this.warningListNode.innerHTML = "<li>내용을 입력하세요</li>";
             }else{
-                sendAjax("POST","/login")
+                const data = {};
+                data.id = id;
+                data.password = password;
+
+                sendAjax("POST","/login",data,'application/json',function(){})
             }
         }
     };
@@ -85,31 +89,28 @@ document.addEventListener("DOMContentLoaded",function(){
             }else if(password !== passwordConfirm) {
                 this.warningListNode.innerHTML = "<li>비밀번호가 일치하지 않습니다</li>";
             }else{
-                let data = {};
-                data['signup-id'] = id;
-                data['signup-password'] = password;
-                data['signup-email'] = email;
-                var stringifiedData = JSON.stringify(data);
+                const data = {};
+                data.id = id;
+                data.password = password;
+                data.email = email;
                 sendAjax('POST','/signup',data,'application/json',function(){
-                    let modal = $("#modal");
-                    let warningListNode = $("#modal-warning ul");
-                    console.log(this.responseText);
-                    //오브젝트 맵핑 스위치문 없애슈
+                    const modal = $("#modal");
+                    const modalWarning = $("#modal-warning ul");
                     switch(this.responseText){
-                        case '["fail-same-id"]' :
-                            warningListNode.innerHTML = "<li>ID ALREADY IN USE</li>";
+                        case "아이디 사용중":
+                            modalWarning.innerHTML = "<li>이미 사용중인 아이디 입니다.</li>";
                             break;
-                        case '["fail-same-email"]' :
-                            warningListNode.innerHTML = "<li>EMAIL ALREADY IN USE</li>";
+                        case "이메일 사용중":
+                            modalWarning.innerHTML = "<li>이미 사용중인 이메일 입니다.</li>";
                             break;
-                        case "success-signup" :
+                        case "회원가입 완료":
+                            alert("회원가입이 완료되었습니다.");
                             modal.style.display = 'none';
-                            alert("회원가입 완료");
                             break;
                         default :
-                            console.log('default');
+                            console.log("switch statement called");
                     }
-                });
+                })
 
             }
         }
@@ -119,4 +120,44 @@ document.addEventListener("DOMContentLoaded",function(){
     var signUpModal = new SignUpModal();
 
 });
+/*
+function(){
+    let id = this.signUpId.value;
+    let password = this.signUpPassword.value;
+    let passwordConfirm = this.signUpConfirm.value;
+    let email = this.signUpEmail.value;
 
+    if(id.length === 0 || password.length === 0 || passwordConfirm.length === 0 || email.length === 0){
+        this.warningListNode.innerHTML = "<li>내용을 입력하세요</li>"; //밖으로 뺄것, 로직수정하는일 없도록 , 포커스 인풋에
+    }else if(password !== passwordConfirm) {
+        this.warningListNode.innerHTML = "<li>비밀번호가 일치하지 않습니다</li>";
+    }else{
+        let data = {};
+        data['signup-id'] = id;
+        data['signup-password'] = password;
+        data['signup-email'] = email;
+        var stringifiedData = JSON.stringify(data);
+        sendAjax('POST','/signup',data,'application/json',function(){
+            let modal = $("#modal");
+            let warningListNode = $("#modal-warning ul");
+            console.log(this.responseText);
+            //오브젝트 맵핑 스위치문 없애슈
+            switch(this.responseText){
+                case '["fail-same-id"]' :
+                    warningListNode.innerHTML = "<li>ID ALREADY IN USE</li>";
+                    break;
+                case '["fail-same-email"]' :
+                    warningListNode.innerHTML = "<li>EMAIL ALREADY IN USE</li>";
+                    break;
+                case "success-signup" :
+                    modal.style.display = 'none';
+                    alert("회원가입 완료");
+                    break;
+                default :
+                    console.log('default');
+            }
+        });
+
+    }
+}
+*/

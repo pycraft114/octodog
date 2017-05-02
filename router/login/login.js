@@ -13,7 +13,14 @@ var LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
 var flash = require('connect-flash');
 
-//데이터가 봐뀌면 데이터를 담당하는 그룹을 수정하게끔 , 즉 데이터를 받아서 사용하게끔 할것
+
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended: true}));
+router.use(passport.initialize());
+router.use(passport.session());
+router.use(flash());
+
+//데이터가 봐뀌면 데이터를 담당하는 그룹을 수정하게끔 , 즉 데이터를 받아서 사용하게끔 할
 
 
 var mysqlData = {
@@ -37,8 +44,6 @@ connection.connect(err => {
     console.log('Mysql connected');
 });
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({extended: true}));
 
 router.use(session({
     secret: 'keyboard cat',
@@ -46,11 +51,6 @@ router.use(session({
     saveUninitialized: true
 }));
 
-router.use(passport.initialize());
-
-router.use(passport.session());
-
-router.use(flash());
 
 router.get('/', function (req, res) {
     //view template을 사용 안했을때 에러 메세지를 어떻게 보여줄 것인가.
@@ -98,6 +98,7 @@ passport.use('local-login', new LocalStrategy({
                     //email in used
                     if(rows.length){
                         return done(null,false,{message:"fail-same-email"});
+                        //if if , if else if , if else 생각해볼것
                     }else{
                         let email = req.body['signup-email'];
                         let sql = {'id': id, 'password': password, 'email': email};
