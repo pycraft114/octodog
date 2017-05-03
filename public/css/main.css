@@ -504,3 +504,25 @@ footer h1 {
 
 .rank ul li p{
 }
+
+.tetris-wrap {
+    margin-top: 5vh;
+}
+
+.game {
+	height : 70vh;
+	width : 35vh;
+	margin-left: 1vh;
+	float:left;
+	display: block;
+	border: 1px solid black;
+}
+
+.next {
+	height : 20vh;
+	width : 16vh;
+	display: inline-blockk;
+	float:left;
+	margin-left: 1vh;
+	border: 1px solid black;
+			}
