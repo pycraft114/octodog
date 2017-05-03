@@ -1,7 +1,7 @@
   function $(element){
     return document.querySelector(element);
   }
-  function _$(element){
+  function $$(element){
     return document.querySelectorAll(element);
   }
 
@@ -16,12 +16,19 @@
       let score =  result.score;
       let eventBtn = '<div class="load-wrap"><p class="rank-load">랭킹 더보기<p><div>';
       let resultHtml = "";
+      
 
       for(let i =0; i < uid.length; i++){
         resultHtml += this.template.replace("{num}",i+1).replace("{name}",uid[i]).replace("{score}",score[i]);
       }
       resultHtml += eventBtn;
       this.wrap.innerHTML = resultHtml;
+      let load =  $(".rank-load");
+      load.addEventListener("click", this.rankLoadHandler);
+    },
+
+    rankLoadHandler : function(){
+      console.log("click");
     }
   };
 
