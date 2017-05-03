@@ -5,10 +5,14 @@ function Tetris(data) {
 	}
 	this.gameContext = this.gameCanvas.getContext("2d");
 	this.nextContext = this.nextCanvas.getContext("2d");
-	this.W = this.gameCanvas.clientWidth;
-	this.H = this.gameCanvas.clientHeight;
-	this.nW = this.nextCanvas.clientWidth;
-	this.nH = this.nextCanvas.clientHeight;
+	this.W = this.gameCanvas.parentElement.clientWidth;
+	this.H = this.gameCanvas.parentElement.clientHeight;
+	this.nW = this.nextCanvas.parentElement.clientWidth;
+	this.nH = this.nextCanvas.parentElement.clientHeight;
+	this.gameCanvas.width = this.W;
+	this.gameCanvas.height = this.H;
+	this.nextCanvas.width = this.nW;
+	this.nextCanvas.height = this.nH;
 	this.blockWidth = this.W / this.COLS;
 	this.blockHeight = this.H / this.ROWS;
 	this.gameBoard = [];
@@ -28,6 +32,20 @@ function Tetris(data) {
 }
 
 Tetris.prototype = {
+	//창크기 변경시 실행될 함수
+	resize: function() {
+		this.W = this.gameCanvas.parentElement.clientWidth;
+		this.H = this.gameCanvas.parentElement.clientHeight;
+		this.nW = this.nextCanvas.parentElement.clientWidth;
+		this.nH = this.nextCanvas.parentElement.clientHeight;
+		this.gameCanvas.width = this.W;
+		this.gameCanvas.height = this.H;
+		this.nextCanvas.width = this.nW;
+		this.nextCanvas.height = this.nH;
+		this.blockWidth = this.W / this.COLS;
+		this.blockHeight = this.H / this.ROWS;	
+		this.render();	
+	},
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
 		context.strokeStyle = "grey";
@@ -38,7 +56,7 @@ Tetris.prototype = {
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
 	render: function() {
 		this.gameContext.clearRect(0, 0, this.W, this.H);
-		this.gameContext.font = "25px Verdana";
+		this.gameContext.font =  (this.blockWidth * 0.7).toString() + "px Verdana";
 		const gradient = this.gameContext.createLinearGradient(0, 0, this.W, 0);
 		gradient.addColorStop("0","magenta");
 		gradient.addColorStop("0.5","blue");
@@ -46,12 +64,12 @@ Tetris.prototype = {
 		this.gameContext.fillStyle = gradient;
 	
 		if(this.lose) {
-			this.gameContext.font = "40px Verdana";
-			this.gameContext.fillText("GAME OVER", this.blockWidth, this.blockHeight * 10);
+			this.gameContext.font = this.blockWidth.toString()  + "px Verdana";
+			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
 			return;
 		}
 		if(this.pause) {
-			this.gameContext.fillText("PAUSE", this.blockWidth * 3, this.blockHeight * 10);
+			this.gameContext.fillText("PAUSE", this.blockWidth * 4, this.blockHeight * 10);
 		}
 		this.gameContext.fillText("Score  " + this.score.toString(), this.blockWidth, this.blockHeight);
 
@@ -328,6 +346,9 @@ Tetris.prototype = {
 			evt.target.blur();
 			that.newGame();
 		});
+		window.addEventListener("resize", function(){
+			that.resize();
+		});
 	}
 
 };
@@ -414,8 +435,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	const data = {
 		startBtn: document.querySelector(".start"),
-		gameCanvas: document.querySelector(".game"),
-		nextCanvas: document.querySelector(".next"),
+		gameCanvas: document.querySelector(".game canvas"),
+		nextCanvas: document.querySelector(".next canvas"),
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
