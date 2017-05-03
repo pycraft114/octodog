@@ -1,10 +1,9 @@
-// after loaded event trigger
-document.addEventListener("DOMContentLoaded", function(){
+
 
 function $(element){
   return document.querySelector(element);
 }
-function _$(element){
+function $$(element){
   return document.querySelectorAll(element);
 }
 
@@ -62,42 +61,43 @@ function ChartData(){
 
 // modal part
 function Modal(){
-  // dom componet
-  this.modal = $('#myModal');
-  this.input = _$(".input-text")
-  this.modalPw = $("#Mpw");
-  this.modalChangePw = $("#Mrepw");
-  this.modalChangePwConfirm = $("#Mrerepw");
-  this.warning = $(".warning");
-  this.btn_close = $(".close");
-
-  // close button click event
-  this.btn_close.addEventListener("click", this.closeClickHandler.bind(this));
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.addEventListener('click', this.windowClickHandler.bind(this));
-
-  // set event when you press enter key in modal input
-  for(let i = 0; i < this.input.length; i++){
-    this.input[i].addEventListener("keypress", this.enterEventHandler.bind(this))
-  }
+    this.modal = $('#myModal');
+    this.input = $$(".input-text");
+    this.modalPw = $("#Mpw");
+    this.modalChangePw = $("#Mrepw");
+    this.modalChangePwConfirm = $("#Mrerepw");
+    this.warning = $(".warning");
+    this.btn_close = $(".close");
 
 }
 
 Modal.prototype = {
 
+  eventOn : function(){
+    // close button click event
+    this.btn_close.addEventListener("click", this.closeClickHandler.bind(this));
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', this.windowClickHandler.bind(this));
+
+    // set event when you press enter key in modal input
+    for(let i = 0; i < this.input.length; i++){
+        this.input[i].addEventListener("keypress", this.enterEventHandler.bind(this));
+    }
+  },
+
   enterEventHandler : function(event){
-    let originPw = this.modalPw.value
-    let changePw = this.modalChangePw.value
-    let changePwConfirm = this.modalChangePwConfirm.value
+    let originPw = this.modalPw.value;
+    let changePw = this.modalChangePw.value;
+    let changePwConfirm = this.modalChangePwConfirm.value;
     let password = {"pw1":originPw, "pw2":changePw};
 
     if(event.keyCode===13){
         if((originPw==='')||(changePw==='')||(changePwConfirm==='')){
-          this.warning.innerHTML = "모든 항목을 입력해주세요"
+          this.warning.innerHTML = "모든 항목을 입력해주세요";
         }
         else if(changePw!==changePwConfirm){
-          this.warning.innerHTML = "비밀 번호 확인이 다릅니다"
+          this.warning.innerHTML = "비밀 번호 확인이 다릅니다";
         }
         else{
           this.warning.innerHTML = '';
@@ -107,12 +107,11 @@ Modal.prototype = {
   },
 
   windowClickHandler:function(event){
-    if (event.target == this.modal) {
+    if (event.target === this.modal) {
         this.modal.style.display = "none";
     }
   },
 
-  // When the user clicks on <span> (x), close the modal
   closeClickHandler : function(){
       this.modal.style.display = "none";
       this.modalPw.value='';
@@ -124,6 +123,7 @@ Modal.prototype = {
 }
 
 let util = {
+    ERR_MESSAGE : "error",
   // chart part Ajax request
    sendAjax : function(method, url, expression, data) {
       const oReq = new XMLHttpRequest();
@@ -149,7 +149,7 @@ let util = {
               break;
             default:
           }
-      }.bind(this))
+      }.bind(this));
   },
 
   renderBothSide : function(obj, result){
@@ -158,23 +158,28 @@ let util = {
   },
 
   passwordConfirm:function(obj, data, msg){
-    if(msg==="no"){
-      obj.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다"
+      console.log(msg);
+    // ERR_MESSAGE로 선언
+    if(msg===this.ERR_MESSAGE){
+        console.log("nonono");
+      obj.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다";
     }
     else{
       let password = JSON.parse(data);
+      console.log("yes");
+      // 변경 실패 고려
       this.sendAjax("post" ,'http://localhost:3000/profile/change', null , password);
       obj.closeClickHandler();
     }
   }
-}
+};
 
-
-
+// profile render로 이름 변경(생성자는 명사)
+// 서버에서 템플릿을 받아온뒤 랜더링
 function RenderProfile(){
     this.modal = $('#myModal');
     this.leftContent = $(".left");
-    this.template = $("#left-template")
+    this.template = $("#left-template");
 }
 
 RenderProfile.prototype = {
@@ -184,10 +189,10 @@ RenderProfile.prototype = {
       let user = resultData.user;
       let chartScore = resultData.chartscore;
 
+      // es6 템플릿 문법 사용하기
       // template 변환 - email, id, img, play, rank, topscore, totalscore
       template = template.replace("{id}", user.id).replace("{email}", user.email).replace("{play}", user.play);
       template = template.replace("{rank}", user.rank).replace("{topscore}", user.topscore).replace("{totalscore}", user.totalscore);
-
       this.leftContent.innerHTML = template;
 
       // add button click handler
@@ -200,7 +205,6 @@ RenderProfile.prototype = {
   // When the user clicks on the button, open the modal
   pwClickHandler : function(){
       this.modal.style.display = "block";
-      console.log("click")
   },
 
   // right side rendering function
@@ -216,16 +220,20 @@ RenderProfile.prototype = {
       dataSets.data = comp_data;
       myBarChart.update();
   }
-}
+};
 
 const renderProfile = new RenderProfile();
 const modal = new Modal();
-const chartData =  new ChartData()
+const chartData =  new ChartData();
 const myBarChart = new Chart(chartData.ctx, {
     type: 'bar',
     data: chartData.data,
     options: chartData.options
 });
+
+// after loaded event trigger
+document.addEventListener("DOMContentLoaded", function(){
+    modal.eventOn();
 
     util.sendAjax("post" ,'http://localhost:3000/profile/user', "init");
 });

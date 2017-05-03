@@ -502,5 +502,13 @@ footer h1 {
   width:30%;
 }
 
-.rank ul li p{
+.rank-wrap .load-wrap{
+    text-align: center;
+    padding:15px;
+}
+
+.rank-wrap .load-wrap .rank-load{
+    cursor: pointer;
+    display: inline;
+    color: gray;
 }

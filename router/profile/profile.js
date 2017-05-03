@@ -95,7 +95,7 @@ router.post('/confirm', function(req, res){
         responseData = {"msg":"ok"};
         res.json(responseData);
     }else{
-        responseData = {"msg":"no"};
+        responseData = {"msg":"error"};
         res.json(responseData);
     }
 
