@@ -5,6 +5,7 @@ function Tetris(data) {
 	}
 	this.gameContext = this.gameCanvas.getContext("2d");
 	this.nextContext = this.nextCanvas.getContext("2d");
+/*
 	this.W = this.gameCanvas.parentElement.clientWidth;
 	this.H = this.gameCanvas.parentElement.clientHeight;
 	this.nW = this.nextCanvas.parentElement.clientWidth;
@@ -15,8 +16,11 @@ function Tetris(data) {
 	this.nextCanvas.height = this.nH;
 	this.blockWidth = this.W / this.COLS;
 	this.blockHeight = this.H / this.ROWS;
+*/
+	this.resize();
 	this.gameBoard = [];
 	this.score = 0;
+	this.currLevel = null;
 	this.goToNextLevel = null;
 	this.lose = false;
 	this.interval = null;
@@ -43,8 +47,7 @@ Tetris.prototype = {
 		this.nextCanvas.width = this.nW;
 		this.nextCanvas.height = this.nH;
 		this.blockWidth = this.W / this.COLS;
-		this.blockHeight = this.H / this.ROWS;	
-		this.render();	
+		this.blockHeight = this.H / this.ROWS;
 	},
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
@@ -72,6 +75,8 @@ Tetris.prototype = {
 			this.gameContext.fillText("PAUSE", this.blockWidth * 4, this.blockHeight * 10);
 		}
 		this.gameContext.fillText("Score  " + this.score.toString(), this.blockWidth, this.blockHeight);
+		this.gameContext.fillText("Lv  " + this.currLevel.toString(), this.blockWidth * 7, this.blockHeight);
+		this.gameContext.fillText("GoToNextLv  -" + this.goToNextLevel.toString(), this.blockWidth * 4, this.blockHeight * 2);
 
 		for(let x = 0; x < this.COLS; x++) {
 			for(let y = 0; y < this.ROWS; y++) {
@@ -141,6 +146,8 @@ Tetris.prototype = {
 				this.gameBoard[y][x] = 0;
 			}
 		}
+		this.currLevel = 1;
+		this.goToNextLevel = 10;
 		this.score = 0;
 	},
 
@@ -156,6 +163,12 @@ Tetris.prototype = {
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
 				return false;
+			}
+			if(this.goToNextLevel === 0 && this.currLevel <= 10) {
+				clearInterval(this.interval);
+				this.goToNextLevel = 10;
+				this.currLevel++;
+				this.interval = setInterval(this.tick.bind(this), this.ms - 20 * this.currLevel);
 			} 
 			this.newShape();
 		}
@@ -202,6 +215,7 @@ Tetris.prototype = {
 			}
 			if(filled) {
 				this.score++;
+				this.goToNextLevel--;
 				for(let i = y; i > 0; i--) {
 					for(let x = 0; x < this.COLS; x++) {
 						this.gameBoard[i][x] = this.gameBoard[i - 1][x];
@@ -257,7 +271,7 @@ Tetris.prototype = {
 					this.gameContext.fillText("Pause", 80, 40);
 					*/		
 				}else{
-					this.interval = setInterval(this.tick.bind(this), this.ms);
+					this.interval = setInterval(this.tick.bind(this), this.ms - (20 * this.currLevel));
 					this.renderInterval = setInterval(this.render.bind(this), 30);
 				}
 				this.pause = !this.pause;
@@ -348,6 +362,7 @@ Tetris.prototype = {
 		});
 		window.addEventListener("resize", function(){
 			that.resize();
+			that.render();
 		});
 	}
 
