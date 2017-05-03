@@ -51,10 +51,27 @@ document.addEventListener("DOMContentLoaded",function(){
                 this.warningListNode.innerHTML = "<li>내용을 입력하세요</li>";
             }else{
                 const data = {};
-                data.id = id;
-                data.password = password;
+                data['id'] = id;
+                data['password'] = password;
 
-                sendAjax("POST","/login",data,'application/json',function(){})
+                sendAjax("POST","/login",data,'application/json',function(){
+                    const warningListNode = $("#login-warning ul");
+                    console.log(this.responseText);
+                    switch(this.responseText){
+                        case "incorrect password":
+                            warningListNode.innerHTML = "<li>비밀번호가 일치하지 않습니다.</li>";
+                            break;
+                        case "user not found":
+                            warningListNode.innerHTML = "<li>octoDog의 회원이 아닙니다.</li>";
+                            break;
+                        case "login success":
+                            warningListNode.innerHTML = "<li>로그인 완료.</li>";
+                            window.location.href = "/";
+                            break;
+                        default:
+                            console.log("switch called");
+                    }
+                })
             }
         }
     };
