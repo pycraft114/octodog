@@ -1,11 +1,29 @@
-document.addEventListener("DOMContentLoaded", function(){
-
   function $(element){
     return document.querySelector(element);
   }
   function _$(element){
     return document.querySelectorAll(element);
   }
+
+  function Rank(){
+      this.template = $("#rank-template").innerHTML;
+      this.wrap =  $(".rank-wrap");
+  }
+
+  Rank.prototype = {
+    rankRender : function(result){
+      let uid = result.uid;
+      let score =  result.score;
+      let eventBtn = '<div class="load-wrap"><p class="rank-load">랭킹 더보기<p><div>';
+      let resultHtml = "";
+
+      for(let i =0; i < uid.length; i++){
+        resultHtml += this.template.replace("{num}",i+1).replace("{name}",uid[i]).replace("{score}",score[i]);
+      }
+      resultHtml += eventBtn;
+      this.wrap.innerHTML = resultHtml;
+    }
+  };
 
   let util = {
     // chart part Ajax request
@@ -26,28 +44,17 @@ document.addEventListener("DOMContentLoaded", function(){
             result = JSON.parse(oReq.responseText);
             switch (expression) {
               case "rankRender" :
-                this.rankRender(result);
+                rank.rankRender(result);
               break;
               default:
             }
-        }.bind(this))
+        }.bind(this));
     },
-
-    rankRender : function(result){
-      let uid = result.uid;
-      let score =  result.score;
-      let template = $("#rank-template").innerHTML;
-      let wrap =  $(".rank-wrap");
-      let eventBtn = '<div class="load-wrap"><p class="rank-load">랭킹 더보기<p><div>';
-      let resultHtml = "";
-
-      for(let i =0; i < uid.length; i++){
-        resultHtml += template.replace("{num}",i+1).replace("{name}",uid[i]).replace("{score}",score[i]);
-      }
-      resultHtml += eventBtn;
-      wrap.innerHTML = resultHtml;
-    }
   };
+
+  const rank =  new Rank();
+
+document.addEventListener("DOMContentLoaded", function(){
 
   util.sendAjax("post", 'http://localhost:3000/game', "rankRender");
 
