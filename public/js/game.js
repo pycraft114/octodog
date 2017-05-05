@@ -8,14 +8,14 @@
   function Rank(){
       this.wrap =  $(".rank-list");
       this.load =  $(".rank-load");      
-      this.range = {range : 10};
+      this.range = 10;
   }
 
   Rank.prototype = {
     onEvent : function() {
         this.load.addEventListener("click", function(){
-        util.sendAjax("post", 'http://localhost:3000/game', "rankRender", rank.range);
-      });
+        util.sendAjax("get", 'http://localhost:3000/game/' + this.range, "rankRender");
+      }.bind(this));
     },
 
     rankRender : function(result){
@@ -35,7 +35,7 @@
         resultHTML += template;
       }
       this.wrap.innerHTML = resultHTML;
-      this.range.range += 10;
+      this.range += 10;
 
       
     },
@@ -72,6 +72,6 @@
 
 document.addEventListener("DOMContentLoaded", function(){
   rank.onEvent();
-  util.sendAjax("post", 'http://localhost:3000/game', "rankRender", rank.range);
+  util.sendAjax("get", 'http://localhost:3000/game/' + rank.range, "rankRender");
 
 });

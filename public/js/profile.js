@@ -242,5 +242,5 @@ const myBarChart = new Chart(chartData.ctx, {
 // after loaded event trigger
 document.addEventListener("DOMContentLoaded", function(){
     modal.eventOn();
-    util.sendAjax("post" ,'http://localhost:3000/profile/user', "init");
+    util.sendAjax("get" ,'http://localhost:3000/profile/getUserProfile', "init");
 });

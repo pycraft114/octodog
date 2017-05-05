@@ -72,7 +72,7 @@ router.get('/success', function (req, res) {
 passport.serializeUser(function (user, done) {
     console.log('passport session save : ', user);
     //done의 두번째 인자를 deserializer에게 전달
-    done(null, user.id)
+    done(null, user.id);
 });
 
 passport.deserializeUser(function (id, done) {
@@ -108,11 +108,11 @@ passport.use('local-signup', new LocalStrategy({
                             return done(null, {'id': id, 'rows': rows});
                             //done의 두번째 인자로 false를 전달해주지 않을때, 즉 true일때
                             //두번째 인자를 passport.serializeUser의 콜백함수 user 인자 값으로 전해준다.
-                        })
+                        });
                     }
-                })
+                });
             }
-        })
+        });
     }
     )
 );
