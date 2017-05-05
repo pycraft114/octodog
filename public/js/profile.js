@@ -179,20 +179,29 @@ let util = {
 function RenderProfile(){
     this.modal = $('#myModal');
     this.leftContent = $(".left");
-    this.template = $("#left-template");
 }
 
 RenderProfile.prototype = {
   // left side rendering function
   leftSideRender : function (resultData) {
-      let template = this.template.innerHTML;
       let user = resultData.user;
       let chartScore = resultData.chartscore;
-
-      // es6 템플릿 문법 사용하기
-      // template 변환 - email, id, img, play, rank, topscore, totalscore
-      template = template.replace("{id}", user.id).replace("{email}", user.email).replace("{play}", user.play);
-      template = template.replace("{rank}", user.rank).replace("{topscore}", user.topscore).replace("{totalscore}", user.totalscore);
+      let template = `<div class="left-content">
+                  <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
+                  <div id="id"><h1>${user.id}</h1></div>
+                  <div class="user-information">
+                      <p>email</p> <div id="email">${user.email}</div>
+                      <p>play</p> <div id="play">${user.play}</div>
+                      <p>rank</p> <div id="rank">${user.rank}</div>
+                      <p>topscore</p> <div id="topscore">${user.topscore}</div>
+                      <p>totalscore</p> <div id="totalscore">${user.totalscore}</div>
+                  </div>
+                  <div class="button-wrap">
+                      <button class="btn img-change">프로필사진 변경</button>
+                      <button class="btn pw-change">비밀번호 변경</button>
+                  </div>
+                </div>`;
+                
       this.leftContent.innerHTML = template;
 
       // add button click handler
@@ -234,6 +243,5 @@ const myBarChart = new Chart(chartData.ctx, {
 // after loaded event trigger
 document.addEventListener("DOMContentLoaded", function(){
     modal.eventOn();
-
     util.sendAjax("post" ,'http://localhost:3000/profile/user', "init");
 });

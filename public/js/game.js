@@ -6,7 +6,6 @@
   }
 
   function Rank(){
-      this.template = $("#rank-template").innerHTML;
       this.wrap =  $(".rank-wrap");
   }
 
@@ -14,15 +13,23 @@
     rankRender : function(result){
       let uid = result.uid;
       let score =  result.score;
-      let eventBtn = '<div class="load-wrap"><p class="rank-load">랭킹 더보기<p><div>';
+      let eventBtn = `<div class="load-wrap"><p class="rank-load">랭킹 더보기<p><div>`;
       let resultHtml = "";
       
-
       for(let i =0; i < uid.length; i++){
-        resultHtml += this.template.replace("{num}",i+1).replace("{name}",uid[i]).replace("{score}",score[i]);
+        let template = `<div class="rank">
+                  <ul>
+                    <li class="numbering">${i}</li>
+                    <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
+                    <li class="name"><p>${uid[i]}</p></li>
+                    <li class="score"><p>${score[i]}</p></li>
+                  </ul>
+                  </div>`;
+        resultHtml += template;
       }
       resultHtml += eventBtn;
       this.wrap.innerHTML = resultHtml;
+
       let load =  $(".rank-load");
       load.addEventListener("click", this.rankLoadHandler);
     },
