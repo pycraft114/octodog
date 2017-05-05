@@ -74,7 +74,7 @@ router.get('/getUserProfile', function(req, res){
   });
 });
 
-router.post('/change',function(req, res){
+router.put('/updatePW',function(req, res){
   var pw2 = req.body.pw2;
   var query = "update user set password="+ pw2 +" where id="+ id +";";
 
@@ -85,7 +85,7 @@ router.post('/change',function(req, res){
   });
 });
 
-router.post('/confirm', function(req, res){
+router.get('/confirmUser', function(req, res){
   var pw1 = req.body.pw1;
   var responseData = {};
   var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";"

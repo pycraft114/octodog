@@ -101,7 +101,7 @@ Modal.prototype = {
         }
         else{
           this.warning.innerHTML = '';
-          util.sendAjax("post", 'http://localhost:3000/profile/confirm', "confirm" ,password);
+          util.sendAjax("get", 'http://localhost:3000/profile/confirm', "confirmUser" ,password);
         }
     }
   },
@@ -168,7 +168,7 @@ let util = {
       let password = JSON.parse(data);
       console.log("yes");
       // 변경 실패 고려
-      this.sendAjax("post" ,'http://localhost:3000/profile/change', null , password);
+      this.sendAjax("put" ,'http://localhost:3000/profile/updatePW', null , password);
       obj.closeClickHandler();
     }
   }
