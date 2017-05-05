@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded",function(){
     }
 //LOCATION.HREF
     function $(selector){
-        return document.querySelector(selector)
+        return document.querySelector(selector);
     }
     function LoginPage(){
         this.modal = $("#modal");

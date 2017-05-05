@@ -142,7 +142,7 @@ let util = {
           result = JSON.parse(oReq.responseText);
           switch (expression) {
             case "init":
-                this.renderBothSide(renderProfile, result);
+                this.renderBothSide(profileRender, result);
               break;
             case "confirm":
                 this.passwordConfirm(modal, data, result.msg);
@@ -176,12 +176,12 @@ let util = {
 
 // profile render로 이름 변경(생성자는 명사)
 // 서버에서 템플릿을 받아온뒤 랜더링
-function RenderProfile(){
+function ProfileRender(){
     this.modal = $('#myModal');
     this.leftContent = $(".left");
 }
 
-RenderProfile.prototype = {
+ProfileRender.prototype = {
   // left side rendering function
   leftSideRender : function (resultData) {
       let user = resultData.user;
@@ -204,7 +204,6 @@ RenderProfile.prototype = {
                 
       this.leftContent.innerHTML = template;
 
-      // add button click handler
       // Get the button that opens the modal
       let btn_pw = $(".pw-change");
 
@@ -231,7 +230,7 @@ RenderProfile.prototype = {
   }
 };
 
-const renderProfile = new RenderProfile();
+const profileRender = new ProfileRender();
 const modal = new Modal();
 const chartData =  new ChartData();
 const myBarChart = new Chart(chartData.ctx, {

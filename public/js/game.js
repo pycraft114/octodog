@@ -6,37 +6,39 @@
   }
 
   function Rank(){
-      this.wrap =  $(".rank-wrap");
+      this.wrap =  $(".rank-list");
+      this.load =  $(".rank-load");      
+      this.range = {range : 10};
   }
 
   Rank.prototype = {
+    onEvent : function() {
+        this.load.addEventListener("click", function(){
+        util.sendAjax("post", 'http://localhost:3000/game', "rankRender", rank.range);
+      });
+    },
+
     rankRender : function(result){
       let uid = result.uid;
       let score =  result.score;
-      let eventBtn = `<div class="load-wrap"><p class="rank-load">랭킹 더보기<p><div>`;
-      let resultHtml = "";
+      let resultHTML = "";
       
       for(let i =0; i < uid.length; i++){
         let template = `<div class="rank">
                   <ul>
-                    <li class="numbering">${i}</li>
+                    <li class="numbering">${i+1}</li>
                     <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
                     <li class="name"><p>${uid[i]}</p></li>
                     <li class="score"><p>${score[i]}</p></li>
                   </ul>
                   </div>`;
-        resultHtml += template;
+        resultHTML += template;
       }
-      resultHtml += eventBtn;
-      this.wrap.innerHTML = resultHtml;
+      this.wrap.innerHTML = resultHTML;
+      this.range.range += 10;
 
-      let load =  $(".rank-load");
-      load.addEventListener("click", this.rankLoadHandler);
+      
     },
-
-    rankLoadHandler : function(){
-      console.log("click");
-    }
   };
 
   let util = {
@@ -69,7 +71,7 @@
   const rank =  new Rank();
 
 document.addEventListener("DOMContentLoaded", function(){
-
-  util.sendAjax("post", 'http://localhost:3000/game', "rankRender");
+  rank.onEvent();
+  util.sendAjax("post", 'http://localhost:3000/game', "rankRender", rank.range);
 
 });
