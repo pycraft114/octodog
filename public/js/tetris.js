@@ -168,6 +168,7 @@ Tetris.prototype = {
 				this.render();
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
+				this.postScore();
 				return false;
 			}
 			if(this.goToNextLevel <= 0 && this.currLevel <= 10) {
@@ -347,6 +348,19 @@ Tetris.prototype = {
 		this.renderInterval = setInterval(this.render.bind(this), 30);
 	},
 
+	//점수를 db에 등록
+	postScore: function() {
+		const req = new XMLHttpRequest();
+		let data = {uid:"test", score:this.score};
+		data = JSON.stringify(data);
+		req.open('POST', '/postScore');
+		req.setRequestHeader("Content-Type", "application/json")
+		req.send(data);
+		req.addEventListener('load', function(){
+			return;
+		});
+		console.log(data);
+	},
 	//이벤트 등록
 	addEvent: function() {
 		const that = this;
@@ -373,7 +387,6 @@ Tetris.prototype = {
 			that.render();
 		});
 	}
-
 };
 	
 document.addEventListener("DOMContentLoaded", function(){

@@ -8,6 +8,7 @@ var game = require("./game/game");
 var profile = require("./profile/profile");
 var login = require("./login/login");
 var signup = require("./signup/signup");
+var postScore = require("./postScore/postScore");
 
 // localhost:3000번으로 접근시 default page
 router.get("/", function(req, res){
@@ -19,6 +20,7 @@ router.use('/signup',signup);
 router.use('/login',login);
 router.use('/profile', profile);
 router.use('/game',game);
+router.use('/postScore', postScore);
 
 
 module.exports = router;
