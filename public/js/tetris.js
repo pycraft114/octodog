@@ -38,10 +38,16 @@ function Tetris(data) {
 Tetris.prototype = {
 	//창크기 변경시 실행될 함수
 	resize: function() {
-		this.W = this.gameCanvas.parentElement.clientWidth;
+
 		this.H = this.gameCanvas.parentElement.clientHeight;
-		this.nW = this.nextCanvas.parentElement.clientWidth;
+		console.log(this.H);
+		console.log(this.H * 0.5);
+		this.W = (this.H * 0.5);
+		this.gameCanvas.parentElement.setAttribute("width", this.W + "px");
+		//this.nW = this.nextCanvas.parentElement.clientWidth;
 		this.nH = this.nextCanvas.parentElement.clientHeight;
+		this.nW = this.nH * 0.7;
+		this.nextCanvas.parentElement.setAttribute("width", this.nW + "px");
 		this.gameCanvas.width = this.W;
 		this.gameCanvas.height = this.H;
 		this.nextCanvas.width = this.nW;
@@ -164,7 +170,7 @@ Tetris.prototype = {
 				clearInterval(this.renderInterval);
 				return false;
 			}
-			if(this.goToNextLevel === 0 && this.currLevel <= 10) {
+			if(this.goToNextLevel <= 0 && this.currLevel <= 10) {
 				clearInterval(this.interval);
 				this.goToNextLevel = 10;
 				this.currLevel++;
@@ -215,7 +221,9 @@ Tetris.prototype = {
 			}
 			if(filled) {
 				this.score++;
-				this.goToNextLevel--;
+				if(this.currLevel !== 10) {
+					this.goToNextLevel--;
+				}
 				for(let i = y; i > 0; i--) {
 					for(let x = 0; x < this.COLS; x++) {
 						this.gameBoard[i][x] = this.gameBoard[i - 1][x];
