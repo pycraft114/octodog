@@ -1,17 +1,17 @@
 /**
  * Created by chanwoopark on 2017. 4. 22..
  */
-document.addEventListener("DOMContentLoaded",function(){
+document.addEventListener("DOMContentLoaded", function () {
     function sendAjax(method, url, data, type, func) {
 
         let xhr = new XMLHttpRequest();
-        xhr.open(method,url);
-        if(type !== undefined) {
+        xhr.open(method, url);
+        if (type !== undefined) {
             // 타입이 많아지면 switch-case문으로 전환 고려.
             xhr.setRequestHeader("Content-Type", type);
         }
 
-        if(data !== undefined) {
+        if (data !== undefined) {
             data = JSON.stringify(data);
             xhr.send(data);
         } else {
@@ -20,11 +20,11 @@ document.addEventListener("DOMContentLoaded",function(){
 
         xhr.addEventListener("load", func);
     }
-//LOCATION.HREF을 통해서 ajax통신후 유저 다른 url로 보낼것
-    function $(selector){
-        return document.querySelector(selector)
+    //LOCATION.HREF
+    function $(selector) {
+        return document.querySelector(selector);
     }
-    function LoginPage(){
+    function LoginPage() {
         this.modal = $("#modal");
         this.modalContent = $("#modal-content");
         this.loginId = $("#login-id");
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded",function(){
             let id = this.loginId.value;
             let password = this.loginPassword.value;
 
-            if(id.length === 0 || password.length === 0){
+            if (id.length === 0 || password.length === 0) {
                 this.warningListNode.innerHTML = "<li>내용을 입력하세요</li>";
             }else{
                 const data = {};
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded",function(){
         }
     };
 
-    function SignUpModal(){
+    function SignUpModal() {
         this.modal = $("#modal");
         this.modalContent = $("#modal-content");
         this.signUpId = $("#signup-id");
@@ -88,8 +88,8 @@ document.addEventListener("DOMContentLoaded",function(){
         this.warningListNode = $("#modal-warning ul");
         this.submitButton = $("#submit");
 
-        this.modal.addEventListener("click",this.closeModalPage.bind(this));
-        this.submitButton.addEventListener("click",this.sendSignUpInfo.bind(this));
+        this.modal.addEventListener("click", this.closeModalPage.bind(this));
+        this.submitButton.addEventListener("click", this.sendSignUpInfo.bind(this));
     }
 
     SignUpModal.prototype = {
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded",function(){
                 this.modalContent.className = "off";
             }
         },
-        sendSignUpInfo : function(){
+        sendSignUpInfo: function () {
             let id = this.signUpId.value;
             let password = this.signUpPassword.value;
             let passwordConfirm = this.signUpConfirm.value;
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded",function(){
                         default :
                             console.log("switch statement called");
                     }
-                })
+                });
 
             }
         }
@@ -139,7 +139,6 @@ document.addEventListener("DOMContentLoaded",function(){
 
     var loginPage = new LoginPage();
     var signUpModal = new SignUpModal();
-
 });
 /*
 function(){

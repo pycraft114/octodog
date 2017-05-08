@@ -19,30 +19,33 @@ var connection = mysql.createConnection({
   password: loginData.password,
   database: 'octodog',
   multipleStatements: true
-})
+});
+
 connection.connect();
 
 router.get('/', function(req, res){
   res.sendFile(path.join(__dirname, '../../public/html/game.html'));
-})
+});
 
-router.post('/',function(req, res){
+router.get('/:range',function(req, res){
   var responseData = {};
   var uid = [];
   var score = [];
-  var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit 10";
+  var range = req.params.range;
+  var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit "+range;
 
   connection.query(query, function(err,rows){
       for(let i = 0; i < rows.length; i++){
         uid.push(rows[i].uid);
         score.push(rows[i].score);
       }
+
       responseData.uid = uid;
       responseData.score = score;
+
       JSON.stringify(responseData);
       res.json(responseData);
-  })
-
-})
+  });
+});
 
 module.exports =  router;
