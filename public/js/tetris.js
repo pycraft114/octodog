@@ -1,116 +1,115 @@
+//Qunit을 통한 테스트 가능한 코드로 리팩토링 setInterval보다는 setTimeout이나 requestAnimationFrame을 사용할 것
+function Tetris(data) {
+	for(let props in data) {
+		this[props] = data[props];
+	}
+	this.gameContext = this.gameCanvas.getContext("2d");
+	this.nextContext = this.nextCanvas.getContext("2d");
+/*
+	this.W = this.gameCanvas.parentElement.clientWidth;
+	this.H = this.gameCanvas.parentElement.clientHeight;
+	this.nW = this.nextCanvas.parentElement.clientWidth;
+	this.nH = this.nextCanvas.parentElement.clientHeight;
+	this.gameCanvas.width = this.W;
+	this.gameCanvas.height = this.H;
+	this.nextCanvas.width = this.nW;
+	this.nextCanvas.height = this.nH;
+	this.blockWidth = this.W / this.COLS;
+	this.blockHeight = this.H / this.ROWS;
+*/
+	this.resize();
+	this.gameBoard = [];
+	this.score = 0;
+	this.currLevel = null;
+	this.goToNextLevel = null;
+	this.lose = false;
+	this.interval = null;
+	this.renderInterval = null;
+	this.curr = null;
+	this.next = null;
+	this.currIdx = null;
+	this.nextIdx = null;
+	this.currRotateIdx = null;
+	this.pause = true;	
+	this.currX = null;
+	this.currY = null;
+}
 
-const tetris = {};
+Tetris.prototype = {
+	//창크기 변경시 실행될 함수
+	resize: function() {
 
-tetris.model = {
-	setData: function() {
-		this.gameContext = this.gameCanvas.getContext("2d");
-		this.nextContext = this.nextCanvas.getContext("2d");
-		this.W = this.gameCanvas.clientWidth;
-		this.H = this.gameCanvas.clientHeight;
-		this.nW = this.nextCanvas.clientWidth;
-		this.nH = this.nextCanvas.clientHeight;
-		/*
-		this.W = parseInt(window.getComputedStyle(this.gameCanvas).width);
-		this.H = parseInt(window.getComputedStyle(this.gameCanvas).height);
-		this.nW = parseInt(window.getComputedStyle(this.nextCanvas).width);
-		this.nH = parseInt(window.getComputedStyle(this.nextCanvas).height);
-		*/
+		this.H = this.gameCanvas.parentElement.clientHeight;
+		console.log(this.H);
+		console.log(this.H * 0.5);
+		this.W = (this.H * 0.5);
+		this.gameCanvas.parentElement.setAttribute("width", this.W + "px");
+		//this.nW = this.nextCanvas.parentElement.clientWidth;
+		this.nH = this.nextCanvas.parentElement.clientHeight;
+		this.nW = this.nH * 0.7;
+		this.nextCanvas.parentElement.setAttribute("width", this.nW + "px");
+		this.gameCanvas.width = this.W;
+		this.gameCanvas.height = this.H;
+		this.nextCanvas.width = this.nW;
+		this.nextCanvas.height = this.nH;
 		this.blockWidth = this.W / this.COLS;
 		this.blockHeight = this.H / this.ROWS;
 	},
-	gameContext: null,
-	nextContext: null,
-	gameBoard:[],
-	nextBoard:[],
-	score: null,
-	goToNextLevel: null,
-	lose: false,
-	interval: null,
-	renderInterval: null,
-	curr: null,
-	next: null,
-	currIdx: null,
-	currRotate: null,
-	nextIdx: null,
-	currX: null,
-	currY: null,
-	shapes:[],
-	colors:[],
-	ms:null,
-	pause: true
-};
-
-/*
-tetris.render = {
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
-		var m = this.model;
-		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
-		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
-	},
-
-	//drawBlock함수를 이용해 캔버스에 그려주는 함수
-	render: function() {
-
-	}
-};
-*/
-
-tetris.game = {
-	//정사각형 블럭을 그려주는함수
-	drawBlock: function(context, x, y) {
-		const m = this.model;
 		context.strokeStyle = "grey";
-		context.fillRect(m.blockWidth * x, m.blockHeight * y, m.blockWidth - 1, m.blockHeight - 1);
-		context.strokeRect(m.blockWidth * x, m.blockHeight * y, m.blockWidthh - 1, m.blockHeight - 1);
+		context.fillRect(this.blockWidth * x, this.blockHeight * y, this.blockWidth - 1, this.blockHeight - 1);
+		context.strokeRect(this.blockWidth * x, this.blockHeight * y, this.blockWidth - 1, this.blockHeight - 1);
 	},
 
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
 	render: function() {
-		const m = this.model;
-		m.gameContext.clearRect(0, 0, m.W, m.H);
-		m.gameContext.font = "25px Verdana";
-		const gradient = m.gameContext.createLinearGradient(0, 0, m.W, 0);
+		this.gameContext.clearRect(0, 0, this.W, this.H);
+		this.gameContext.font =  (this.blockWidth * 0.7).toString() + "px Verdana";
+		const gradient = this.gameContext.createLinearGradient(0, 0, this.W, 0);
 		gradient.addColorStop("0","magenta");
 		gradient.addColorStop("0.5","blue");
 		gradient.addColorStop("1.0","red");
-		m.gameContext.fillStyle = gradient;
-		if(m.lose) {
-			m.gameContext.font = "40px Verdana";
-			m.gameContext.fillText("GAME OVER", m.blockWidth, m.blockHeight * 10);
+		this.gameContext.fillStyle = gradient;
+	
+		if(this.lose) {
+			this.gameContext.font = this.blockWidth.toString()  + "px Verdana";
+			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
 			return;
 		}
-		if(m.pause) {
-			m.gameContext.fillText("PAUSE", m.blockWidth * 3, m.blockHeight * 10);
+		if(this.pause) {
+			this.gameContext.fillText("PAUSE", this.blockWidth * 4, this.blockHeight * 10);
 		}
-		m.gameContext.fillText("Score  " + m.score.toString(), m.blockWidth, m.blockHeight);
+		this.gameContext.fillText("Score  " + this.score.toString(), this.blockWidth, this.blockHeight);
+		this.gameContext.fillText("Lv  " + this.currLevel.toString(), this.blockWidth * 7, this.blockHeight);
+		this.gameContext.fillText("GoToNextLv  -" + this.goToNextLevel.toString(), this.blockWidth * 4, this.blockHeight * 2);
 
-		for(let x = 0; x < m.COLS; x++) {
-			for(let y = 0; y < m.ROWS; y++) {
-				if(m.gameBoard[y][x]) {
-					m.gameContext.fillStyle = m.colors[m.gameBoard[y][x] - 1];
-					this.drawBlock(m.gameContext, x, y);
+		for(let x = 0; x < this.COLS; x++) {
+			for(let y = 0; y < this.ROWS; y++) {
+				if(this.gameBoard[y][x]) {
+					this.gameContext.fillStyle = this.colors[this.gameBoard[y][x] - 1];
+					this.drawBlock(this.gameContext, x, y);
 				}
 			}
 		}
 
-		m.gameContext.fillStyle = m.colors[m.currIdx];
+		this.gameContext.fillStyle = this.colors[this.currIdx];
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
-			if(m.curr[i]) {
-				this.drawBlock(m.gameContext, m.currX + x, m.currY + y);
+			if(this.curr[i]) {
+				this.drawBlock(this.gameContext, this.currX + x, this.currY + y);
 			}
 		}
 
-		m.nextContext.clearRect(0, 0, m.nW, m.nH);
-		m.nextContext.strokeStyle = 'black';
+		this.nextContext.clearRect(0, 0, this.nW, this.nH);
+		this.nextContext.strokeStyle = 'black';
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
-			if(m.next[i]) {
-				m.nextContext.fillStyle = m.colors[m.next[i] - 1];
-				this.drawBlock(m.nextContext, x + 1, y + 1);
+			if(this.next[i]) {
+				this.nextContext.fillStyle = this.colors[this.next[i] - 1];
+				this.drawBlock(this.nextContext, x + 1, y + 1);
 			} 
 		}
 		
@@ -118,49 +117,64 @@ tetris.game = {
 
 	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
 	newShape: function() {
-		const m = this.model;
-		if(m.nextIdx !== null) {
-			m.curr = m.next;
-			m.currIdx = m.nextIdx;
-			m.nextIdx = Math.floor(Math.random() * m.shapes.length);
+		if(this.nextIdx !== null) {
+			this.curr = this.next;
+			this.currIdx = this.nextIdx;
+			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}else{
-			m.currIdx = Math.floor(Math.random() * m.shapes.length);
-			m.curr = m.shapes[m.currIdx][0].split("").map(function(v){
-				return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
+			this.currIdx = Math.floor(Math.random() * this.shapes.length);
+			//split전까지 변수에 담아서 사용 할 것
+			let currShape = this.shapes[this.currIdx][0].split("");
+			currShape = currShape.map(function(val){
+				return Number(val);
 			});
-			m.nextIdx = Math.floor(Math.random() * m.shapes.length);
+			this.curr = currShape.map(function(val){
+				return val === 0 ? val : (val + this.currIdx);
+			}.bind(this));
+			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}
-		m.next = m.shapes[m.nextIdx][0].split("").map(function(v){
-			return Number(v) === 0 ? Number(v) : Number(v) + m.nextIdx;
+		let nextShape = this.shapes[this.nextIdx][0].split("");
+		nextShape = nextShape.map(function(val){
+			return Number(val);
 		});
-		m.currX = 5;
-		m.currY = 0;
+		this.next = nextShape.map(function(val){
+			return val === 0 ? val : (val + this.nextIdx);
+		}.bind(this));
+		this.currX = 5;
+		this.currY = 0;
 	},
 
 	//캔버스의 2d컨텍스트의 초기화
 	init: function() {
-		const m = this.model;
-		for(let y = 0; y < m.ROWS; y++) {
-			m.gameBoard[y] = [];
-			for(let x = 0; x < m.COLS; x++) {
-				m.gameBoard[y][x] = 0;
+		for(let y = 0; y < this.ROWS; y++) {
+			this.gameBoard[y] = [];
+			for(let x = 0; x < this.COLS; x++) {
+				this.gameBoard[y][x] = 0;
 			}
 		}
-		m.score = 0;
+		this.currLevel = 1;
+		this.goToNextLevel = 10;
+		this.score = 0;
 	},
 
 	//재귀호출되면서 게임진행을 해주는 함수
 	tick: function() {
-		const m = this.model;
 		if(this.valid(0,1)) {
-			m.currY++;
+			this.currY++;
 		}else{
 			this.freeze();
 			this.clearLines();
-			if(m.lose) {
-				clearInterval(m.interval);
-				clearInterval(m.renderInterval);
+			if(this.lose) {
+				this.render();
+				clearInterval(this.interval);
+				clearInterval(this.renderInterval);
 				return false;
+			}
+			if(this.goToNextLevel <= 0 && this.currLevel <= 10) {
+				clearInterval(this.interval);
+				this.goToNextLevel = 10;
+				this.currLevel++;
+				this.interval = setInterval(this.tick.bind(this), this.ms - 20 * this.currLevel);
 			} 
 			this.newShape();
 		}
@@ -168,46 +182,51 @@ tetris.game = {
 
 	//내려오던 블럭이 바닥이나 이미 정지해 있는 블럭과 닿으면 정지시켜줌
 	freeze: function() {
-		const m = this.model;
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
-			if(m.curr[i]) {
-				m.gameBoard[y + m.currY][x + m.currX] = m.curr[i];
+			if(this.curr[i]) {
+				this.gameBoard[y + this.currY][x + this.currX] = this.curr[i];
 			}
 		}
 	},
 
 	//현재 블럭을 회전시켜주는 함수
 	rotate: function() {
-		const m = this.model;
-		if(m.shapes[m.currIdx][m.currRotate + 1]) {
-			m.currRotate++;
+		if(this.shapes[this.currIdx][this.currRotateIdx + 1]) {
+			this.currRotateIdx++;
 		}else{
-			m.currRotate = 0;
+			this.currRotateIdx = 0;
 		}
-		const newCurr = m.shapes[m.currIdx][m.currRotate].split('').map(function(v){
-			return Number(v) === 0 ? Number(v) : Number(v) + m.currIdx;
-		})
+		/*split 전까지 변수로 담아서 사용할것
+		map에서 리턴되는 값이 NaN이 나옴 
+		-> map의 콜백에서의 this를 bind해줌으로 해결
+		*/ 
+		let newCurr = this.shapes[this.currIdx][this.currRotateIdx].split("");
+		newCurr = newCurr.map(function(val){
+			return Number(val) === 0 ? Number(val) : (Number(val) + this.currIdx);
+		}.bind(this));
 		return newCurr;
 	},
 
 	//열이 블럭으로 가득차면 지워주는 함수
 	clearLines: function() {
-		const m = this.model;
-		for(let y = m.ROWS - 1; y >= 0; y--) {
+		for(let y = this.ROWS - 1; y >= 0; y--) {
 			let filled = true;
-			for(let x = 0; x < m.COLS; x++) {
-				if(m.gameBoard[y][x] === 0) {
+			for(let x = 0; x < this.COLS; x++) {
+				if(this.gameBoard[y][x] === 0) {
 					filled = false;
 					break;
 				}
 			}
 			if(filled) {
-				m.score++;
+				this.score++;
+				if(this.currLevel !== 10) {
+					this.goToNextLevel--;
+				}
 				for(let i = y; i > 0; i--) {
-					for(let x = 0; x < m.COLS; x++) {
-						m.gameBoard[i][x] = m.gameBoard[i - 1][x];
+					for(let x = 0; x < this.COLS; x++) {
+						this.gameBoard[i][x] = this.gameBoard[i - 1][x];
 					}
 				}
 				y++;
@@ -219,51 +238,51 @@ tetris.game = {
 
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
 	keyPress: function(key) {
-		const m = this.model;
-		if(key !== "pause" && m.pause === true) return;
+		if(key !== "pause" && this.pause === true) return;
  		switch(key) {
 			case 'left':
 				//valid(-1)은 현재블럭의 왼쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(-1)) {
-					m.currX--;
+					this.currX--;
 				}
 				break;
 			case 'right':
 				//valid(1)은 현재블럭의 오른쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(1)) {
-					m.currX++;
+					this.currX++;
 				}
 				break;
 			case 'down':
 				//valid(0, 1)은 현재블럭의 아래쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(0, 1)) {
-					m.currY++;
+					this.currY++;
 				}
 				break;
 			case 'powerDown':
 				//case 'down'에서 if를 while로 변경해서 바로 이동가능한 만큼 아래로 이동시킴
 				while(this.valid(0, 1)) {
-					m.currY++;
+					this.currY++;
 				}
 				break;
 			case 'rotate':
 				const rotated = this.rotate();
 				if(this.valid(0, 0, rotated)) {
-					m.curr = rotated;
+					this.curr = rotated;
 				}
 				break;
 			case 'pause':
-				if(m.pause === false) {
-					clearInterval(m.interval);
-					clearInterval(m.renderInterval);
-					//아래 코드들은 작동이 안된다 왜일까
-					m.gameContext.clearRect(0, 0, m.W, m.H);
-					m.gameContext.fillText("Pause", 80, 40);
+				if(this.pause === false) {
+					clearInterval(this.interval);
+					clearInterval(this.renderInterval);
+					/*
+					this.gameContext.clearRect(0, 0, this.W, this.H);
+					this.gameContext.fillText("Pause", 80, 40);
+					*/		
 				}else{
-					m.interval = setInterval(this.tick.bind(this), m.ms);
-					m.renderInterval = setInterval(this.render.bind(this), 30);
+					this.interval = setInterval(this.tick.bind(this), this.ms - (20 * this.currLevel));
+					this.renderInterval = setInterval(this.render.bind(this), 30);
 				}
-				m.pause = !m.pause;
+				this.pause = !this.pause;
 				break;
 		}
 	},
@@ -272,42 +291,42 @@ tetris.game = {
 
 	*/
 	valid: function(offsetX, offsetY, newCurr) {
-		const m = this.model;
 		offsetX = offsetX || 0;
 		offsetY = offsetY || 0;
-		offsetX += m.currX;
-		offsetY += m.currY;
-		newCurr = newCurr || m.curr;
+		offsetX += this.currX;
+		offsetY += this.currY;
+		newCurr = newCurr || this.curr;
 
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
 			/*
 			if(newCurr[i]) {
-				if(typeof m.gameBoard[y + offsetY] === "undefined"
-				|| m.gameBoard[y + offsetY][x + offsetX]
+				if(typeof this.gameBoard[y + offsetY] === "undefined"
+				|| this.gameBoard[y + offsetY][x + offsetX]
 				|| x + offsetX < 0
-				|| y + offsetY >= m.ROWS
-				|| x + offsetX >= m.COLS ) {
+				|| y + offsetY >= this.ROWS
+				|| x + offsetX >= this.COLS ) {
 					return false;
 				}
-				if(typeof m.gameBoard[y + offsetY][x + offsetX] === "undefined") {
-					if(x + offsetX > 0 && x + offsetX < m.COLS && offsetY === 1) {
-						m.lose = true;
+				if(typeof this.gameBoard[y + offsetY][x + offsetX] === "undefined") {
+					if(x + offsetX > 0 && x + offsetX < this.COLS && offsetY === 1) {
+						this.lose = true;
 					}
 					return false;
 				}
 				
 				*/
+				//중첩된 if 문은 제거 할 수 있다. valid는 분리해봐야 할 듯. Qunit을 통한 test code로 리팩토링.
 			if(newCurr[i]) {
-				if(typeof m.gameBoard[y + offsetY] === "undefined"
-				|| typeof m.gameBoard[y + offsetY][x + offsetX] === "undefined"
-				|| m.gameBoard[y + offsetY][x + offsetX]
+				if(typeof this.gameBoard[y + offsetY] === "undefined"
+				|| typeof this.gameBoard[y + offsetY][x + offsetX] === "undefined"
+				|| this.gameBoard[y + offsetY][x + offsetX]
 				|| x + offsetX < 0
-				|| y + offsetY >= m.ROWS
-				|| x + offsetX >= m.COLS ) {
-					if(x + offsetX > 0 && x + offsetX < m.COLS && offsetY === 1) {
-						m.lose = true;
+				|| y + offsetY >= this.ROWS
+				|| x + offsetX >= this.COLS ) {
+					if(x + offsetX > 0 && x + offsetX < this.COLS && offsetY === 1) {
+						this.lose = true;
 					}
 					return false;
 				}
@@ -317,16 +336,15 @@ tetris.game = {
 	},
 
 	//게임을 시작할때 호출할 함수
-	newGame: function() {
-		const m = this.model;	
+	newGame: function() {	
 		this.init();
 		this.newShape();
-		clearInterval(m.interval);
-		clearInterval(m.renderInterval);
-		m.pause = false;
-		m.lose = false;
-		m.interval = setInterval(this.tick.bind(this), m.ms);
-		m.renderInterval = setInterval(this.render.bind(this), 30);
+		clearInterval(this.interval);
+		clearInterval(this.renderInterval);
+		this.pause = false;
+		this.lose = false;
+		this.interval = setInterval(this.tick.bind(this), this.ms);
+		this.renderInterval = setInterval(this.render.bind(this), 30);
 	},
 
 	//이벤트 등록
@@ -341,34 +359,25 @@ tetris.game = {
 			27: 'pause'
 		};
 		document.addEventListener("keydown", function(evt){
-			if(typeof keys[evt.keyCode] !== 'undefined' && (this.model.interval)) {
-				this.keyPress(keys[evt.keyCode]);
-				this.render();
+			if(typeof keys[evt.keyCode] !== 'undefined' && (that.interval)) {
+				that.keyPress(keys[evt.keyCode]);
+				that.render();
 			}
-		}.bind(that));
-		this.model.startBtn.addEventListener("click", function(evt){
+		});
+		this.startBtn.addEventListener("click", function(evt){
 			evt.target.blur();
-			this.newGame();
-		}.bind(that));
+			that.newGame();
+		});
+		window.addEventListener("resize", function(){
+			that.resize();
+			that.render();
+		});
 	}
 
 };
-
-/*
-tetris.controller = {
-
-	addEvent: function() {
-		document.body.addEventListener(function(evt){
-			if( typeof this.keys[evt.keyCode] !== "undefinded") {
-				//키눌러졌을때 작동할 함수호출
-				//render함수호출 
-				// 아무래도 옵저버 패턴을 써야 할듯?
-			}
-		})
-	}
-};
-*/
+	
 document.addEventListener("DOMContentLoaded", function(){
+	//shapeMap과 data는 추후 외부 파일로 분리 할 것
 	const shapeMap = [];
 
 	/*[0]
@@ -449,8 +458,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	const data = {
 		startBtn: document.querySelector(".start"),
-		gameCanvas: document.querySelector(".game"),
-		nextCanvas: document.querySelector(".next"),
+		gameCanvas: document.querySelector(".game canvas"),
+		nextCanvas: document.querySelector(".next canvas"),
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
@@ -458,26 +467,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		colors: ["rgba(255, 0, 0, 0.6)", "rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)", "rgba(255, 206, 86, 0.6)", "rgba(75, 192, 192, 0.6)", "rgba(255, 159, 64, 0.6)", "rgba(153, 102, 255, 0.6)"]
 	};
 
-	const model = Object.assign(Object.create(tetris.model), data);
-	model.setData();
-/*
-	var render = Object.assign({},Object.create(tetris.render));
-	render.model = model;
-*/
-	const game = Object.create(tetris.game);
-	game.model = model;
-	game.addEvent();
-/*
-	var controller = Object.assign({},Object.create(tetris.controller), {
-		keys: {
-			27: 'pause',
-			37: 'left',
-			39: 'right',
-			40: 'down',
-			32: 'powerDown',
-			38: 'rotate'
-		}
-	});
-*/
+	const tetris = new Tetris(data);
+	tetris.addEvent();
 });
-

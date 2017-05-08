@@ -1,11 +1,45 @@
-document.addEventListener("DOMContentLoaded", function(){
-
   function $(element){
     return document.querySelector(element);
   }
-  function _$(element){
+  function $$(element){
     return document.querySelectorAll(element);
   }
+
+  function Rank(){
+      this.range = 10;
+  }
+
+  Rank.prototype = {
+    onEvent : function() {
+        let load = $(".rank-load");   
+        load.addEventListener("click", function(){
+        util.sendAjax("get", 'http://localhost:3000/game/' + this.range, "rankRender");
+      }.bind(this));
+    },
+
+    rankRender : function(result){
+      let uid = result.uid;
+      let score =  result.score;
+      let resultHTML = "";
+      let wrap =  $(".rank-list");
+      
+      for(let i =0; i < uid.length; i++){
+        let template = `<div class="rank">
+                  <ul>
+                    <li class="numbering">${i+1}</li>
+                    <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
+                    <li class="name"><p>${uid[i]}</p></li>
+                    <li class="score"><p>${score[i]}</p></li>
+                  </ul>
+                  </div>`;
+        resultHTML += template;
+      }
+      wrap.innerHTML = resultHTML;
+      this.range += 10;
+
+      
+    },
+  };
 
   let util = {
     // chart part Ajax request
@@ -26,28 +60,18 @@ document.addEventListener("DOMContentLoaded", function(){
             result = JSON.parse(oReq.responseText);
             switch (expression) {
               case "rankRender" :
-                this.rankRender(result);
+                rank.rankRender(result);
               break;
               default:
             }
-        }.bind(this))
+        }.bind(this));
     },
+  };
 
-    rankRender : function(result){
-      let uid = result.uid;
-      let score =  result.score;
-      let template = $("#rank-template").innerHTML;
-      let wrap =  $(".rank-wrap");
-      let resultHtml = "";
+  const rank =  new Rank();
 
-
-      for(let i =0; i < uid.length; i++){
-        resultHtml += template.replace("{num}",i+1).replace("{name}",uid[i]).replace("{score}",score[i]);
-      }
-      wrap.innerHTML = resultHtml;
-    }
-  }
-
-  util.sendAjax("post", 'http://localhost:3000/game', "rankRender");
+document.addEventListener("DOMContentLoaded", function(){
+  rank.onEvent();
+  util.sendAjax("get", 'http://localhost:3000/game/' + rank.range, "rankRender");
 
 });
