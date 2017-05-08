@@ -6,14 +6,13 @@
   }
 
   function Rank(){
-      this.wrap =  $(".rank-list");
-      this.load =  $(".rank-load");      
       this.range = 10;
   }
 
   Rank.prototype = {
     onEvent : function() {
-        this.load.addEventListener("click", function(){
+        let load = $(".rank-load");   
+        load.addEventListener("click", function(){
         util.sendAjax("get", 'http://localhost:3000/game/' + this.range, "rankRender");
       }.bind(this));
     },
@@ -22,6 +21,7 @@
       let uid = result.uid;
       let score =  result.score;
       let resultHTML = "";
+      let wrap =  $(".rank-list");
       
       for(let i =0; i < uid.length; i++){
         let template = `<div class="rank">
@@ -34,7 +34,7 @@
                   </div>`;
         resultHTML += template;
       }
-      this.wrap.innerHTML = resultHTML;
+      wrap.innerHTML = resultHTML;
       this.range += 10;
 
       
