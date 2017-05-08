@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded",function(){
     }
     function LoginPage(){
         this.modal = $("#modal");
+        this.modalContent = $("#modal-content");
         this.loginId = $("#login-id");
         this.loginPassword = $("#login-password");
         this.loginButton = $("#login");
@@ -39,7 +40,8 @@ document.addEventListener("DOMContentLoaded",function(){
 
     LoginPage.prototype = {
         openModalPage : function(){
-            this.modal.style.display = "block";
+            this.modal.className = "on";
+            this.modalContent.className = "on";
         },
 
         //변수 사용빈도적으면 함수내에 변수 선언
@@ -78,6 +80,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
     function SignUpModal(){
         this.modal = $("#modal");
+        this.modalContent = $("#modal-content");
         this.signUpId = $("#signup-id");
         this.signUpPassword = $("#signup-password");
         this.signUpConfirm = $("#signup-confirm");
@@ -92,7 +95,8 @@ document.addEventListener("DOMContentLoaded",function(){
     SignUpModal.prototype = {
         closeModalPage : function(evt){
             if(evt.target === this.modal){
-                this.modal.style.display = "none";
+                this.modal.className = "off";
+                this.modalContent.className = "off";
             }
         },
         sendSignUpInfo : function(){
@@ -122,7 +126,7 @@ document.addEventListener("DOMContentLoaded",function(){
                             break;
                         case "회원가입 완료":
                             alert("회원가입이 완료되었습니다.");
-                            modal.style.display = 'none';
+                            location.href = '/login';
                             break;
                         default :
                             console.log("switch statement called");
