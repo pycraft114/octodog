@@ -5,6 +5,25 @@
     return document.querySelectorAll(element);
   }
 
+  let util = {
+    // chart part Ajax request
+     sendAjax : function(method, url, data, type, func) {
+        const oReq = new XMLHttpRequest();
+        let result;
+
+        oReq.open(method, url);
+        oReq.setRequestHeader('Content-Type', type);
+        if(data!==undefined){
+            data =  JSON.stringify(data);
+            oReq.send(data);
+        }else{
+            oReq.send();
+        }
+
+        oReq.addEventListener('load', func);
+    },
+  };
+
   function Rank(){
       this.range = 10;
   }
@@ -13,13 +32,13 @@
     onEvent : function() {
         let load = $(".rank-load");   
         load.addEventListener("click", function(){
-        util.sendAjax("get", 'http://localhost:3000/game/' + this.range, "rankRender");
+        util.sendAjax("get", 'http://localhost:3000/game/' + this.range, null, "application/json", rank.rankRender);
       }.bind(this));
     },
 
-    rankRender : function(result){
-      let uid = result.uid;
-      let score =  result.score;
+    rankRender : function(){
+      let uid = JSON.parse(this.responseText).uid;
+      let score =  JSON.parse(this.responseText).score;
       let resultHTML = "";
       let wrap =  $(".rank-list");
       
@@ -35,43 +54,13 @@
         resultHTML += template;
       }
       wrap.innerHTML = resultHTML;
-      this.range += 10;
-
-      
+      rank.range += 10;
     },
   };
-
-  let util = {
-    // chart part Ajax request
-     sendAjax : function(method, url, expression, data) {
-        const oReq = new XMLHttpRequest();
-        let result;
-
-        oReq.open(method, url);
-        oReq.setRequestHeader('Content-Type', "application/json");
-        if(data!==undefined){
-            data =  JSON.stringify(data);
-            oReq.send(data);
-        }else{
-            oReq.send();
-        }
-
-        oReq.addEventListener('load', function() {
-            result = JSON.parse(oReq.responseText);
-            switch (expression) {
-              case "rankRender" :
-                rank.rankRender(result);
-              break;
-              default:
-            }
-        }.bind(this));
-    },
-  };
-
+  
   const rank =  new Rank();
 
 document.addEventListener("DOMContentLoaded", function(){
   rank.onEvent();
-  util.sendAjax("get", 'http://localhost:3000/game/' + rank.range, "rankRender");
-
+  util.sendAjax("get", 'http://localhost:3000/game/' + rank.range, null, "application/json", rank.rankRender);
 });
