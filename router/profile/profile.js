@@ -85,9 +85,10 @@ router.put('/updatePW',function(req, res){
   });
 });
 
-router.get('/confirmUser', function(req, res){
+router.post('/confirmUser', function(req, res){
   var pw1 = req.body.pw1;
   var responseData = {};
+  
   var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";"
 
   connection.query(query, function(err,rows){

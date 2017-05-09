@@ -6,6 +6,25 @@ function $$(element) {
     return document.querySelectorAll(element);
 }
 
+let util = {
+    // chart part Ajax request
+    sendAjax: function (method, url, data, type, func) {
+        const oReq = new XMLHttpRequest();
+        let result;
+
+        oReq.open(method, url);
+        oReq.setRequestHeader('Content-Type', type);
+        if (data !== null) {
+            data = JSON.stringify(data);
+            oReq.send(data);
+        } else {
+            oReq.send();
+        }
+
+        oReq.addEventListener('load', func);
+    },
+};
+
 function ChartData() {
     this.ctx = $("#myChart").getContext('2d');
 
@@ -97,7 +116,7 @@ Modal.prototype = {
                 this.warning.innerHTML = "비밀 번호 확인이 다릅니다";
             } else {
                 this.warning.innerHTML = '';
-                util.sendAjax("get", 'http://localhost:3000/profile/confirm', "confirmUser", password);
+                util.sendAjax("post", 'http://localhost:3000/profile/confirmUser', password ,"application/json", modal.passwordConfirm);
             }
         }
     },
@@ -114,60 +133,33 @@ Modal.prototype = {
         this.modalChangePw.value = '';
         this.modalChangePwConfirm.value = '';
         this.warning.innerHTML = '';
-    }
-
-}
-
-let util = {
-    ERR_MESSAGE: "error",
-    // chart part Ajax request
-    sendAjax: function (method, url, expression, data) {
-        const oReq = new XMLHttpRequest();
-        let result;
-
-        oReq.open(method, url);
-        oReq.setRequestHeader('Content-Type', "application/json");
-        if (data !== undefined) {
-            data = JSON.stringify(data);
-            oReq.send(data);
-        } else {
-            oReq.send();
-        }
-
-        oReq.addEventListener('load', function () {
-            result = JSON.parse(oReq.responseText);
-            switch (expression) {
-                case "init":
-                    this.renderBothSide(profileRender, result);
-                    break;
-                case "confirm":
-                    this.passwordConfirm(modal, data, result.msg);
-                    break;
-                default:
-            }
-        }.bind(this));
     },
 
-    renderBothSide: function (obj, result) {
-        obj.leftSideRender(result);
-        obj.rightSideRender(result, chartData);
-    },
+    passwordConfirm: function () {
+        let result = JSON.parse(this.responseText),
+            msg =  result.msg,
+            ERR_MESSAGE = "error",
+            originPw = modal.modalPw.value,
+            changePw = modal.modalChangePw.value,
+            password = {
+            "pw1": originPw,
+            "pw2": changePw
+            };
 
-    passwordConfirm: function (obj, data, msg) {
-        console.log(msg);
         // ERR_MESSAGE로 선언
-        if (msg === this.ERR_MESSAGE) {
-            console.log("nonono");
-            obj.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다";
+        if (msg === ERR_MESSAGE) {
+            console.log("no");
+            modal.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다";
         } else {
-            let password = JSON.parse(data);
             console.log("yes");
             // 변경 실패 고려
-            this.sendAjax("put", 'http://localhost:3000/profile/updatePW', null, password);
-            obj.closeClickHandler();
+            util.sendAjax("put", 'http://localhost:3000/profile/updatePW', password, "application/json");
+            modal.closeClickHandler();
         }
     }
-};
+}
+
+
 
 function ProfileRender() {
     this.modal = $('#myModal');
@@ -175,6 +167,12 @@ function ProfileRender() {
 }
 
 ProfileRender.prototype = {
+
+    renderBothSide: function (result) {
+        result = JSON.parse(this.responseText);
+        profileRender.leftSideRender(result);
+        profileRender.rightSideRender(result, chartData);
+    },
     // left side rendering function
     leftSideRender: function (resultData) {
         let user = resultData.user;
@@ -235,5 +233,5 @@ const myBarChart = new Chart(chartData.ctx, {
 // after loaded event trigger
 document.addEventListener("DOMContentLoaded", function () {
     modal.eventOn();
-    util.sendAjax("get", 'http://localhost:3000/profile/getUserProfile', "init");
+    util.sendAjax("get", 'http://localhost:3000/profile/getUserProfile', null ,"application/json", profileRender.renderBothSide);
 });
