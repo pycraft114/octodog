@@ -94,7 +94,6 @@ Modal.prototype = {
         // When the user clicks anywhere outside of the modal, close it
         window.addEventListener('click', this.windowClickHandler.bind(this));
 
-        // set event when you press enter key in modal input
         for (let i = 0; i < this.input.length; i++) {
             this.input[i].addEventListener("keypress", this.enterEventHandler.bind(this));
         }
@@ -148,10 +147,8 @@ Modal.prototype = {
 
         // ERR_MESSAGE로 선언
         if (msg === ERR_MESSAGE) {
-            console.log("no");
             modal.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다";
         } else {
-            console.log("yes");
             // 변경 실패 고려
             util.sendAjax("put", 'http://localhost:3000/profile/updatePW', password, "application/json");
             modal.closeClickHandler();
@@ -167,6 +164,12 @@ function ProfileRender() {
 }
 
 ProfileRender.prototype = {
+    onBtnEvent : function(){
+        // Get the button that opens the modal
+        let btn_pw = $(".pw-change");
+
+        btn_pw.addEventListener("click", this.pwClickHandler.bind(this));
+    },
 
     renderBothSide: function (result) {
         result = JSON.parse(this.responseText);
@@ -194,11 +197,7 @@ ProfileRender.prototype = {
                 </div>`;
 
         this.leftContent.innerHTML = template;
-
-        // Get the button that opens the modal
-        let btn_pw = $(".pw-change");
-
-        btn_pw.addEventListener("click", this.pwClickHandler.bind(this));
+        this.onBtnEvent();
     },
 
     // When the user clicks on the button, open the modal
