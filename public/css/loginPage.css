@@ -6,6 +6,8 @@
 body{
     height: 100vh;
     overflow:hidden;
+    background-image: url('../img/tetris-image.jpg');
+    background-size : cover;
 }
 /*--------The Login page---------------------*/
 section{
