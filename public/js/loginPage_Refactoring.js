@@ -5,10 +5,6 @@
 const octoDog = function(){
     const octoDog = {};
 
-    function ajaxResponseHandler(ajaxResponse) {
-
-    }
-
     function sendAjax(method, url, data, type, func) {
 
         let xhr = new XMLHttpRequest();
@@ -26,10 +22,6 @@ const octoDog = function(){
         }
 
         xhr.addEventListener("load", func);
-    }
-    //validateRrors의 재사용성을 고려한것.
-    responseErrors = {
-        INCORRECT_PASSWORD: "incorrect_password"
     }
 
     function $(selector){
@@ -138,6 +130,8 @@ const octoDog = function(){
             (cases[responseType].bind(this) || cases["default"])();
         }
     };
+
+    //initiate loginPage
     const loginPage = new Page(loginPageContent);
 
 
@@ -203,6 +197,7 @@ const octoDog = function(){
         }
     };
 
+    //initiate modal
     const modal = new Page(modalContent);
 
 
