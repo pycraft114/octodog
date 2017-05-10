@@ -1,3 +1,14 @@
-var friends = ["Mike", "Stacy", "Andy", "Rick"];
-friends.forEach(function (eachName, index){ console.log(index + 1 + ". " + eachName)});
-console.log('ji');
+function Page(objectContent){
+    for(let key in objectContent){
+        this[key] = objectContent[key]
+    }
+}
+
+const smth = {
+    that : this,
+    hi : "this is hi"
+};
+
+var test = new Page(smth);
+
+console.log(test);
