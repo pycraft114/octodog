@@ -1,48 +1,49 @@
-  function $(element){
+const rankResister = function () {
+
+  function $(element) {
     return document.querySelector(element);
   }
-  function $$(element){
+
+  function $$(element) {
     return document.querySelectorAll(element);
   }
 
-  let util = {
-    // chart part Ajax request
-     sendAjax : function(method, url, data, type, func) {
-        const oReq = new XMLHttpRequest();
-        let result;
+  // chart part Ajax request
+  function sendAjax(method, url, data, type, func) {
+    const oReq = new XMLHttpRequest();
+    let result;
 
-        oReq.open(method, url);
-        oReq.setRequestHeader('Content-Type', type);
-        if(data!==undefined){
-            data =  JSON.stringify(data);
-            oReq.send(data);
-        }else{
-            oReq.send();
-        }
+    oReq.open(method, url);
+    oReq.setRequestHeader('Content-Type', type);
+    if (data !== undefined) {
+      data = JSON.stringify(data);
+      oReq.send(data);
+    } else {
+      oReq.send();
+    }
 
-        oReq.addEventListener('load', func);
-    },
-  };
+    oReq.addEventListener('load', func);
+  }
 
-  function Rank(){
-      this.range = 10;
+  function Rank() {
+    this.range = 10;
   }
 
   Rank.prototype = {
-    onEvent : function() {
-        let load = $(".rank-load");   
-        load.addEventListener("click", function(){
-        util.sendAjax("get", 'http://localhost:3000/game/' + this.range, null, "application/json", rank.rankRender);
+    onEvent: function () {
+      let load = $(".rank-load");
+      load.addEventListener("click", function () {
+        sendAjax("get", 'http://localhost:3000/game/' + this.range, null, "application/json", rank.rankRender);
       }.bind(this));
     },
 
-    rankRender : function(){
+    rankRender: function () {
       let uid = JSON.parse(this.responseText).uid;
-      let score =  JSON.parse(this.responseText).score;
+      let score = JSON.parse(this.responseText).score;
       let resultHTML = "";
-      let wrap =  $(".rank-list");
-      
-      for(let i =0; i < uid.length; i++){
+      let wrap = $(".rank-list");
+
+      for (let i = 0; i < uid.length; i++) {
         let template = `<div class="rank">
                   <ul>
                     <li class="numbering">${i+1}</li>
@@ -57,10 +58,16 @@
       rank.range += 10;
     },
   };
-  
-  const rank =  new Rank();
 
-document.addEventListener("DOMContentLoaded", function(){
-  rank.onEvent();
-  util.sendAjax("get", 'http://localhost:3000/game/' + rank.range, null, "application/json", rank.rankRender);
-});
+  const rank = new Rank();
+
+  document.addEventListener("DOMContentLoaded", function () {
+    rank.onEvent();
+    sendAjax("get", 'http://localhost:3000/game/' + rank.range, null, "application/json", rank.rankRender);
+  });
+
+  return {
+    rank: rank
+  };
+
+}();
