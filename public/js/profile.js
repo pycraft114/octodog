@@ -106,17 +106,17 @@ const Profile = function () {
 
         eventOn: function () {
             // close button click event
-            this.btn_close.addEventListener("click", this.closeClickHandler.bind(this));
+            this.btn_close.addEventListener("click", this.closeBtnClickHandler.bind(this));
 
             // When the user clicks anywhere outside of the modal, close it
             window.addEventListener('click', this.windowClickHandler.bind(this));
 
             for (let i = 0; i < this.input.length; i++) {
-                this.input[i].addEventListener("keypress", this.enterEventHandler.bind(this));
+                this.input[i].addEventListener("keypress", this.enterPressEventHandler.bind(this));
             }
         },
 
-        enterEventHandler: function (event) {
+        enterPressEventHandler: function (event) {
             let passwordObj = {
                 originPw: this.modalPw.value,
                 changePw: this.modalChangePw.value,
@@ -134,7 +134,7 @@ const Profile = function () {
             }
         },
 
-        closeClickHandler: function () {
+        closeBtnClickHandler: function () {
             this.modal.style.display = "none";
             this.modalPw.value = '';
             this.modalChangePw.value = '';
@@ -159,7 +159,7 @@ const Profile = function () {
             } else {
                 // 변경 실패 고려
                 sendAjax("put", 'http://localhost:3000/profile/updatePW', password, "application/json");
-                modal.closeClickHandler();
+                modal.closeBtnClickHandler();
             }
         }
     }
@@ -208,11 +208,6 @@ const Profile = function () {
             this.onBtnEvent();
         },
 
-        // When the user clicks on the button, open the modal
-        pwClickHandler: function () {
-            this.modal.style.display = "block";
-        },
-
         // right side rendering function
         rightSideRender: function (resultData, chartObj) {
             let score = resultData.chartscore.reverse(),
@@ -225,6 +220,11 @@ const Profile = function () {
 
             dataSets.data = comp_data;
             myBarChart.update();
+        },
+
+        // When the user clicks on the button, open the modal
+        pwClickHandler: function () {
+            this.modal.style.display = "block";
         }
     };
 
@@ -243,4 +243,8 @@ const Profile = function () {
         sendAjax("get", 'http://localhost:3000/profile/getUserProfile', null, "application/json", profileRender.renderBothSide);
     });
 
+    return {
+        modal: modal,
+        profileRender : profileRender
+    };
 }();
