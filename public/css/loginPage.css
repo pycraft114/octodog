@@ -36,6 +36,7 @@ section{
     margin-bottom:10px;
     border:0;
     font-size:19px;
+    cursor:pointer;
 }
 .main-button#login,.main-button#submit{
     background-color: #399CDD;
@@ -49,6 +50,7 @@ section{
     display:block;
     text-align:center;
     font-weight:bold;
+    margin:auto;
 }
 
 footer{
@@ -85,29 +87,49 @@ button{
 }*/
 /*----------------The modal-----------------*/
 #modal{
+    transform:scale(0);
     z-index: 1;
     position:fixed;
     width:100%;
     height:100vh;
-    display:none;
     padding-top:114px;
     background-color:rgba(0,0,0,0.5);
-
 }
+
+#modal.on{
+    animation : unfoldIn 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+#modal.off{
+    transform:scale(1);
+    animation: unfoldOut 1s 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
 #modal-content{
     background-color: #ffffff;
     width:410px;
     margin:auto;
-    display:block;
+    transform:scale(0);
     padding-top:32px;
     height:495px;
     border:1px solid darkgrey;
     border-radius:6px;
 }
+
+#modal-content.on{
+    animation: zoomIn 0.5s 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+#modal-content.off{
+    transform:scale(1);
+    animation: zoomOut 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
 #modal-content p{
     color: #399CDD;
     font-weight: bold;
 }
+
 .signup-input,.warning-list{
     display:block;
     margin:auto;
@@ -120,4 +142,55 @@ button{
 .warning-list{
     width:74%;
     height:118px;
+    text-align:center;
+    padding-top:40px;
+}
+
+.warning-list ul li{
+    color:red;
+}
+
+
+/*------------------modal animation------------*/
+@keyframes unfoldIn {
+    0% {
+        transform: scaleY(0) scaleX(0);
+    }
+    50% {
+        transform: scaleY(0.005) scaleX(1);
+    }
+    100% {
+        transform: scaleY(1) scaleX(1);
+    }
+}
+
+@keyframes unfoldOut {
+    0% {
+        transform: scaleY(1) scaleX(1);
+    }
+    50% {
+        transform: scaleY(0.005) scaleX(1);
+    }
+    100% {
+        transform: scaleY(0) scaleX(0);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+
+        transform: scale(1);
+    }
+}
+
+@keyframes zoomOut {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
 }

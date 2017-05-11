@@ -7,6 +7,9 @@ var mysql = require('mysql');
 
 var id = "'ma'";
 
+const ERR_MESSAGE = "error";
+const CONFIRM_MESSAGE = "ok";
+
 var loginData = {
   host: options.storageConfig.HOST,
   user: options.storageConfig.user,
@@ -20,14 +23,14 @@ var connection = mysql.createConnection({
   password: loginData.password,
   database: 'octodog',
   multipleStatements: true
-})
+});
 connection.connect();
 
 router.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
-})
+});
 
-router.post('/user', function(req, res){
+router.get('/getUserProfile', function(req, res){
   var responseData = {};
   var temp;
   var query = "select `email`,`id`,`img` from user where id=" + id + ";" +
@@ -49,16 +52,16 @@ router.post('/user', function(req, res){
     // chart에 사용될 score 데이터 처리
     rows[1].forEach(function(val){
       responseData.chartscore.push(val.score);
-    })
+    });
 
     // 플레이 횟수 처리
-    temp = rows[2][0]
+    temp = rows[2][0];
     responseData.user.play = temp["count(*)"];
 
     // 현재 까지 모은 총 score 처리
     var sum = responseData.chartscore.reduce(function(a,b){
       return a+b;
-    })
+    });
     responseData.user.totalscore = sum;
 
     // 랭크 처리
@@ -71,18 +74,18 @@ router.post('/user', function(req, res){
   });
 });
 
-router.post('/change',function(req, res){
+router.put('/updatePW',function(req, res){
   var pw2 = req.body.pw2;
-  var query = "update user set password="+ pw2 +" where id="+ id +";"
+  var query = "update user set password="+ pw2 +" where id="+ id +";";
 
   connection.query(query, function(err,rows){
     if(err) throw err;
-    var responseData = {"msg":"ok"};
+    var responseData = {"msg" : CONFIRM_MESSAGE};
     res.json(responseData);
-  })
-})
+  });
+});
 
-router.post('/confirm', function(req, res){
+router.get('/confirmUser', function(req, res){
   var pw1 = req.body.pw1;
   var responseData = {};
   var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";"
@@ -92,15 +95,15 @@ router.post('/confirm', function(req, res){
     var confirm = rows[0]["count(*)"];
 
     if(confirm){
-        responseData = {"msg":"ok"};
+        responseData = {"msg":CONFIRM_MESSAGE};
         res.json(responseData);
     }else{
-        responseData = {"msg":"no"};
+        responseData = {"msg":ERR_MESSAGE};
         res.json(responseData);
     }
 
-  })
+  });
 
-})
+});
 
 module.exports = router;
