@@ -23,10 +23,7 @@ connection.connect();
 
 router.post('/', function(req, res){
 	var query = "insert into scoreboard set ?";
-	console.log(req.body);
-	console.log(res.body);
 	var sql = {uid:req.body.uid, score:req.body.score};
-	console.log(sql);
 	connection.query(query, sql, function(err){
 		if(err) throw err;
 		return;

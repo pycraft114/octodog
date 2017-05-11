@@ -40,8 +40,6 @@ Tetris.prototype = {
 	resize: function() {
 
 		this.H = this.gameCanvas.parentElement.clientHeight;
-		console.log(this.H);
-		console.log(this.H * 0.5);
 		this.W = (this.H * 0.5);
 		this.gameCanvas.parentElement.setAttribute("width", this.W + "px");
 		//this.nW = this.nextCanvas.parentElement.clientWidth;
@@ -140,6 +138,7 @@ Tetris.prototype = {
 		this.next = nextShape.map(function(val){
 			return val === 0 ? val : (val + this.nextIdx);
 		}.bind(this));
+		this.currRotateIdx = 0;
 		this.currX = 5;
 		this.currY = 0;
 	},
@@ -351,7 +350,10 @@ Tetris.prototype = {
 	//점수를 db에 등록
 	postScore: function() {
 		const req = new XMLHttpRequest();
-		let data = {uid:"test", score:this.score};
+		let data = {
+			uid:document.querySelector(".user-id").innerText,
+			score:this.score
+		};
 		data = JSON.stringify(data);
 		req.open('POST', '/postScore');
 		req.setRequestHeader("Content-Type", "application/json")
