@@ -4,22 +4,6 @@ const Profile = function () {
         $$ = util.$$,
         sendAjax = util.sendAjax;
 
-    function isEmpty(data, changeHTML) {
-        let password = {
-                "pw1": data.originPw,
-                "pw2": data.changePw
-            };
-
-        if ((data.originPw === '') || (data.changePw === '') || (data.changePwConfirm === '')) {
-            changeHTML.innerHTML = "모든 항목을 입력해주세요";
-        } else if (data.changePw !== data.changePwConfirm) {
-            changeHTML.innerHTML = "비밀 번호 확인이 다릅니다";
-        } else {
-            changeHTML.innerHTML = '';
-            sendAjax("post", 'http://localhost:3000/profile/confirmUser', password, "application/json", modal.passwordConfirm);
-        }
-    }
-
     function ChartData() {
         this.ctx = $("#myChart").getContext('2d');
 
@@ -68,106 +52,136 @@ const Profile = function () {
         };
     }
 
-    // modal part
-    function Modal() {
-        this.modal = $('#myModal');
-        this.input = $$(".input-text");
-        this.modalPw = $("#Mpw");
-        this.modalChangePw = $("#Mrepw");
-        this.modalChangePwConfirm = $("#Mrerepw");
-        this.warning = $(".warning");
-        this.btn_close = $(".close");
+    const modalPageContent = {
+        modal: $('#myModal'),
+        input: $$(".input-text"),
+        modalPw: $("#Mpw"),
+        modalChangePw: $("#Mrepw"),
+        modalChangePwConfirm: $("#Mrerepw"),
+        warning: $(".warning"),
+        btnClose: $(".close"),
 
-    }
-
-    Modal.prototype = {
-
-        eventOn: function () {
-            // close button click event
-            this.btn_close.addEventListener("click", this.closeBtnClickHandler.bind(this));
-
-            // When the user clicks anywhere outside of the modal, close it
-            window.addEventListener('click', this.windowClickHandler.bind(this));
-
-            for (let i = 0; i < this.input.length; i++) {
-                this.input[i].addEventListener("keypress", this.enterPressEventHandler.bind(this));
-            }
+        warningMessage: {
+            noContent: "<span>내용을 입력하세요</span>",
+            passwordUnconfirm: "<span>비밀번호 확인이 일치하지 않습니다.</span>",
+            noUser: "<span>비밀번호가 잘못되었습니다</span>",
+            failChange: "<span>비밀번호 변경이 실패 했습니다.</span>"
         },
 
-        enterPressEventHandler: function (event) {
-            let passwordObj = {
-                originPw: this.modalPw.value,
-                changePw: this.modalChangePw.value,
-                changePwConfirm: this.modalChangePwConfirm.value
+        verifier: function (responseText) {
+            responseText = JSON.parse(responseText);
+            let msg = responseText.msg,
+                data = responseText.data;
+
+            const cases = {
+                "ok": function () {
+                    sendAjax("put", "/profile/updatePW", data, "application/json", function () {
+                        modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
+                    });
+                },
+                "error": function () {
+                    this.changeAttribute(this.warning, "innerHTML", this.warningMessage.noUser);
+                },
+                "change ok": function () {
+                    this.modal.style.display = "none";
+                    this.modalPw.value = '';
+                    this.modalChangePw.value = '';
+                    this.modalChangePwConfirm.value = '';
+                    this.warning.innerHTML = '';
+                },
+                "change error": function () {
+                    this.changeAttribute(this.warning, "innerHTML", this.warningMessage.failChange);
+                },
+                default: function () {
+                    console.log("modal verifier called");
+                }
             };
-
-            if (event.keyCode === 13) {
-                isEmpty(passwordObj, this.warning);
-            }
-        },
-
-        windowClickHandler: function (event) {
-            if (event.target === this.modal) {
-                this.modal.style.display = "none";
-            }
-        },
-
-        closeBtnClickHandler: function () {
-            this.modal.style.display = "none";
-            this.modalPw.value = '';
-            this.modalChangePw.value = '';
-            this.modalChangePwConfirm.value = '';
-            this.warning.innerHTML = '';
-        },
-
-        passwordConfirm: function () {
-            let result = JSON.parse(this.responseText),
-                msg = result.msg,
-                ERR_MESSAGE = "error",
-                originPw = modal.modalPw.value,
-                changePw = modal.modalChangePw.value,
-                password = {
-                    "pw1": originPw,
-                    "pw2": changePw
-                };
-
-            // ERR_MESSAGE로 선언
-            if (msg === ERR_MESSAGE) {
-                modal.warning.innerHTML = "기존 비밀번호가 잘못 입력되었습니다";
-            } else {
-                // 변경 실패 고려
-                sendAjax("put", 'http://localhost:3000/profile/updatePW', password, "application/json");
-                modal.closeBtnClickHandler();
-            }
+            (cases[msg].bind(this) || cases["default"])();
         }
+    };
+
+    //initiate loginPage
+    const modalPage = new SubmitPage(modalPageContent);
+
+    modalPage.btnClose.addEventListener("click", function () {
+        this.modal.style.display = "none";
+        this.modalPw.value = '';
+        this.modalChangePw.value = '';
+        this.modalChangePwConfirm.value = '';
+        this.warning.innerHTML = '';
+    }.bind(modalPage));
+
+    window.addEventListener('click', function (event) {
+        if (event.target === this.modal) {
+            this.modal.style.display = "none";
+        }
+    }.bind(modalPage));
+
+    for (let i = 0; i < modalPage.input.length; i++) {
+        modalPage.input[i].addEventListener("keypress", function (event) {
+            if (event.keyCode !== 13) {
+                return;
+            }
+
+            if (this.checkEmptyInput([this.input[0], this.input[1], this.input[2]])) {
+                this.changeAttribute(this.warning, "innerHTML", this.warningMessage.noContent);
+            } else if (this.input[1].value !== this.input[2].value) {
+                this.changeAttribute(this.warning, "innerHTML", this.warningMessage.passwordUnconfirm);
+            } else {
+                const data = {};
+                data['pw1'] = this.modalPw.value;
+                data['pw2'] = this.modalChangePw.value;
+
+                sendAjax("post", "/profile/confirmUser", data, "application/json", function () {
+                    modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
+                });
+            }
+        }.bind(modalPage));
     }
 
 
+    const profilePageContent = {
+        modal: $('#myModal'),
+        leftContent: $(".left"),
 
-    function ProfileRender() {
-        this.modal = $('#myModal');
-        this.leftContent = $(".left");
-    }
-
-    ProfileRender.prototype = {
-        onBtnEvent: function () {
-            // Get the button that opens the modal
-            let btn_pw = $(".pw-change");
-
-            btn_pw.addEventListener("click", this.pwClickHandler.bind(this));
+        warningMessage: {
+            loadError: "LOAD RANKING ERR!"
         },
 
-        renderBothSide: function (result) {
-            result = JSON.parse(this.responseText);
-            profileRender.leftSideRender(result);
-            profileRender.rightSideRender(result, chartData);
-        },
+        verifier: function (responseText) {
+            responseText = JSON.parse(responseText);
+            let msg = responseText.msg;
 
-        // left side rendering function
-        leftSideRender: function (resultData) {
-            let user = resultData.user,
-                chartScore = resultData.chartscore,
-                template = `<div class="left-content">
+            const cases = {
+                "ok": function () {
+                    profilePage.leftSideRender(responseText);
+                    profilePage.rightSideRender(responseText, chartData);
+                },
+                "error": function () {
+                    alert(warningMessage.loadError);
+                },
+                default: function () {
+                    console.log("modal verifier called");
+                }
+            };
+            (cases[msg].bind(this) || cases["default"])();
+        }
+    };
+
+    //initiate loginPage
+    const profilePage = new SubmitPage(profilePageContent);
+
+    profilePage.onBtnEvent =  function(){
+        let btnPw = $(".pw-change");
+        btnPw.addEventListener("click", function () {
+            profilePage.modal.style.display = "block";
+        });
+    };
+
+    profilePage.leftSideRender = function (resultData) {
+        let user = resultData.user,
+            chartScore = resultData.chartscore,
+            template = `<div class="left-content">
                     <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
                     <div id="id"><h1>${user.id}</h1></div>
                     <div class="user-information">
@@ -183,32 +197,24 @@ const Profile = function () {
                     </div>
                     </div>`;
 
-            this.leftContent.innerHTML = template;
-            this.onBtnEvent();
-        },
-
-        // right side rendering function
-        rightSideRender: function (resultData, chartObj) {
-            let score = resultData.chartscore.reverse(),
-                dataSets = chartObj.data.datasets[0],
-                comp_data = dataSets.data;
-
-            for (let i = 0; i < comp_data.length; i++) {
-                comp_data[i] = score[i];
-            }
-
-            dataSets.data = comp_data;
-            myBarChart.update();
-        },
-
-        // When the user clicks on the button, open the modal
-        pwClickHandler: function () {
-            this.modal.style.display = "block";
-        }
+        this.leftContent.innerHTML = template;
+        this.onBtnEvent();
     };
 
-    const profileRender = new ProfileRender();
-    const modal = new Modal();
+    profilePage.rightSideRender = function (resultData, chartObj) {
+        let score = resultData.chartscore.reverse(),
+            dataSets = chartObj.data.datasets[0],
+            comp_data = dataSets.data;
+
+        for (let i = 0; i < comp_data.length; i++) {
+            comp_data[i] = score[i];
+        }
+
+        dataSets.data = comp_data;
+        myBarChart.update();
+    };
+
+    // const profileRender = new ProfileRender();
     const chartData = new ChartData();
     const myBarChart = new Chart(chartData.ctx, {
         type: 'bar',
@@ -218,12 +224,9 @@ const Profile = function () {
 
     // after loaded event trigger
     document.addEventListener("DOMContentLoaded", function () {
-        modal.eventOn();
-        sendAjax("get", 'http://localhost:3000/profile/getUserProfile', null, "application/json", profileRender.renderBothSide);
+        sendAjax("get", "/profile/getUserProfile", null, "application/json", function () {
+            profilePage.ajaxResponseHandler(profilePage.verifier.bind(profilePage), this.responseText);
+        });
     });
 
-    return {
-        modal: modal,
-        profileRender : profileRender
-    };
 }();

@@ -9,6 +9,8 @@ var id = "'ma'";
 
 const ERR_MESSAGE = "error";
 const CONFIRM_MESSAGE = "ok";
+const CHANGE_ERR_MESSAGE = "change error";
+const CHANGE_CONFIRM_MESSAGE = "change ok";
 
 var loginData = {
   host: options.storageConfig.HOST,
@@ -44,7 +46,10 @@ router.get('/getUserProfile', function(req, res){
       user:{},
       chartscore:[]
     };
-    if(err) throw err;
+    if(err){
+      responseData.msg = ERR_MESSAGE;
+      res.json(responseData);
+    };
 
     // user 데이터 처리
     responseData.user =  rows[0][0];
@@ -68,6 +73,7 @@ router.get('/getUserProfile', function(req, res){
     temp = rows[3][0];
     responseData.user.rank = temp.rank;
     responseData.user.topscore = temp.score;
+    responseData.msg = CONFIRM_MESSAGE;
 
 
     res.json(responseData);
@@ -79,27 +85,37 @@ router.put('/updatePW',function(req, res){
   var query = "update user set password="+ pw2 +" where id="+ id +";";
 
   connection.query(query, function(err,rows){
-    if(err) throw err;
-    var responseData = {"msg" : CONFIRM_MESSAGE};
+    var responseData = {"msg" : CHANGE_CONFIRM_MESSAGE};
+    if(err){
+      responseData = {"msg" : CHANGE_ERR_MESSAGE};
+      res.json(responseData);
+    }
     res.json(responseData);
   });
 });
 
 router.post('/confirmUser', function(req, res){
   var pw1 = req.body.pw1;
+  var pw2 = req.body.pw2;
   var responseData = {};
   
-  var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";"
+  var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";";
 
   connection.query(query, function(err,rows){
     if(err) throw err;
     var confirm = rows[0]["count(*)"];
 
     if(confirm){
-        responseData = {"msg":CONFIRM_MESSAGE};
+        responseData ={ 
+            msg : CONFIRM_MESSAGE,
+            data : {pw1:pw1, pw2:pw2}
+        };
         res.json(responseData);
     }else{
-        responseData = {"msg":ERR_MESSAGE};
+        responseData ={ 
+            msg : ERR_MESSAGE,
+            data : {pw1:pw1, pw2:pw2}
+        };
         res.json(responseData);
     }
 

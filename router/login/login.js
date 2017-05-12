@@ -34,6 +34,7 @@ var connection = mysql.createConnection({
     database: 'octodog',
     multipleStatements: true
 });
+
 connection.connect(err => {
     if (err) {
         throw new Error('Mysql connect failed');

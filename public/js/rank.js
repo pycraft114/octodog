@@ -1,29 +1,53 @@
 const rankResister = function () {
 
   let $ = util.$,
-      $$ = util.$$,
-      sendAjax = util.sendAjax;
+    $$ = util.$$,
+    sendAjax = util.sendAjax;
 
-  function Rank() {
-    this.range = 10;
-  }
+  const rankPageContent = {
+    range: 10,
+    load: $(".rank-load"),
 
-  Rank.prototype = {
-    onEvent: function () {
-      let load = $(".rank-load");
-      load.addEventListener("click", function () {
-        sendAjax("get", 'http://localhost:3000/game/' + this.range, null, "application/json", rank.rankRender);
-      }.bind(this));
+    warningMessage: {
+      loadError: "LOAD RANKING ERR!"
     },
 
-    rankRender: function () {
-      let uid = JSON.parse(this.responseText).uid;
-      let score = JSON.parse(this.responseText).score;
-      let resultHTML = "";
-      let wrap = $(".rank-list");
+    verifier: function (responseText) {
+      responseText = JSON.parse(responseText);
+      let msg = responseText.msg
 
-      for (let i = 0; i < uid.length; i++) {
-        let template = `<div class="rank">
+      const cases = {
+        "ok": function () {
+          rankPage.renderRank(responseText);
+        },
+        "error": function () {
+          alert(warningMessage.loadError);
+        },
+        default: function () {
+          console.log("modal verifier called");
+        }
+      };
+      (cases[msg].bind(this) || cases["default"])();
+    }
+  };
+
+  //initiate loginPage
+  const rankPage = new SubmitPage(rankPageContent);
+
+  rankPage.load.addEventListener("click", function () {
+    sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
+      rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
+    });
+  });
+
+  rankPage.renderRank = function (responseText) {
+    let uid = responseText.uid,
+      score = responseText.score,
+      template = "",
+      wrap = $(".rank-list");
+
+    for (let i = 0; i < uid.length; i++) {
+      template += `<div class="rank">
                   <ul>
                     <li class="numbering">${i+1}</li>
                     <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
@@ -31,22 +55,16 @@ const rankResister = function () {
                     <li class="score"><p>${score[i]}</p></li>
                   </ul>
                   </div>`;
-        resultHTML += template;
-      }
-      wrap.innerHTML = resultHTML;
-      rank.range += 10;
-    },
-  };
+    }
 
-  const rank = new Rank();
+    wrap.innerHTML = template;
+    rankPage.range += 10;
+  };
 
   document.addEventListener("DOMContentLoaded", function () {
-    rank.onEvent();
-    sendAjax("get", 'http://localhost:3000/game/' + rank.range, null, "application/json", rank.rankRender);
+    sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
+      rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
+    });
   });
-
-  return {
-    rank: rank
-  };
 
 }();
