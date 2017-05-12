@@ -33,6 +33,8 @@ function Tetris(data) {
 	this.pause = true;	
 	this.currX = null;
 	this.currY = null;
+	this.playOn = false;
+	this.userId = document.querySelector(".user-id").innerText;
 }
 
 Tetris.prototype = {
@@ -62,25 +64,22 @@ Tetris.prototype = {
 
 	//drawBlock함수를 이용해 캔버스에 그려주는 함수
 	render: function() {
+		if(!this.playOn) return;
 		this.gameContext.clearRect(0, 0, this.W, this.H);
-		this.gameContext.font =  (this.blockWidth * 0.7).toString() + "px Verdana";
+		this.gameContext.font = this.blockWidth * 0.7 + "px Verdana";
 		const gradient = this.gameContext.createLinearGradient(0, 0, this.W, 0);
 		gradient.addColorStop("0","magenta");
 		gradient.addColorStop("0.5","blue");
 		gradient.addColorStop("1.0","red");
 		this.gameContext.fillStyle = gradient;
 	
-		if(this.lose) {
-			this.gameContext.font = this.blockWidth.toString()  + "px Verdana";
-			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
-			return;
-		}
+
 		if(this.pause) {
 			this.gameContext.fillText("PAUSE", this.blockWidth * 4, this.blockHeight * 10);
 		}
-		this.gameContext.fillText("Score  " + this.score.toString(), this.blockWidth, this.blockHeight);
-		this.gameContext.fillText("Lv  " + this.currLevel.toString(), this.blockWidth * 7, this.blockHeight);
-		this.gameContext.fillText("GoToNextLv  -" + this.goToNextLevel.toString(), this.blockWidth * 4, this.blockHeight * 2);
+		this.gameContext.fillText("Score  " + this.score, this.blockWidth, this.blockHeight);
+		this.gameContext.fillText("Lv  " + this.currLevel, this.blockWidth * 7, this.blockHeight);
+		this.gameContext.fillText("Next  -" + this.goToNextLevel, this.blockWidth * 6, this.blockHeight * 2);
 
 		for(let x = 0; x < this.COLS; x++) {
 			for(let y = 0; y < this.ROWS; y++) {
@@ -110,7 +109,13 @@ Tetris.prototype = {
 				this.drawBlock(this.nextContext, x + 1, y + 1);
 			} 
 		}
-		
+		if(this.lose) {
+			this.gameContext.fillStyle = gradient;
+			this.gameContext.font = this.blockWidth  + "px Verdana";
+			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
+			this.nextContext.clearRect(0, 0, this.nW, this.nH);
+			//return;
+		}
 	},	
 
 	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
@@ -168,6 +173,9 @@ Tetris.prototype = {
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
 				this.postScore();
+				util.sendAjax("get", 'http://localhost:3000/game/' + 10, "rankRender");
+				document.querySelector(".ranking").scrollTop = 0;
+				this.playOn = false;
 				return false;
 			}
 			if(this.goToNextLevel <= 0 && this.currLevel <= 10) {
@@ -283,6 +291,7 @@ Tetris.prototype = {
 					this.renderInterval = setInterval(this.render.bind(this), 30);
 				}
 				this.pause = !this.pause;
+
 				break;
 		}
 	},
@@ -337,6 +346,7 @@ Tetris.prototype = {
 
 	//게임을 시작할때 호출할 함수
 	newGame: function() {	
+		this.playOn = true;
 		this.init();
 		this.newShape();
 		clearInterval(this.interval);
@@ -345,13 +355,14 @@ Tetris.prototype = {
 		this.lose = false;
 		this.interval = setInterval(this.tick.bind(this), this.ms);
 		this.renderInterval = setInterval(this.render.bind(this), 30);
+
 	},
 
 	//점수를 db에 등록
 	postScore: function() {
 		const req = new XMLHttpRequest();
 		let data = {
-			uid:document.querySelector(".user-id").innerText,
+			uid:this.userId,
 			score:this.score
 		};
 		data = JSON.stringify(data);
@@ -376,6 +387,7 @@ Tetris.prototype = {
 		};
 		document.addEventListener("keydown", function(evt){
 			if(typeof keys[evt.keyCode] !== 'undefined' && (that.interval)) {
+				if(that.playOn === true) evt.preventDefault();
 				that.keyPress(keys[evt.keyCode]);
 				that.render();
 			}
@@ -472,6 +484,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	];
 
 	const data = {
+		container: document.querySelector(".container"),
 		startBtn: document.querySelector(".start"),
 		gameCanvas: document.querySelector(".game canvas"),
 		nextCanvas: document.querySelector(".next canvas"),
@@ -479,7 +492,15 @@ document.addEventListener("DOMContentLoaded", function(){
 		ROWS: 20,
 		ms: 300,
 		shapes: shapeMap,
-		colors: ["rgba(255, 0, 0, 0.6)", "rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)", "rgba(255, 206, 86, 0.6)", "rgba(75, 192, 192, 0.6)", "rgba(255, 159, 64, 0.6)", "rgba(153, 102, 255, 0.6)"]
+		colors: [
+			"rgba(255, 0, 0, 0.6)", 
+			"rgba(255, 99, 132, 0.6)", 
+			"rgba(54, 162, 235, 0.6)", 
+			"rgba(255, 206, 86, 0.6)", 
+			"rgba(75, 192, 192, 0.6)", 
+			"rgba(255, 159, 64, 0.6)", 
+			"rgba(153, 102, 255, 0.6)"
+		]
 	};
 
 	const tetris = new Tetris(data);
