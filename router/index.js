@@ -22,7 +22,7 @@ router.use('/signup',signup);
 router.use('/login',login);
 router.use('/profile', profile);
 router.use('/game',game);
-router.use('/postScore', postScore);
+router.use('/score', postScore);
 
 
 module.exports = router;

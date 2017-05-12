@@ -5,18 +5,6 @@ function Tetris(data) {
 	}
 	this.gameContext = this.gameCanvas.getContext("2d");
 	this.nextContext = this.nextCanvas.getContext("2d");
-/*
-	this.W = this.gameCanvas.parentElement.clientWidth;
-	this.H = this.gameCanvas.parentElement.clientHeight;
-	this.nW = this.nextCanvas.parentElement.clientWidth;
-	this.nH = this.nextCanvas.parentElement.clientHeight;
-	this.gameCanvas.width = this.W;
-	this.gameCanvas.height = this.H;
-	this.nextCanvas.width = this.nW;
-	this.nextCanvas.height = this.nH;
-	this.blockWidth = this.W / this.COLS;
-	this.blockHeight = this.H / this.ROWS;
-*/
 	this.resize();
 	this.gameBoard = [];
 	this.score = 0;
@@ -34,7 +22,7 @@ function Tetris(data) {
 	this.currX = null;
 	this.currY = null;
 	this.playOn = false;
-	this.userId = document.querySelector(".user-id").innerText;
+	this.userId = util.$(".user-id").innerText;
 }
 
 Tetris.prototype = {
@@ -72,7 +60,6 @@ Tetris.prototype = {
 		gradient.addColorStop("0.5","blue");
 		gradient.addColorStop("1.0","red");
 		this.gameContext.fillStyle = gradient;
-	
 
 		if(this.pause) {
 			this.gameContext.fillText("PAUSE", this.blockWidth * 4, this.blockHeight * 10);
@@ -114,7 +101,6 @@ Tetris.prototype = {
 			this.gameContext.font = this.blockWidth  + "px Verdana";
 			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
 			this.nextContext.clearRect(0, 0, this.nW, this.nH);
-			//return;
 		}
 	},	
 
@@ -126,7 +112,6 @@ Tetris.prototype = {
 			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}else{
 			this.currIdx = Math.floor(Math.random() * this.shapes.length);
-			//split전까지 변수에 담아서 사용 할 것
 			let currShape = this.shapes[this.currIdx][0].split("");
 			currShape = currShape.map(function(val){
 				return Number(val);
@@ -173,8 +158,8 @@ Tetris.prototype = {
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
 				this.postScore();
-				util.sendAjax("get", 'http://localhost:3000/game/' + 10, "rankRender");
-				document.querySelector(".ranking").scrollTop = 0;
+				util.sendAjax("get", 'http://localhost:3000/game/' + 10, null, "application/json", rank.rankRender);
+				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
 				return false;
 			}
@@ -281,11 +266,7 @@ Tetris.prototype = {
 			case 'pause':
 				if(this.pause === false) {
 					clearInterval(this.interval);
-					clearInterval(this.renderInterval);
-					/*
-					this.gameContext.clearRect(0, 0, this.W, this.H);
-					this.gameContext.fillText("Pause", 80, 40);
-					*/		
+					clearInterval(this.renderInterval);	
 				}else{
 					this.interval = setInterval(this.tick.bind(this), this.ms - (20 * this.currLevel));
 					this.renderInterval = setInterval(this.render.bind(this), 30);
@@ -309,24 +290,7 @@ Tetris.prototype = {
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
-			/*
-			if(newCurr[i]) {
-				if(typeof this.gameBoard[y + offsetY] === "undefined"
-				|| this.gameBoard[y + offsetY][x + offsetX]
-				|| x + offsetX < 0
-				|| y + offsetY >= this.ROWS
-				|| x + offsetX >= this.COLS ) {
-					return false;
-				}
-				if(typeof this.gameBoard[y + offsetY][x + offsetX] === "undefined") {
-					if(x + offsetX > 0 && x + offsetX < this.COLS && offsetY === 1) {
-						this.lose = true;
-					}
-					return false;
-				}
-				
-				*/
-				//중첩된 if 문은 제거 할 수 있다. valid는 분리해봐야 할 듯. Qunit을 통한 test code로 리팩토링.
+			//중첩된 if 문은 제거 할 수 있다. valid는 분리해봐야 할 듯. Qunit을 통한 test code로 리팩토링.
 			if(newCurr[i]) {
 				if(typeof this.gameBoard[y + offsetY] === "undefined"
 				|| typeof this.gameBoard[y + offsetY][x + offsetX] === "undefined"
@@ -360,19 +324,13 @@ Tetris.prototype = {
 
 	//점수를 db에 등록
 	postScore: function() {
-		const req = new XMLHttpRequest();
 		let data = {
 			uid:this.userId,
 			score:this.score
 		};
-		data = JSON.stringify(data);
-		req.open('POST', '/postScore');
-		req.setRequestHeader("Content-Type", "application/json")
-		req.send(data);
-		req.addEventListener('load', function(){
+		util.sendAjax('POST', '/score', data, "application/json", function(){
 			return;
 		});
-		console.log(data);
 	},
 	//이벤트 등록
 	addEvent: function() {
@@ -484,10 +442,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	];
 
 	const data = {
-		container: document.querySelector(".container"),
-		startBtn: document.querySelector(".start"),
-		gameCanvas: document.querySelector(".game canvas"),
-		nextCanvas: document.querySelector(".next canvas"),
+		startBtn: util.$(".start"),
+		gameCanvas: util.$(".game canvas"),
+		nextCanvas: util.$(".next canvas"),
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
