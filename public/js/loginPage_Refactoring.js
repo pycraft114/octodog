@@ -5,6 +5,9 @@
 const octoDog = function(){
     const octoDog = {};
 
+    //const $ = util.$;
+    //
+    // const sendAjax = util.sendAjax;
     function sendAjax(method, url, data, type, func) {
 
         let xhr = new XMLHttpRequest();
@@ -101,6 +104,7 @@ const octoDog = function(){
         loginId : $("#login-id"),
         loginPassword : $("#login-password"),
         loginButton : $("#login"),
+        anonymous : $("#anonymous"),
         signUpButton : $("#signup"),
         warningListNode : $("#login-warning ul"),
 
@@ -113,23 +117,22 @@ const octoDog = function(){
         },
 
         verifier : function(responseText){
-            console.log(this);
-            const self = this;
             const cases = {
                 "user not found" : function(){
-                    self.changeAttribute(self.warningListNode, "innerHTML", self.warningMessage.noUser);
+                    this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.noUser);
                 },
                 "incorrect password" : function(){
-                    self.changeAttribute(self.warningListNode, "innerHTML", self.warningMessage.wrongPassword);
+                    this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.wrongPassword);
                 },
                 "login success" : function(){
-                    self.changeAttribute(this.warningListNode, "innerHTML", self.warningMessage.loginSuccess);
+                    this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.loginSuccess);
+                    location.href = '/game'
                 },
                 default : function(){
                     console.log("login page verifier called");
                 }
             };
-            (cases[responseText] || cases["default"])();
+            (cases[responseText].bind(this) || cases["default"])();
         }
     };
 
@@ -178,7 +181,7 @@ const octoDog = function(){
 
     //---------------------------------add events-----------------------------
 
-    
+
     loginPage.signUpButton.addEventListener("click", function(){
         this.changeAttribute(this.modal,"className","on");
         this.changeAttribute(this.modalContent,"className","on");
@@ -200,10 +203,18 @@ const octoDog = function(){
             data['id'] = this.loginId.value;
             data['password'] = this.loginPassword.value;
             sendAjax("POST","/login",data,"application/json", function() {
-                loginPage.ajaxResponseHandler(loginPage.verifier, this.responseText);
+                loginPage.ajaxResponseHandler(loginPage.verifier.bind(loginPage), this.responseText);
                 //bind안하면 verifier함수내의 this가 window를 가르킴
             })
         }
+    }.bind(loginPage));
+
+    loginPage.anonymous.addEventListener("click",function(evt){
+        const data = {};
+        data['flag'] = true;
+        sendAjax('GET','/game',data,'application/json',function(){
+            location.href = '/game';
+        })
     }.bind(loginPage));
 
 
@@ -241,148 +252,3 @@ const octoDog = function(){
     return octoDog;
 }();
 
-/*
-sumitPage
-
-submitPage.prototype.addElement(이름, 셀렉터) {
-    this['이름'] = $셀렉터
-
-    retun this
-}
-
-Page.prototype.onClick(name, handlingFunction)
-Page.prototype.onSubmit(name, handlingFunction)
-Page.prototype.createEvent(error)
-Page.prototype.onEvent(name, handlingFunction)
-Page.prototype.onSuccess()
-
-loginPage = new Page('loginPage')
-modalPage = new Page('modalPage')
-
-loginPage.addElement('warning', '#warning')
-    .onError('warning', (message) {
-case "아이디 사용중" :
-    modal.changeAttribute(modal.warningListNode, "innerHTML", modal.warningMessage.idInUse);
-    break;
-case "이메일 사용중":
-    modal.changeAttribute(modal.warningListNode, "innerHTML", modal.warningMessage.emailInUse);
-    break;
-})
-*/
-
-const octo = {};
-
-(function(octo) {
-    function changeAttribute(element, attribute, value){
-        element[attribute] = value;
-    }
-
-    function isEmpty(element){
-        if(element.value.length === 0) {
-            return true;
-        }
-
-        return false;
-    }
-
-    function $(selector){
-        return document.querySelector(selector);
-    }
-
-
-
-    function SubmitPageElement(page, selector) {
-        this.page = page;
-        this.element = $(selector);
-    }
-
-    SubmitPageElement.prototype.onClick = function(clickHandler) {
-      this.element.addEventListener("click", clickHandler);
-    };
-
-    SubmitPageElement.prototype.addEvent = function(name, eventHandler) {
-        const event = new Event(name);
-
-        this.events[name] = event;
-        this.element.addEventListener(name, eventHandler, false);
-    };
-
-    SubmitPageElement.prototype.necessary = function(isConfirmation, sameSelector) {
-        this.page.necessaryInputs.push(this.element);
-
-        if(isConfirmation && this.page[sameSelector]) {
-            this.page.confirmationInputs.push(this.element);
-            this.page.confirmationInputs.push(this.page[sameSelector]);
-        }
-    };
-
-    SubmitPageElement.prototype.warningNode = function() {
-        this.page.warningNode = this.element;
-    };
-
-    SubmitPageElement.prototype.attachSubmit = function(method, url, responseHandler) {
-        const page = this.page;
-
-        this.element.addEventListener("click", function() {
-            for (const necessaryInput of page.necessaryInputs) {
-                if(isEmpty(necessaryInput)) {
-                    page.showError("No Content")
-                }
-            }
-
-            if ((page.confirmationInputs);
-
-        });
-    };
-
-
-
-    octo.SubmitPage = function(name) {
-        this.name = name;
-        this.necessaryInputs = [];
-        this.confirmationInputs = [];
-        this.warningElement = null;
-    };
-
-    SubmitPage.init = function(name) {
-        return new SubmitPage(name);
-    };
-
-    SubmitPage.prototype.addElement = function(name, selector) {
-        this[name] = new SubmitPageElement(this, selector);
-
-        return this[name];
-    };
-
-    SubmitPage.prototype.addWarningElement = function(selector) {
-        this.warningElement = $(selector);
-    };
-
-    SubmitPage.prototype.showError = function(message) {
-        changeAttribute(this.warningElement, "innerHTML", message)
-    }
-
-
-})(octo);
-
-
-
-(function() {
-    const modal = octo.SubmitPage.init('loginPage');
-    modal.addElement('signUpPassword', '#signup-password')
-        .necessary();
-    modal.addElement('signUpConfirm', '#signup-confirm')
-        .necessary(true, 'signUpPassword');
-
-    modal.addElement('signUpId', '#signup-id')
-        .necessary();
-
-    modal.addElement('signUpEmail', '#signup-email')
-        .necessary();
-
-    modal.addWarningElement('warningListNode', '#modal-warning ul');
-
-    modal.addElement('submitButton', '#submit')
-        .attachSubmit(url, );
-
-})()
