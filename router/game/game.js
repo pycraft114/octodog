@@ -26,8 +26,13 @@ var connection = mysql.createConnection({
 connection.connect();
 
 router.get('/', function(req, res){
+  var id = req.user;
+  
+  if(!id) res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
   res.sendFile(path.join(__dirname, '../../public/html/game.html'));
 });
+
+
 
 router.get('/:range',function(req, res){
   var responseData = {msg:CONFIRM_MESSAGE};

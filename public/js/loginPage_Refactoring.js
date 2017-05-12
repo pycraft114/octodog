@@ -211,10 +211,9 @@ const octoDog = function(){
 
     loginPage.anonymous.addEventListener("click",function(evt){
         const data = {};
-        data['flag'] = true;
-        sendAjax('GET','/game',data,'application/json',function(){
+        sendAjax('POST','/game',data,'application/json',function(){
             location.href = '/game';
-        })
+        });
     }.bind(loginPage));
 
 

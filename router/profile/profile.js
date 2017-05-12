@@ -29,6 +29,7 @@ var connection = mysql.createConnection({
 connection.connect();
 
 router.get('/', function(req, res) {
+  console.log(req.user);
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
 });
 

@@ -45,8 +45,9 @@ connection.connect(err => {
 
 
 router.get('/', function (req, res) {
+    flag=false;
+    console.log(flag);
     res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
-    console.log(req.user);
 });
 
 passport.serializeUser(function (user, done) {
