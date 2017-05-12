@@ -1,12 +1,8 @@
 const Profile = function () {
 
-    function $(element) {
-        return document.querySelector(element);
-    }
-
-    function $$(element) {
-        return document.querySelectorAll(element);
-    }
+    let $ = util.$,
+        $$ = util.$$,
+        sendAjax = util.sendAjax;
 
     function isEmpty(data, changeHTML) {
         let password = {
@@ -23,24 +19,6 @@ const Profile = function () {
             sendAjax("post", 'http://localhost:3000/profile/confirmUser', password, "application/json", modal.passwordConfirm);
         }
     }
-
-    // chart part Ajax request
-    function sendAjax(method, url, data, type, func) {
-        const oReq = new XMLHttpRequest();
-        let result;
-
-        oReq.open(method, url);
-        oReq.setRequestHeader('Content-Type', type);
-        if (data !== null) {
-            data = JSON.stringify(data);
-            oReq.send(data);
-        } else {
-            oReq.send();
-        }
-
-        oReq.addEventListener('load', func);
-    }
-
 
     function ChartData() {
         this.ctx = $("#myChart").getContext('2d');
@@ -184,6 +162,7 @@ const Profile = function () {
             profileRender.leftSideRender(result);
             profileRender.rightSideRender(result, chartData);
         },
+
         // left side rendering function
         leftSideRender: function (resultData) {
             let user = resultData.user,
