@@ -1,29 +1,8 @@
 const rankResister = function () {
 
-  function $(element) {
-    return document.querySelector(element);
-  }
-
-  function $$(element) {
-    return document.querySelectorAll(element);
-  }
-
-  // chart part Ajax request
-  function sendAjax(method, url, data, type, func) {
-    const oReq = new XMLHttpRequest();
-    let result;
-
-    oReq.open(method, url);
-    oReq.setRequestHeader('Content-Type', type);
-    if (data !== undefined) {
-      data = JSON.stringify(data);
-      oReq.send(data);
-    } else {
-      oReq.send();
-    }
-
-    oReq.addEventListener('load', func);
-  }
+  let $ = util.$,
+      $$ = util.$$,
+      sendAjax = util.sendAjax;
 
   function Rank() {
     this.range = 10;
