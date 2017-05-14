@@ -50,16 +50,18 @@ router.get('/getUserProfile', function(req, res){
       user:{},
       chartscore:[]
     };
+
     if(err){
       responseData.msg = ERR_MESSAGE;
       res.json(responseData);
-    };
+    }
 
     // user 데이터 처리
     responseData.user =  rows[0][0];
 
     // chart에 사용될 score 데이터 처리
-    rows[1].forEach(function(val){
+    chartData = rows[1];
+    chartData.forEach(function(val){
       responseData.chartscore.push(val.score);
     });
 
@@ -68,18 +70,28 @@ router.get('/getUserProfile', function(req, res){
     responseData.user.play = temp["count(*)"];
 
     // 현재 까지 모은 총 score 처리
-    var sum = responseData.chartscore.reduce(function(a,b){
+    var sum = 0;
+
+    if(responseData.chartscore.length !== 0){
+      sum = responseData.chartscore.reduce(function(a,b){
       return a+b;
-    });
+      });   
+    }
+    
     responseData.user.totalscore = sum;
 
     // 랭크 처리
-    temp = rows[3][0];
-    responseData.user.rank = temp.rank;
-    responseData.user.topscore = temp.score;
+    var temp = rows[3][0];
+    if(temp ===undefined){
+      responseData.user.rank = 0;
+      responseData.user.topscore = 0;
+    }else{
+      responseData.user.rank = temp.rank;
+      responseData.user.topscore = temp.score;
+    }
+    
     responseData.msg = CONFIRM_MESSAGE;
-
-    console.log(responseData);
+    
 
     res.json(responseData);
   });
