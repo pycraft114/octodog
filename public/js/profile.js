@@ -171,7 +171,7 @@ const Profile = function () {
     //initiate loginPage
     const profilePage = new SubmitPage(profilePageContent);
 
-    profilePage.onBtnEvent =  function(){
+    profilePage.onBtnEvent = function () {
         let btnPw = $(".pw-change");
         btnPw.addEventListener("click", function () {
             profilePage.modal.style.display = "block";
@@ -214,6 +214,17 @@ const Profile = function () {
         myBarChart.update();
     };
 
+    const headerContent = {
+        headerTag: $("#header")
+    };
+
+    const header =  new SubmitPage(headerContent);
+
+    header.renderHeader = function (responseText) {
+        template = responseText;
+        header.headerTag.innerHTML = template;
+    };
+
     // const profileRender = new ProfileRender();
     const chartData = new ChartData();
     const myBarChart = new Chart(chartData.ctx, {
@@ -224,7 +235,10 @@ const Profile = function () {
 
     // after loaded event trigger
     document.addEventListener("DOMContentLoaded", function () {
-        sendAjax("get", "/profile//User", null, "application/json", function () {
+        sendAjax("get", "/game/header", null, "application/json", function () {
+            header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
+        });
+        sendAjax("get", "/profile/User", null, "application/json", function () {
             profilePage.ajaxResponseHandler(profilePage.verifier.bind(profilePage), this.responseText);
         });
     });

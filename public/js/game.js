@@ -61,7 +61,22 @@ const rankResister = function () {
     rankPage.range += 10;
   };
 
+
+  const headerContent = {
+    headerTag: $("#header")
+  };
+
+  const header = new SubmitPage(headerContent);
+
+  header.renderHeader = function (responseText){
+      template = responseText;
+      header.headerTag.innerHTML = template;
+  };
+
   document.addEventListener("DOMContentLoaded", function () {
+    sendAjax("get", "/game/header", null, "application/json", function () {
+      header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
+    });
     sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
       rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
     });

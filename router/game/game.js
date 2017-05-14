@@ -32,7 +32,11 @@ router.get('/', function(req, res){
   res.sendFile(path.join(__dirname, '../../public/html/game.html'));
 });
 
-
+router.get('/header', function(req, res){
+  var id = req.user;
+  console.log(id);
+  res.render('header',{'id' : id});
+});
 
 router.get('/:searchRankRange',function(req, res){
   var responseData = {msg:CONFIRM_MESSAGE};
