@@ -27,14 +27,13 @@ connection.connect();
 
 router.get('/', function(req, res){
   var id = req.user;
-  
+  console.log(id);
   if(!id) res.redirect("/login");
   res.sendFile(path.join(__dirname, '../../public/html/game.html'));
 });
 
 router.get('/header', function(req, res){
   var id = req.user;
-  console.log(id);
   res.render('header',{'id' : id});
 });
 
