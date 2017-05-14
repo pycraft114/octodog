@@ -75,7 +75,7 @@ const Profile = function () {
 
             const cases = {
                 "ok": function () {
-                    sendAjax("put", "/profile/updatePW", data, "application/json", function () {
+                    sendAjax("put", "/profile/User/pw", data, "application/json", function () {
                         modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
                     });
                 },
@@ -132,7 +132,7 @@ const Profile = function () {
                 data['pw1'] = this.modalPw.value;
                 data['pw2'] = this.modalChangePw.value;
 
-                sendAjax("post", "/profile/confirmUser", data, "application/json", function () {
+                sendAjax("post", "/profile/User/confirm", data, "application/json", function () {
                     modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
                 });
             }
@@ -224,7 +224,7 @@ const Profile = function () {
 
     // after loaded event trigger
     document.addEventListener("DOMContentLoaded", function () {
-        sendAjax("get", "/profile/getUserProfile", null, "application/json", function () {
+        sendAjax("get", "/profile//User", null, "application/json", function () {
             profilePage.ajaxResponseHandler(profilePage.verifier.bind(profilePage), this.responseText);
         });
     });

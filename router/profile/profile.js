@@ -36,7 +36,7 @@ router.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
 });
 
-router.get('/getUserProfile', function(req, res){
+router.get('/User', function(req, res){
   var responseData = {};
   var temp;
   var query = "select `email`,`id`,`img` from user where id='" + id + "';" +
@@ -97,7 +97,7 @@ router.get('/getUserProfile', function(req, res){
   });
 });
 
-router.put('/updatePW',function(req, res){
+router.put('/User/pw',function(req, res){
   var pw2 = req.body.pw2;
   var query = "update user set password="+ pw2 +" where id='"+ id +"';";
 
@@ -111,7 +111,7 @@ router.put('/updatePW',function(req, res){
   });
 });
 
-router.post('/confirmUser', function(req, res){
+router.post('/User/confirm', function(req, res){
   var pw1 = req.body.pw1;
   var pw2 = req.body.pw2;
   var responseData = {};

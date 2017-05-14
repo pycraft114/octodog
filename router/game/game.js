@@ -34,11 +34,11 @@ router.get('/', function(req, res){
 
 
 
-router.get('/:range',function(req, res){
+router.get('/:searchRankRange',function(req, res){
   var responseData = {msg:CONFIRM_MESSAGE};
   var uid = [];
   var score = [];
-  var range = req.params.range;
+  var range = req.params.searchRankRange;
   var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit "+range;
 
   connection.query(query, function(err,rows){
