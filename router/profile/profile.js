@@ -89,7 +89,7 @@ router.get('/getUserProfile', function(req, res){
       responseData.user.rank = temp.rank;
       responseData.user.topscore = temp.score;
     }
-    
+
     responseData.msg = CONFIRM_MESSAGE;
     
 
@@ -99,7 +99,7 @@ router.get('/getUserProfile', function(req, res){
 
 router.put('/updatePW',function(req, res){
   var pw2 = req.body.pw2;
-  var query = "update user set password="+ pw2 +" where id="+ id +";";
+  var query = "update user set password="+ pw2 +" where id='"+ id +"';";
 
   connection.query(query, function(err,rows){
     var responseData = {"msg" : CHANGE_CONFIRM_MESSAGE};
@@ -116,7 +116,7 @@ router.post('/confirmUser', function(req, res){
   var pw2 = req.body.pw2;
   var responseData = {};
   
-  var query = "select count(*) from user where id=" + id + " AND password="+ pw1 +";";
+  var query = "select count(*) from user where id='" + id + "' AND password="+ pw1 +";";
 
   connection.query(query, function(err,rows){
     if(err) throw err;
