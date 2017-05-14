@@ -31,7 +31,7 @@ connection.connect();
 router.get('/', function(req, res) {
   id = req.user;
   
-  if(!id) res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
+  if(!id) res.redirect("/login");
 
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
 });

@@ -14,7 +14,7 @@ const rankResister = function () {
 
     verifier: function (responseText) {
       responseText = JSON.parse(responseText);
-      let msg = responseText.msg
+      let msg = responseText.msg;
 
       const cases = {
         "ok": function () {
