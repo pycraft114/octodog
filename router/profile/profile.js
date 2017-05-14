@@ -5,7 +5,7 @@ var path = require('path');
 var options = require('../option');
 var mysql = require('mysql');
 
-var id = "'ma'";
+var id;
 
 const ERR_MESSAGE = "error";
 const CONFIRM_MESSAGE = "ok";
@@ -29,17 +29,20 @@ var connection = mysql.createConnection({
 connection.connect();
 
 router.get('/', function(req, res) {
-  console.log(req.user);
+  id = req.user;
+  
+  if(!id) res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
+
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
 });
 
 router.get('/getUserProfile', function(req, res){
   var responseData = {};
   var temp;
-  var query = "select `email`,`id`,`img` from user where id=" + id + ";" +
-      "select score from scoreboard where uid=" + id + " ORDER BY num DESC limit 5;" +
-      "select count(*) from scoreboard where uid=" + id + ";" +
-      "select `score`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t where `uid`="+ id + " ORDER BY rank asc limit 1;";
+  var query = "select `email`,`id`,`img` from user where id='" + id + "';" +
+      "select score from scoreboard where uid='" + id + "' ORDER BY num DESC limit 5;" +
+      "select count(*) from scoreboard where uid='" + id + "';" +
+      "select `score`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t where `uid`='"+ id + "' ORDER BY rank asc limit 1;";
 
   connection.query(query, function(err,rows){
     // user 정보 - email, id, img, play, rank, topscore, totalscore
@@ -76,6 +79,7 @@ router.get('/getUserProfile', function(req, res){
     responseData.user.topscore = temp.score;
     responseData.msg = CONFIRM_MESSAGE;
 
+    console.log(responseData);
 
     res.json(responseData);
   });
