@@ -56,8 +56,13 @@ header .hd-left .user-id {
     top: 50%;
     transform: translateY(-50%);
     float: left;
-    font-size: 1.2rem;
     color: aliceblue;
+}
+
+header .hd-left .user-id a{
+    font-size: 1.2rem;
+    text-decoration: none;
+    color:white;
 }
 
 header .hd-center {
@@ -65,16 +70,23 @@ header .hd-center {
     text-align: center;
 }
 
-header .hd-center h1 {
+header .hd-center h1{
+    font-size: 3rem;
+    font-family: 'Rubik Mono One', sans-serif;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 3rem;
-    font-family: 'Rubik Mono One', sans-serif;
     padding: 0.4rem;
     border: 1px solid gray;
     border-radius: 1rem;
     background-color: white;
+}
+
+header .hd-center h1 a{
+    font-size: 3rem;
+    font-family: 'Rubik Mono One', sans-serif;
+    text-decoration: none;
+    color:black;
 }
 
 header .hd-right {
@@ -86,8 +98,13 @@ header .hd-right h1 {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.2rem;
     color: aliceblue;
+}
+
+header .hd-right h1 a{
+    font-size: 1.2rem;
+    color:white;
+    text-decoration: none;
 }
 
 section {
@@ -215,7 +232,8 @@ footer h1 {
     padding-top: 1rem;
 }
 
-.left-content .button-wrap .btn {
+.left-content .button-wrap .btn, .start {
+    animation: fadein 1s;
     -moz-box-shadow: inset 0px 1px 0px 0px #bbdaf7;
     -webkit-box-shadow: inset 0px 1px 0px 0px #bbdaf7;
     box-shadow: inset 0px 1px 0px 0px #bbdaf7;
@@ -506,6 +524,7 @@ footer h1 {
 }
 
 .tetris-wrap {
+    position: relative;
     margin-top: 5vh;
     width : 100%;
     height : 100%;
@@ -519,10 +538,19 @@ footer h1 {
 	border: 1px solid black;
 }
 
+.game-right {
+    height : 40%;
+    position: relative;
+    display : inline-block;
+    margin-left : 1vh;
+}
+
 .next {
-	height : 27%;
+	height : 75%;
 	display: inline-blockk;
-	float:left;
-	margin-left: 1vh;
 	border: 1px solid black;
-			}
+}
+
+button.start {
+    margin-top : 1vh;
+}

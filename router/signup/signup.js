@@ -50,18 +50,18 @@ router.post('/',function(req,res){
         if(err) {throw new Error("error while checking id")}
 
         if(rows.length) {
-            res.send("아이디 사용중")
+            res.send("id in use")
         }else {
             const checkEmailQuery = connection.query('select * from user where email=?', email, function(err,rows) {
                 if(err) {throw new Error("error while checking email")}
 
                 if(rows.length) {
-                    res.send("이메일 사용중")
+                    res.send("email in use")
                 }else{
                     const sql = {'id': id, 'password': password, 'email': email};
                     const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
                         if(err) {throw new Error("error while saving")}
-                        else{res.send("회원가입 완료")}
+                        else{res.send("signup success")}
                     })
                 }
             })
