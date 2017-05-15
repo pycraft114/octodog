@@ -28,12 +28,21 @@ connection.connect();
 router.get('/', function(req, res){
   var id = req.user;
   console.log(id);
-  if(!id) res.redirect("/login");
+  if(!id) {
+    res.redirect("/login");
+  }
   res.sendFile(path.join(__dirname, '../../public/html/game.html'));
 });
 
 router.get('/header', function(req, res){
   var id = req.user;
+
+  if(id==="anonymous"){
+    let random =  Math.floor((Math.random() * 1000) + 1);
+    id = "개굴#";
+    id += random;
+  }
+  
   res.render('header',{'id' : id});
 });
 

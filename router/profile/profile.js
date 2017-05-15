@@ -30,8 +30,11 @@ connection.connect();
 
 router.get('/', function(req, res) {
   id = req.user;
-  
+  console.log(id);
   if(!id) res.redirect("/login");
+  if(id==="anonymous"){
+    res.redirect("/login");
+  }
 
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
 });
