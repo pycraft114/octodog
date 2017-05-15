@@ -36,13 +36,13 @@ router.get('/', function(req, res){
 
 router.get('/header', function(req, res){
   var id = req.user;
+
   if(id==="anonymous"){
     let random =  Math.floor((Math.random() * 1000) + 1);
     id = "개굴#";
     id += random;
-
-    res.render('header',{'id' : id});
   }
+  
   res.render('header',{'id' : id});
 });
 
