@@ -216,7 +216,7 @@ const octoDog = function(){
         sendAjax('POST','/anonymous',dummyData,'application/json', function(){
             console.log(this.responseText);
             location.href = '/game';
-        })
+        });
     }.bind(loginPage));
 
 

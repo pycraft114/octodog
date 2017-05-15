@@ -34,6 +34,7 @@ var connection = mysql.createConnection({
     database: 'octodog',
     multipleStatements: true
 });
+
 connection.connect(err => {
     if (err) {
         throw new Error('Mysql connect failed');
@@ -44,8 +45,9 @@ connection.connect(err => {
 
 
 router.get('/', function (req, res) {
+    flag=false;
+    console.log(flag);
     res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
-    console.log(req.user);
 });
 
 passport.serializeUser(function (user, done) {

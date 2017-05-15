@@ -1,30 +1,53 @@
-  function $(element){
-    return document.querySelector(element);
-  }
-  function $$(element){
-    return document.querySelectorAll(element);
-  }
+const rankResister = function () {
 
-  function Rank(){
-      this.range = 10;
-  }
+  let $ = util.$,
+    $$ = util.$$,
+    sendAjax = util.sendAjax;
 
-  Rank.prototype = {
-    onEvent : function() {
-        let load = $(".rank-load");   
-        load.addEventListener("click", function(){
-        util.sendAjax("get", 'http://localhost:3000/game/' + this.range, "rankRender");
-      }.bind(this));
+  const rankPageContent = {
+    range: 10,
+    load: $(".rank-load"),
+
+    warningMessage: {
+      loadError: "LOAD RANKING ERR!"
     },
 
-    rankRender : function(result){
-      let uid = result.uid;
-      let score =  result.score;
-      let resultHTML = "";
-      let wrap =  $(".rank-list");
-      
-      for(let i =0; i < uid.length; i++){
-        let template = `<div class="rank">
+    verifier: function (responseText) {
+      responseText = JSON.parse(responseText);
+      let msg = responseText.msg;
+
+      const cases = {
+        "ok": function () {
+          rankPage.renderRank(responseText);
+        },
+        "error": function () {
+          alert(warningMessage.loadError);
+        },
+        default: function () {
+          console.log("modal verifier called");
+        }
+      };
+      (cases[msg].bind(this) || cases["default"])();
+    }
+  };
+
+  //initiate loginPage
+  const rankPage = new SubmitPage(rankPageContent);
+
+  rankPage.load.addEventListener("click", function () {
+    sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
+      rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
+    });
+  });
+
+  rankPage.renderRank = function (responseText) {
+    let uid = responseText.uid,
+      score = responseText.score,
+      template = "",
+      wrap = $(".rank-list");
+
+    for (let i = 0; i < uid.length; i++) {
+      template += `<div class="rank">
                   <ul>
                     <li class="numbering">${i+1}</li>
                     <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
@@ -32,46 +55,31 @@
                     <li class="score"><p>${score[i]}</p></li>
                   </ul>
                   </div>`;
-        resultHTML += template;
-      }
-      wrap.innerHTML = resultHTML;
-      this.range += 10;
+    }
 
-      
-    },
+    wrap.innerHTML = template;
+    rankPage.range += 10;
   };
 
-  let util = {
-    // chart part Ajax request
-     sendAjax : function(method, url, expression, data) {
-        const oReq = new XMLHttpRequest();
-        let result;
 
-        oReq.open(method, url);
-        oReq.setRequestHeader('Content-Type', "application/json");
-        if(data!==undefined){
-            data =  JSON.stringify(data);
-            oReq.send(data);
-        }else{
-            oReq.send();
-        }
-
-        oReq.addEventListener('load', function() {
-            result = JSON.parse(oReq.responseText);
-            switch (expression) {
-              case "rankRender" :
-                rank.rankRender(result);
-              break;
-              default:
-            }
-        }.bind(this));
-    },
+  const headerContent = {
+    headerTag: $("#header")
   };
 
-  const rank =  new Rank();
+  const header = new SubmitPage(headerContent);
 
-document.addEventListener("DOMContentLoaded", function(){
-  rank.onEvent();
-  util.sendAjax("get", 'http://localhost:3000/game/' + rank.range, "rankRender");
+  header.renderHeader = function (responseText){
+      template = responseText;
+      header.headerTag.innerHTML = template;
+  };
 
-});
+  document.addEventListener("DOMContentLoaded", function () {
+    sendAjax("get", "/game/header", null, "application/json", function () {
+      header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
+    });
+    sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
+      rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
+    });
+  });
+
+}();
