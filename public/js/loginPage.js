@@ -1,7 +1,53 @@
 /**
  * Created by chanwoopark on 2017. 4. 22..
  */
+/*클로저(이피)사용해서
+* 공개할 메소드 말고는 공개하지않기 (전역에 안둔다)
+*
+* 코드 실질적으로 재사용안되더라도 재사용가능성 확장성(범용성) 테스트 가능성 무조건 확보할것
+
+* */
+/*const octo = function(){
+    const octo = {}
+    octo.a = 1;
+    function validate(){
+        smth
+    }
+
+    function LoginController(){
+
+    }
+
+    octo.logincontroller = new LoginController();
+
+    return octo
+}()
+*/
 document.addEventListener("DOMContentLoaded", function () {
+/*    const WARNING_MESSAGES = {
+        NO_CONTENT: "<li>내용을 입력하세요</li>",
+        WRONG_PASSWORD: "<li>비밀번호가 일치하지 않습니다.</li>",
+        NO_USER: "<li>octoDog의 회원이 아닙니다.</li>",
+        LOGIN_SUCCESS: "<li>로그인 완료.</li>"
+    };
+
+    loginController.attachInput(element, validator, warningmessage) {
+
+    }
+    loginController.attachSubmitButton(element, onSubmit) {
+
+    }
+
+    function LoginController() {
+
+    }
+
+    LoginController.prototype.attachInput() =  {
+        validate(element.value)
+    }
+    LoginController.prototyoe.attachSubmit()
+
+*/
     function sendAjax(method, url, data, type, func) {
 
         let xhr = new XMLHttpRequest();
