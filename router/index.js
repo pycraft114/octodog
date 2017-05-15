@@ -8,6 +8,7 @@ var path = require("path");
 var profile = require("./profile/profile");
 var login = require("./login/login");
 var signup = require("./signup/signup");
+var postScore = require("./postScore/postScore");
 var game = require("./game/game");
 var logout = require("./logout/logout");
 var anonymous = require("./anonymous/anonymous");
@@ -23,6 +24,7 @@ router.use('/signup',signup);
 router.use('/login',login);
 router.use('/profile', profile);
 router.use('/game',game);
+router.use('/score', postScore);
 router.use('/logout',logout);
 router.use('/anonymous',anonymous);
 
