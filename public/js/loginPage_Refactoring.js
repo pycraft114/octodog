@@ -30,37 +30,6 @@ const octoDog = function(){
     function $(selector){
         return document.querySelector(selector);
     }
-    //---------------------closure----------------------------선언 순서 (?)
-
-    /*
-    // validate 함수는(리턴 트루 폴스 해서 트루폴스값에따른 체인지 어트리뷰트를 하는 또다른 함수를 만들어야함) 유효한지 확인만 해야함 다른 작업은 다른함수로
-    function ajaxResponseHandler(responseText) {
-        switch(responseText){
-            case validateErrors.INCORRECT_PASSWORD:
-                loginPage.changeAttribute(loginPage.warningListNode, "innerHTML", loginPage.warningMessage.wrongPassword);
-                break;
-            case "user not found":
-                loginPage.changeAttribute(loginPage.warningListNode, "innerHTML", loginPage.warningMessage.noUser);
-                break;
-            case "login success":
-                loginPage.changeAttribute(loginPage.warningListNode, "innerHTML", loginPage.warningMessage.loginSuccess);
-                window.location.href = "/";
-                break;
-            case "already used id" :
-                modal.changeAttribute(modal.warningListNode, "innerHTML", modal.warningMessage.idInUse);
-                break;
-            case "already used email":
-                modal.changeAttribute(modal.warningListNode, "innerHTML", modal.warningMessage.emailInUse);
-                break;
-            case "signup success":
-                alert("회원가입이 완료되었습니다.");
-                location.href = '/login';
-                break;
-            default:
-                console.log("switch called");
-        }
-    }
-    */
 
     //-------------------Page class---------------------------
     function Page(objectContent){
@@ -108,7 +77,6 @@ const octoDog = function(){
         signUpButton : $("#signup"),
         warningListNode : $("#login-warning ul"),
 
-        //31번라인의 키이름과 warning message 키이름 동일하게해볼것
         warningMessage : {
             noContent: "<li>내용을 입력하세요</li>",
             wrongPassword: "<li>비밀번호가 일치하지 않습니다.</li>",
@@ -234,14 +202,14 @@ const octoDog = function(){
             sendAjax('POST','/signup',data,'application/json',function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
                 //단순 warning List node inner html 바꾸는 역할 하는 함수랑
-                //실질적으로 로그인이나 회원가압 성공했을때 어떤 기능을하는 함수랑 분리
+                //실질적으로 로그인이나 회원가입 성공했을때 어떤 기능을하는 함수랑 분리
                 // 예를 들면 if(this.responseText !== "success") {
                 //  modal.changeAttribute(modal.warningListNode, "innerHTML", "<li>"+this.responseText+"</li>");
                 // }
                 //else 일때는 성공했을때이니 굳이 verifier가 필요없을것같음
                 //그런데 이렇게 했을때의 문제점은 success가아닌 각자 개별 상황마다 단순히 warningListNode만 바꾸는게 아니고 다른 기능들을 할때는
                 //적용을 할수가없음
-                //
+                //결론은 verifier가 있어야함
             })
         }
     }.bind(modal));
