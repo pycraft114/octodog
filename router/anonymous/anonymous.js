@@ -55,7 +55,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 
-passport.use('local-login', new LocalStrategy({
+passport.use('local-anonymous', new LocalStrategy({
         usernameField: 'id',
         passwordField: 'password',
         passReqToCallback: true
@@ -66,7 +66,7 @@ passport.use('local-login', new LocalStrategy({
 );
 
 router.post('/', function(req,res,next){
-    passport.authenticate('local-login', function(err, user, info){
+    passport.authenticate('local-anonymous', function(err, user, info){
         if(err) res.status(500).json(err);
         if(!user) return res.status(401).send(info.message);
 
