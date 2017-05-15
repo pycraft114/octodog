@@ -81,5 +81,5 @@ const rankResister = function () {
       rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
     });
   });
-
+  return rankPage;
 }();

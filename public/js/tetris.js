@@ -22,7 +22,7 @@ function Tetris(data) {
 	this.currX = null;
 	this.currY = null;
 	this.playOn = false;
-	this.userId = util.$(".user-id").innerText;
+	this.userId = util.$(".user-id a").innerText;
 }
 
 Tetris.prototype = {
@@ -158,7 +158,7 @@ Tetris.prototype = {
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
 				this.postScore();
-				util.sendAjax("get", 'http://localhost:3000/game/' + 10, null, "application/json", rank.rankRender);
+				util.sendAjax("get", '/game' + 10, null, "application/json", rankResister.rankRender);
 				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
 				return false;
