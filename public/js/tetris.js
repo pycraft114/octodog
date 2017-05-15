@@ -22,7 +22,6 @@ function Tetris(data) {
 	this.currX = null;
 	this.currY = null;
 	this.playOn = false;
-	this.userId = util.$(".user-id a").innerText;
 }
 
 Tetris.prototype = {
@@ -158,7 +157,6 @@ Tetris.prototype = {
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
 				this.postScore();
-				util.sendAjax("get", '/game' + 10, null, "application/json", rankResister.rankRender);
 				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
 				return false;
@@ -325,11 +323,12 @@ Tetris.prototype = {
 	//점수를 db에 등록
 	postScore: function() {
 		let data = {
-			uid:this.userId,
+			uid:util.$(".user-id a").innerText,
 			score:this.score
 		};
+		console.log(data);
 		util.sendAjax('POST', '/score', data, "application/json", function(){
-			return;
+			util.sendAjax("get", '/game/' + 10, null, "application/json", rankResister.rankRender);
 		});
 	},
 	//이벤트 등록
@@ -445,6 +444,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		startBtn: util.$(".start"),
 		gameCanvas: util.$(".game canvas"),
 		nextCanvas: util.$(".next canvas"),
+		userId: util.$(".user-id a").innerText,
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
