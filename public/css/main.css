@@ -1,10 +1,5 @@
 /* template page */
 
-@keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
 * {
     box-sizing: border-box;
 }
@@ -199,14 +194,12 @@ footer h1 {
     margin: 0 auto;
     border-radius: 100%;
     border: 1px solid gray;
-    animation: fadein 1s;
 }
 
 .left-content h1 {
     text-align: center;
     font-size: 1.7rem;
     margin: 0.8rem 0;
-    animation: fadein 1s;
 }
 
 .left-content .user-information {
@@ -220,7 +213,6 @@ footer h1 {
     font-size: 0.8rem;
     color: gray;
     font-weight: 200;
-    animation: fadein 1s;
 }
 
 .left-content .user-information div {
@@ -228,8 +220,7 @@ footer h1 {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
     border-radius: 1rem;
-    background-color: beige;
-    animation: fadein 1s;
+    background-color: beige
 }
 
 .left-content .user-information div:last-child {
@@ -304,7 +295,6 @@ footer h1 {
   font-family: 'Rubik Mono One', sans-serif;
   font-size:2rem;
   margin-bottom: 1rem;
-  animation: fadein 1s;
 }
 
 .right-content .chart-wrap #myChart {
@@ -480,7 +470,6 @@ footer h1 {
   font-size:2rem;
   text-align: center;
   padding: 20px 0;
-  animation: fadein 1s;
 }
 
 .rank{
@@ -492,7 +481,6 @@ footer h1 {
   padding:10px;
   font-size: 1.2rem;
   text-align: center;
-  animation: fadein 1s;
 }
 
 .rank ul{
@@ -532,15 +520,7 @@ footer h1 {
   width:30%;
 }
 
-.rank-wrap .load-wrap{
-    text-align: center;
-    padding:15px;
-}
-
-.rank-wrap .load-wrap .rank-load{
-    cursor: pointer;
-    display: inline;
-    color: gray;
+.rank ul li p{
 }
 
 .tetris-wrap {
