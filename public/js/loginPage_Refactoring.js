@@ -210,8 +210,11 @@ const octoDog = function(){
     }.bind(loginPage));
 
     loginPage.anonymous.addEventListener("click",function(evt){
-        const data = {};
-        sendAjax('POST','/game',data,'application/json',function(){
+        const dummyData = {};
+        dummyData['id'] = 'id';
+        dummyData['password'] = 'password';
+        sendAjax('POST','/anonymous',dummyData,'application/json', function(){
+            console.log(this.responseText);
             location.href = '/game';
         });
     }.bind(loginPage));
