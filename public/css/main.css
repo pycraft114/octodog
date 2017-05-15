@@ -61,8 +61,13 @@ header .hd-left .user-id {
     top: 50%;
     transform: translateY(-50%);
     float: left;
-    font-size: 1.2rem;
     color: aliceblue;
+}
+
+header .hd-left .user-id a{
+    font-size: 1.2rem;
+    text-decoration: none;
+    color:white;
 }
 
 header .hd-center {
@@ -70,16 +75,23 @@ header .hd-center {
     text-align: center;
 }
 
-header .hd-center h1 {
+header .hd-center h1{
+    font-size: 3rem;
+    font-family: 'Rubik Mono One', sans-serif;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 3rem;
-    font-family: 'Rubik Mono One', sans-serif;
     padding: 0.4rem;
     border: 1px solid gray;
     border-radius: 1rem;
     background-color: white;
+}
+
+header .hd-center h1 a{
+    font-size: 3rem;
+    font-family: 'Rubik Mono One', sans-serif;
+    text-decoration: none;
+    color:black;
 }
 
 header .hd-right {
@@ -91,8 +103,13 @@ header .hd-right h1 {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.2rem;
     color: aliceblue;
+}
+
+header .hd-right h1 a{
+    font-size: 1.2rem;
+    color:white;
+    text-decoration: none;
 }
 
 section {

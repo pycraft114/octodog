@@ -1,4 +1,7 @@
 /**
+ * Created by chanwoopark on 2017. 5. 13..
+ */
+/**
  * Created by chanwoopark on 2017. 4. 25..
  */
 var express = require('express');
@@ -34,20 +37,11 @@ var connection = mysql.createConnection({
     database: 'octodog',
     multipleStatements: true
 });
-
 connection.connect(err => {
     if (err) {
         throw new Error('Mysql connect failed');
     }
     console.log('Mysql connected');
-});
-
-
-
-router.get('/', function (req, res) {
-    flag=false;
-    console.log(flag);
-    res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
 });
 
 passport.serializeUser(function (user, done) {
@@ -61,30 +55,18 @@ passport.deserializeUser(function (id, done) {
 });
 
 
-passport.use('local-login', new LocalStrategy({
+passport.use('local-anonymous', new LocalStrategy({
         usernameField: 'id',
         passwordField: 'password',
         passReqToCallback: true
     }, function (req, id, password, done){
-            const loginQuery = connection.query('select password from user where id=?', id, function(err,rows){
-                if(err) return done(err);
-
-                if(rows.length){
-                    if(password === rows[0].password){
-                        return done(null,{'id':id});
-                    }else{
-                        return done(null,false,{message:"incorrect password"});
-                    }
-                }else{
-                    return done(null,false,{message:"user not found"});
-                }
-            })
-        }
+        done(null,{'id':'anonymous'});
+    }
     )
 );
 
 router.post('/', function(req,res,next){
-    passport.authenticate('local-login', function(err, user, info){
+    passport.authenticate('local-anonymous', function(err, user, info){
         if(err) res.status(500).json(err);
         if(!user) return res.status(401).send(info.message);
 

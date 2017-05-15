@@ -12,6 +12,8 @@ app.listen(3000,function(){
     console.log("server start on port 3000!");
 });
 
+app.set('view engine', 'ejs'); 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(express.static('public'));      // 정적 파일 경로 지정
