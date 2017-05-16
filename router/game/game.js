@@ -72,4 +72,17 @@ router.get('/:searchRankRange',function(req, res){
   });
 });
 
+router.post('/User/confirm', function(req, res){
+  var id = req.user;
+  var responseText = {};
+
+  if(id==="anonymous"){
+    responseText.msg = "anonymous";
+  }else{
+    responseText.msg = "comfirm ok";
+  }
+  res.json(responseText);
+
+});
+
 module.exports =  router;

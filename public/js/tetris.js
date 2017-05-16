@@ -326,7 +326,7 @@ Tetris.prototype = {
 	//점수를 db에 등록
 	postScore: function() {
 		let data = {
-			uid:util.$(".user-id a").innerText,
+			uid:util.$(".user-id").innerText,
 			score:this.score
 		};
 		console.log(data);
@@ -447,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		startBtn: util.$(".start"),
 		gameCanvas: util.$(".game canvas"),
 		nextCanvas: util.$(".next canvas"),
-		userId: util.$(".user-id a").innerText,
+		userId: util.$(".user-id").innerText,
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
