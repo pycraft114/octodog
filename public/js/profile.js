@@ -88,6 +88,7 @@ const Profile = function () {
                     this.modalChangePw.value = '';
                     this.modalChangePwConfirm.value = '';
                     this.warning.innerHTML = '';
+                    setTimeout(function(){ alert("비밀번호가 변경되었습니다!"); }, 100);
                 },
                 "change error": function () {
                     this.changeAttribute(this.warning, "innerHTML", this.warningMessage.failChange);
