@@ -129,9 +129,10 @@ const Profile = function () {
             } else if (this.input[1].value !== this.input[2].value) {
                 this.changeAttribute(this.warning, "innerHTML", this.warningMessage.passwordUnconfirm);
             } else {
-                const data = {};
+                let data = {};
                 data['pw1'] = this.modalPw.value;
                 data['pw2'] = this.modalChangePw.value;
+                data = JSON.stringify(data);
 
                 sendAjax("post", "/profile/User/confirm", data, "application/json", function () {
                     modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
