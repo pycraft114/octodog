@@ -144,30 +144,7 @@ const Profile = function () {
 
     const profilePageContent = {
         modal: $('#myModal'),
-        leftContent: $(".left"),
-
-        warningMessage: {
-            loadError: "LOAD RANKING ERR!"
-        },
-
-        verifier: function (responseText) {
-            responseText = JSON.parse(responseText);
-            let msg = responseText.msg;
-
-            const cases = {
-                "ok": function () {
-                    profilePage.leftSideRender(responseText);
-                    profilePage.rightSideRender(responseText, chartData);
-                },
-                "error": function () {
-                    alert(warningMessage.loadError);
-                },
-                default: function () {
-                    console.log("modal verifier called");
-                }
-            };
-            (cases[msg].bind(this) || cases["default"])();
-        }
+        leftContent: $(".left")
     };
 
     //initiate loginPage
@@ -180,30 +157,14 @@ const Profile = function () {
         });
     };
 
-    profilePage.leftSideRender = function (resultData) {
-        let user = resultData.user,
-            chartScore = resultData.chartscore,
-            template = `<div class="left-content">
-                    <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
-                    <div id="id"><h1>${user.id}</h1></div>
-                    <div class="user-information">
-                        <p>email</p> <div id="email">${user.email}</div>
-                        <p>play</p> <div id="play">${user.play}</div>
-                        <p>rank</p> <div id="rank">${user.rank}</div>
-                        <p>topscore</p> <div id="topscore">${user.topscore}</div>
-                        <p>totalscore</p> <div id="totalscore">${user.totalscore}</div>
-                    </div>
-                    <div class="button-wrap">
-                        <button class="btn img-change">프로필사진 변경</button>
-                        <button class="btn pw-change">비밀번호 변경</button>
-                    </div>
-                    </div>`;
-
-        this.leftContent.innerHTML = template;
+    profilePage.leftSideRender = function (responseText) {
+        this.leftContent.innerHTML = responseText;
         this.onBtnEvent();
     };
 
-    profilePage.rightSideRender = function (resultData, chartObj) {
+    profilePage.rightSideRender = function (chartObj, resultData) {
+        resultData = JSON.parse(resultData);
+        
         let score = resultData.chartscore.reverse(),
             dataSets = chartObj.data.datasets[0],
             comp_data = dataSets.data;
@@ -240,8 +201,11 @@ const Profile = function () {
         sendAjax("get", "/game/header", null, "application/json", function () {
             header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
         });
-        sendAjax("get", "/profile/User", null, "application/json", function () {
-            profilePage.ajaxResponseHandler(profilePage.verifier.bind(profilePage), this.responseText);
+        sendAjax("get", "/profile/User/right", null, "application/json", function () {
+            profilePage.ajaxResponseHandler(profilePage.rightSideRender.bind(profilePage, chartData), this.responseText);
+        });
+        sendAjax("get", "/profile/User/left", null, "application/json", function () {
+            profilePage.ajaxResponseHandler(profilePage.leftSideRender.bind(profilePage), this.responseText);
         });
     });
 
