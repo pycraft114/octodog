@@ -4,6 +4,7 @@ var router = express.Router();
 var path = require('path');
 var options = require('../option');
 var mysql = require('mysql');
+var ejs = require('ejs');
 
 var id;
 
