@@ -7,6 +7,7 @@ const rankResister = function () {
   const rankPageContent = {
     range: 10,
     load: $(".rank-load"),
+    wrap : $(".rank-list"),
   };
 
   //initiate loginPage
@@ -20,9 +21,8 @@ const rankResister = function () {
 
   rankPage.renderRank = function (responseText) {
       template = responseText;
-      wrap = $(".rank-list");
 
-      wrap.innerHTML = template;
+      this.wrap.innerHTML = template;
       rankPage.range += 10;
   };
 

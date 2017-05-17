@@ -75,6 +75,7 @@ const Profile = function () {
 
             const cases = {
                 "ok": function () {
+                    data = JSON.stringify(data);
                     sendAjax("put", "/profile/User/pw", data, "application/json", function () {
                         modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
                     });
