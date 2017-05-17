@@ -8,7 +8,19 @@ var path = require('path');
 var options = require('../option');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
+var multer = require('multer');
 
+
+var storage = multer.diskStorage({
+    destination:function(req, file, callback){
+        callback(null, 'public/img')
+    },
+    filename:function(req, file, callback){
+        callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1])
+    }
+});
+
+var upload = multer({storage: storage});
 
 var mysqlData = {
     host: options.storageConfig.HOST,
@@ -40,11 +52,13 @@ router.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '../../public/html/loginPage.html'));
 });
 
-router.post('/',function(req,res){
-    const data = req.body;
-    const id = data.id;
-    const password = data.password;
-    const email = data.email;
+
+router.post('/', upload.single('file'), function(req,res){
+    const data = req.body,
+          id = data.id,
+          password = data.password,
+          email = data.email,
+          filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
 
     const checkIdQuery = connection.query('select * from user where id=?', id, function(err,rows) {
         if(err) {throw new Error("error while checking id")}
@@ -58,7 +72,7 @@ router.post('/',function(req,res){
                 if(rows.length) {
                     res.send("email in use")
                 }else{
-                    const sql = {'id': id, 'password': password, 'email': email};
+                    const sql = {'id': id, 'password': password, 'email': email, 'img' : filePath};
                     const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
                         if(err) {throw new Error("error while saving")}
                         else{res.send("signup success")}
