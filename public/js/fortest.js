@@ -1,2 +1,8 @@
-var d =new Date();
-console.log(d.getDate())
+function smth(bool){
+    if(bool){
+        return console.log("hi");
+    }
+    console.log("hello");
+}
+
+smth(true);
