@@ -146,4 +146,38 @@ router.post('/User/confirm', function(req, res){
 
 });
 
+router.post('/User/img', function(req, res){
+   const filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
+   id = req.user;
+   console.log(filePath);
+
+   var query = "update user set img='"+ filePath +"' where id='"+ id +"';";
+
+   connection.query(query, function(err,rows){
+      if(err) throw err;
+      res.send("ok");
+   });
+  //  const checkIdQuery = connection.query('select * from user where id=?', id, function(err,rows) {
+  //       if(err) {throw new Error("error while checking id")}
+
+  //       if(rows.length) {
+  //           res.send("id in use")
+  //       }else {
+  //           const checkEmailQuery = connection.query('select * from user where email=?', email, function(err,rows) {
+  //               if(err) {throw new Error("error while checking email")}
+
+  //               if(rows.length) {
+  //                   res.send("email in use")
+  //               }else{
+  //                   const sql = {'id': id, 'password': password, 'email': email, 'img' : filePath};
+  //                   const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
+  //                       if(err) {throw new Error("error while saving")}
+  //                       else{res.send("signup success")}
+  //                   })
+  //               }
+  //           })
+  //       }
+  //   })
+});
+
 module.exports = router;

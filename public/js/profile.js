@@ -145,7 +145,8 @@ const Profile = function () {
     const imgModal = {
         imgModal: $('#imgModal'),
         btnClose: $("#img-modal-close"),
-        btnSubmit : $("#change-image-btn")
+        btnSubmit : $("#change-image-btn"),
+        imgInput : $("#change-image")
     };
 
     const imgModalPage = new SubmitPage(imgModal);
@@ -155,7 +156,14 @@ const Profile = function () {
     }.bind(imgModalPage));
 
     imgModalPage.btnSubmit.addEventListener("click", function(){
+        let formData = new FormData();
         
+        formData.append('file', this.imgInput.files[0]);
+        formData = JSON.stringify(formData);
+        
+        sendAjax('POST','/profile/User/img',formData, null ,function(){
+            // modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
+        });
     }.bind(imgModalPage));
 
     const profilePageContent = {

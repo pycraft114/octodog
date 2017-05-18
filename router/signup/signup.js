@@ -70,7 +70,7 @@ router.post('/', upload.single('file'), function(req,res){
                 if(err) {throw new Error("error while checking email")}
 
                 if(rows.length) {
-                    res.send("email in use")
+                    res.send("email in use");
                 }else{
                     const sql = {'id': id, 'password': password, 'email': email, 'img' : filePath};
                     const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){

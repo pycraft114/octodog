@@ -201,7 +201,6 @@ const octoDog = function(){
             formData.append('password',this.signUpPassword.value);
             formData.append('email',this.signUpEmail.value);
             formData.append('file',this.imgInputTag.files[0]);
-
             formData = JSON.stringify(formData);
             sendAjax('POST','/signup',formData, null ,function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
