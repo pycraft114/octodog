@@ -142,9 +142,25 @@ const Profile = function () {
         }.bind(modalPage));
     }
 
+    const imgModal = {
+        imgModal: $('#imgModal'),
+        btnClose: $("#img-modal-close"),
+        btnSubmit : $("#change-image-btn")
+    };
+
+    const imgModalPage = new SubmitPage(imgModal);
+
+    imgModalPage.btnClose.addEventListener("click", function () {
+        this.imgModal.style.display = "none";
+    }.bind(imgModalPage));
+
+    imgModalPage.btnSubmit.addEventListener("click", function(){
+        
+    }.bind(imgModalPage));
 
     const profilePageContent = {
         modal: $('#myModal'),
+        imgModal: $('#imgModal'),
         leftContent: $(".left")
     };
 
@@ -153,8 +169,12 @@ const Profile = function () {
 
     profilePage.onBtnEvent = function () {
         let btnPw = $(".pw-change");
+        let btnImg = $(".img-change");
         btnPw.addEventListener("click", function () {
             profilePage.modal.style.display = "block";
+        });
+        btnImg.addEventListener("click", function(){
+            profilePage.imgModal.style.display = "block";
         });
     };
 

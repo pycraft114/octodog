@@ -448,6 +448,17 @@ footer h1 {
     text-align: center;
 }
 
+.modal-content .change-image{
+    color: #fd4c88;
+    font-family: arial;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #fd4c88;
+}
+
+.modal-content .btn-wrap{
+    text-align: center;
+}
+
 
 /*game page*/
 

@@ -111,7 +111,6 @@ router.put('/User/pw',function(req, res){
     var responseData = {"msg" : CHANGE_CONFIRM_MESSAGE};
     if(err){
       responseData = {"msg" : CHANGE_ERR_MESSAGE};
-      res.json(responseData);
     }
     res.json(responseData);
   });
@@ -133,14 +132,15 @@ router.post('/User/confirm', function(req, res){
             msg : CONFIRM_MESSAGE,
             data : {pw1:pw1, pw2:pw2}
         };
-        res.json(responseData);
-    }else{
+    }
+    else{
         responseData ={ 
             msg : ERR_MESSAGE,
             data : {pw1:pw1, pw2:pw2}
         };
-        res.json(responseData);
     }
+
+    res.json(responseData);
 
   });
 

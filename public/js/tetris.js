@@ -329,7 +329,7 @@ Tetris.prototype = {
 			uid:util.$(".user-id").innerText,
 			score:this.score
 		};
-		console.log(data);
+		data = JSON.stringify(data);
 		util.sendAjax("POST", "/score", data, "application/json", function(){
 			return;
 		});
