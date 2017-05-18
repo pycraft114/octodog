@@ -120,7 +120,8 @@ const octoDog = function(){
             noContent: "<li>내용을 입력하세요</li>",
             passwordUnconfirm: "<li>비밀번호가 일치하지 않습니다.</li>",
             idInUse: "<li>이미 사용중인 아이디 입니다.</li>",
-            emailInUse: "<li>이미 사용중인 이메일 입니다.</li>"
+            emailInUse: "<li>이미 사용중인 이메일 입니다.</li>",
+            notImageFile: "<li>이미지 파일을 업로드 해주세요.</li>"
         },
 
         verifier : function(responseText){
@@ -133,13 +134,13 @@ const octoDog = function(){
                 },
                 "signup success" : function(){
                     alert("회원가입이 완료되었습니다.");
-                    //location.href = '/login';
+                    location.href = '/login';
                 },
-                default : function(){
-                    console.log("modal verifier called");
+                "not image" : function(){
+                    this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.notImageFile);
                 }
             };
-            (cases[responseText].bind(this) || cases["default"])();
+            cases[responseText].bind(this)();
         }
     };
 
