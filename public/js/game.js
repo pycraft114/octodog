@@ -64,6 +64,7 @@ const rankResister = function () {
 
   const headerContent = {
     headerTag: $("#header")
+    
   };
 
   const header = new SubmitPage(headerContent);
@@ -71,6 +72,24 @@ const rankResister = function () {
   header.renderHeader = function (responseText){
       template = responseText;
       header.headerTag.innerHTML = template;
+
+      userId = $(".user-id");
+      userId.addEventListener("click", function(){
+         sendAjax('POST','/game/User/confirm',null,'application/json',function(){
+            header.confirmUser(this.responseText);
+         }); 
+      });
+
+      
+  };
+
+  header.confirmUser = function(responseText){
+        let msg = JSON.parse(responseText).msg;
+        if(msg==="anonymous"){
+          alert("익명 유저는 로그인이 필요합니다");
+        }else{
+          location.href = "/profile";
+        }
   };
 
   document.addEventListener("DOMContentLoaded", function () {

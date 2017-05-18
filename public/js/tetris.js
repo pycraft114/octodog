@@ -157,6 +157,9 @@ Tetris.prototype = {
 				clearInterval(this.interval);
 				clearInterval(this.renderInterval);
 				this.postScore();
+				util.sendAjax("GET", "/game/" + 10, null, "application/json", function () {
+					rankResister.ajaxResponseHandler(rankResister.verifier.bind(rankResister), this.responseText);
+    			});
 				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
 				return false;
@@ -323,12 +326,12 @@ Tetris.prototype = {
 	//점수를 db에 등록
 	postScore: function() {
 		let data = {
-			uid:util.$(".user-id a").innerText,
+			uid:util.$(".user-id").innerText,
 			score:this.score
 		};
 		console.log(data);
-		util.sendAjax('POST', '/score', data, "application/json", function(){
-			util.sendAjax("get", '/game/' + 10, null, "application/json", rankResister.rankRender);
+		util.sendAjax("POST", "/score", data, "application/json", function(){
+			return;
 		});
 	},
 	//이벤트 등록
@@ -409,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	/*[4] 
 	1000 1110 0110 0000
 	1000 1000 0010 0010
-	1100 1000 0010 1110
+	1100 0000 0010 1110
 	0000 0000 0000 0000
 	*/
 	shapeMap[4] = [
@@ -419,16 +422,16 @@ document.addEventListener("DOMContentLoaded", function(){
 		"0000001011100000"
 	];
 	/*[5]
-	0010 0000 1110 1100
-	0010 1000 0010 1000
-	0110 1110 0000 1000
+	0010 0000 1100 1110 
+	0010 1000 1000 0010 
+	0110 1110 1000 0000 
 	0000 0000 0000 0000	
 	*/
 	shapeMap[5] = [
 		"0010001001100000",
 		"0000100011100000",
-		"1110001000000000",
-		"1100100010000000"
+		"1100100010000000",
+		"1110001000000000"
 	];
 	/*[6]
 	1100
@@ -444,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		startBtn: util.$(".start"),
 		gameCanvas: util.$(".game canvas"),
 		nextCanvas: util.$(".next canvas"),
-		userId: util.$(".user-id a").innerText,
+		userId: util.$(".user-id").innerText,
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
