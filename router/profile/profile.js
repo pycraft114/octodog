@@ -4,7 +4,8 @@ var router = express.Router();
 var path = require('path');
 var options = require('../option');
 var mysql = require('mysql');
-var ejs = require('ejs');
+var bodyParser = require('body-parser');
+var multer = require('multer');
 
 var id;
 
@@ -29,40 +30,73 @@ var connection = mysql.createConnection({
 });
 connection.connect();
 
-router.get('/', function(req, res) {
+var storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, 'public/img')
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1])
+  }
+});
+var inputData = {};
+
+var fileFilter = function (req, file, cb) {
+  inputData.filePath = req.file ? req.file.path.replace(/public/, "..") : undefined;
+
+  const filetypes = /.jpeg|.jpg|.png|.gif/g,
+    extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+  if (extname) {
+    console.log('pass');
+    return cb(null, true);
+  }
+  req.errorMsg = "not image";
+  cb(null, false);
+
+};
+
+
+var upload = multer({storage: storage, fileFilter: fileFilter});
+
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+router.get('/', function (req, res) {
   id = req.user;
   console.log(id);
-  if(!id) res.redirect("/login");
-  if(id==="anonymous"){
+  if (!id) res.redirect("/login");
+  if (id === "anonymous") {
     res.redirect("/login");
   }
 
   res.sendFile(path.join(__dirname, '../../public/html/profile.html'));
 });
 
-router.get('/User/:view', function(req, res){
+router.get('/User/:view', function (req, res) {
   var responseData = {};
   var view = req.params.view;
   var temp;
   var query = "select `email`,`id`,`img` from user where id='" + id + "';" +
-      "select score from scoreboard where uid='" + id + "' ORDER BY num DESC limit 5;" +
-      "select count(*) from scoreboard where uid='" + id + "';" +
-      "select `score`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t where `uid`='"+ id + "' ORDER BY rank asc limit 1;";
+    "select score from scoreboard where uid='" + id + "' ORDER BY num DESC limit 5;" +
+    "select count(*) from scoreboard where uid='" + id + "';" +
+    "select `score`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t where `uid`='" + id + "' ORDER BY rank asc limit 1;";
 
-  connection.query(query, function(err,rows){
+  connection.query(query, function (err, rows) {
     // user 정보 - email, id, img, play, rank, topscore, totalscore
-    
+
     responseData = {
-      user:{},
-      chartscore:[]
+      user: {},
+      chartscore: []
     };
 
     // user 데이터 처리
-    responseData.user =  rows[0][0];
+    responseData.user = rows[0][0];
 
     // chart에 사용될 score 데이터 처리
     chartData = rows[1];
-    chartData.forEach(function(val){
+    chartData.forEach(function (val) {
       responseData.chartscore.push(val.score);
     });
 
@@ -73,71 +107,87 @@ router.get('/User/:view', function(req, res){
     // 현재 까지 모은 총 score 처리
     var sum = 0;
 
-    if(responseData.chartscore.length !== 0){
-      sum = responseData.chartscore.reduce(function(a,b){
-      return a+b;
-      });   
+    if (responseData.chartscore.length !== 0) {
+      sum = responseData.chartscore.reduce(function (a, b) {
+        return a + b;
+      });
     }
-    
+
     responseData.user.totalscore = sum;
 
     // 랭크 처리
     var temp = rows[3][0];
-    if(temp ===undefined){
+    if (temp === undefined) {
       responseData.user.rank = 0;
       responseData.user.topscore = 0;
-    }else{
+    } else {
       responseData.user.rank = temp.rank;
       responseData.user.topscore = temp.score;
     }
 
-    
-    if(view==='left'){
+
+    if (view === 'left') {
       var user = responseData.user;
-      res.render('profile',{'img' : user.img,'id' : user.id,'email': user.email,'play':user.play,'rank':user.rank,'topscore':user.topscore,'totalscore':user.totalscore});
-    }
-    else if(view==='right'){
+      res.render('profile', {
+        'img': user.img,
+        'id': user.id,
+        'email': user.email,
+        'play': user.play,
+        'rank': user.rank,
+        'topscore': user.topscore,
+        'totalscore': user.totalscore
+      });
+    } else if (view === 'right') {
       res.json(responseData);
     }
   });
 });
 
 
-router.put('/User/pw',function(req, res){
+router.put('/User/pw', function (req, res) {
   var pw2 = req.body.pw2;
-  var query = "update user set password="+ pw2 +" where id='"+ id +"';";
+  var query = "update user set password=" + pw2 + " where id='" + id + "';";
 
-  connection.query(query, function(err,rows){
-    var responseData = {"msg" : CHANGE_CONFIRM_MESSAGE};
-    if(err){
-      responseData = {"msg" : CHANGE_ERR_MESSAGE};
+  connection.query(query, function (err, rows) {
+    var responseData = {
+      "msg": CHANGE_CONFIRM_MESSAGE
+    };
+    if (err) {
+      responseData = {
+        "msg": CHANGE_ERR_MESSAGE
+      };
     }
     res.json(responseData);
   });
 });
 
-router.post('/User/confirm', function(req, res){
+router.post('/User/confirm', function (req, res) {
   var pw1 = req.body.pw1;
   var pw2 = req.body.pw2;
   var responseData = {};
-  
-  var query = "select count(*) from user where id='" + id + "' AND password="+ pw1 +";";
 
-  connection.query(query, function(err,rows){
-    if(err) throw err;
+  var query = "select count(*) from user where id='" + id + "' AND password=" + pw1 + ";";
+
+  connection.query(query, function (err, rows) {
+    if (err) throw err;
     var confirm = rows[0]["count(*)"];
 
-    if(confirm){
-        responseData ={ 
-            msg : CONFIRM_MESSAGE,
-            data : {pw1:pw1, pw2:pw2}
-        };
-    }
-    else{
-        responseData ={ 
-            msg : ERR_MESSAGE,
-            data : {pw1:pw1, pw2:pw2}
-        };
+    if (confirm) {
+      responseData = {
+        msg: CONFIRM_MESSAGE,
+        data: {
+          pw1: pw1,
+          pw2: pw2
+        }
+      };
+    } else {
+      responseData = {
+        msg: ERR_MESSAGE,
+        data: {
+          pw1: pw1,
+          pw2: pw2
+        }
+      };
     }
 
     res.json(responseData);
@@ -146,38 +196,25 @@ router.post('/User/confirm', function(req, res){
 
 });
 
-router.post('/User/img', function(req, res){
-   const filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
-   id = req.user;
-   console.log(filePath);
+router.post('/User/img', upload.single('file'), function (req, res) {
+  if (!req.errorMsg) {
 
-   var query = "update user set img='"+ filePath +"' where id='"+ id +"';";
+    id = req.user;
+    const filePath = inputData.filePath;
+    console.log(filePath);
 
-   connection.query(query, function(err,rows){
-      if(err) throw err;
-      res.send("ok");
-   });
-  //  const checkIdQuery = connection.query('select * from user where id=?', id, function(err,rows) {
-  //       if(err) {throw new Error("error while checking id")}
+    var query = "update user set img='" + filePath + "' where id='" + id + "';";
 
-  //       if(rows.length) {
-  //           res.send("id in use")
-  //       }else {
-  //           const checkEmailQuery = connection.query('select * from user where email=?', email, function(err,rows) {
-  //               if(err) {throw new Error("error while checking email")}
-
-  //               if(rows.length) {
-  //                   res.send("email in use")
-  //               }else{
-  //                   const sql = {'id': id, 'password': password, 'email': email, 'img' : filePath};
-  //                   const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
-  //                       if(err) {throw new Error("error while saving")}
-  //                       else{res.send("signup success")}
-  //                   })
-  //               }
-  //           })
-  //       }
-  //   })
+    connection.query(query, function (err, rows) {
+      if (err) {
+        throw new Error("error while changing");
+      } else {
+        res.send("change success");
+      }
+    });
+  } else {
+    res.send(req.errorMsg);
+  }
 });
 
 module.exports = router;

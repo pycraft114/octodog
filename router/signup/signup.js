@@ -100,12 +100,13 @@ router.post('/', upload.single('file'), function(req,res){
             'email': inputData.email,
             'img': inputData.filePath
         };
+        
         const saveQuery = connection.query('INSERT INTO user SET ?', sql, function (err, rows) {
             if (err) {
                 throw new Error("error while saving")
             }
             else {
-                res.send("signup success")
+                res.send("signup success");
             }
         })
     }

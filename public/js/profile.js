@@ -162,6 +162,7 @@ const Profile = function () {
         formData = JSON.stringify(formData);
         
         sendAjax('POST','/profile/User/img',formData, null ,function(){
+            console.log(this.responseText);
             // modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
         });
     }.bind(imgModalPage));
