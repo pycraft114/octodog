@@ -57,12 +57,10 @@ header .hd-left .user-id {
     transform: translateY(-50%);
     float: left;
     color: aliceblue;
-}
-
-header .hd-left .user-id a{
     font-size: 1.2rem;
     text-decoration: none;
     color:white;
+    cursor: pointer;
 }
 
 header .hd-center {
@@ -520,7 +518,10 @@ footer h1 {
   width:30%;
 }
 
-.rank ul li p{
+.rank-wrap .load-wrap .rank-load{
+    text-align:center;
+    color: gray;
+    margin:25px auto;
 }
 
 .tetris-wrap {
@@ -554,3 +555,4 @@ footer h1 {
 button.start {
     margin-top : 1vh;
 }
+
