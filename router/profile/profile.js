@@ -186,6 +186,7 @@ router.post('/User/confirm', function (req, res) {
 });
 
 router.post('/User/img', upload.single('file'), function (req, res) {
+    let responseText = {};
     id = req.user;
     const filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
 
@@ -193,10 +194,11 @@ router.post('/User/img', upload.single('file'), function (req, res) {
 
     connection.query(query, function (err, rows) {
       if (err) {
-        throw new Error("error while changing");
+        responseText.msg = "change error";
       } else {
-        res.send("change success");
+        responseText.msg = "change ok";
       }
+      res.json(responseText);
     });
 });
 

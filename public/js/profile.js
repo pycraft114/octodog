@@ -89,7 +89,9 @@ const Profile = function () {
                     this.modalChangePw.value = '';
                     this.modalChangePwConfirm.value = '';
                     this.warning.innerHTML = '';
-                    setTimeout(function(){ alert("비밀번호가 변경되었습니다!"); }, 100);
+                    setTimeout(function () {
+                        alert("비밀번호가 변경되었습니다!");
+                    }, 100);
                 },
                 "change error": function () {
                     this.changeAttribute(this.warning, "innerHTML", this.warningMessage.failChange);
@@ -145,8 +147,35 @@ const Profile = function () {
     const imgModal = {
         imgModal: $('#imgModal'),
         btnClose: $("#img-modal-close"),
-        btnSubmit : $("#change-image-btn"),
-        imgInput : $("#change-image")
+        btnSubmit: $("#change-image-btn"),
+        imgInput: $("#change-image"),
+
+        verifier: function (responseText) {
+            responseText = JSON.parse(responseText);
+            let msg = responseText.msg
+
+            const cases = {
+                "change ok": function () {
+                    profilePage.imgModal.style.display = "none";
+                    setTimeout(function () {
+                        alert("사진이 변경되었습니다!");
+                    }, 100);
+                    sendAjax("get", "/profile/User/left", null, "application/json", function () {
+                        profilePage.ajaxResponseHandler(profilePage.leftSideRender.bind(profilePage), this.responseText);
+                    });
+                },
+                "change error": function () {
+                    profilePage.imgModal.style.display = "none";
+                    setTimeout(function () {
+                        alert("사진 변경이 실패 했습니다!");
+                    }, 100);
+                },
+                default: function () {
+                    console.log("modal verifier called");
+                }
+            };
+            (cases[msg].bind(this) || cases["default"])();
+        }
     };
 
     const imgModalPage = new SubmitPage(imgModal);
@@ -155,14 +184,13 @@ const Profile = function () {
         this.imgModal.style.display = "none";
     }.bind(imgModalPage));
 
-    imgModalPage.btnSubmit.addEventListener("click", function(){
+    imgModalPage.btnSubmit.addEventListener("click", function () {
         let formData = new FormData();
         formData.append('file', this.imgInput.files[0]);
         console.log(formData.file);
-        
-        sendAjax('POST','/profile/User/img',formData, null ,function(){
-            console.log(this.responseText);
-            // modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
+
+        sendAjax('POST', '/profile/User/img', formData, null, function () {
+            imgModalPage.ajaxResponseHandler(imgModal.verifier.bind(imgModal), this.responseText);
         });
     }.bind(imgModalPage));
 
@@ -181,7 +209,7 @@ const Profile = function () {
         btnPw.addEventListener("click", function () {
             profilePage.modal.style.display = "block";
         });
-        btnImg.addEventListener("click", function(){
+        btnImg.addEventListener("click", function () {
             profilePage.imgModal.style.display = "block";
         });
     };
@@ -193,7 +221,7 @@ const Profile = function () {
 
     profilePage.rightSideRender = function (chartObj, resultData) {
         resultData = JSON.parse(resultData);
-        
+
         let score = resultData.chartscore.reverse(),
             dataSets = chartObj.data.datasets[0],
             comp_data = dataSets.data;
