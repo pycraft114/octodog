@@ -157,9 +157,8 @@ const Profile = function () {
 
     imgModalPage.btnSubmit.addEventListener("click", function(){
         let formData = new FormData();
-        
         formData.append('file', this.imgInput.files[0]);
-        formData = JSON.stringify(formData);
+        console.log(formData.file);
         
         sendAjax('POST','/profile/User/img',formData, null ,function(){
             console.log(this.responseText);

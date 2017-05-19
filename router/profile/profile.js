@@ -31,32 +31,17 @@ var connection = mysql.createConnection({
 connection.connect();
 
 var storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, 'public/img')
-  },
-  filename: function (req, file, callback) {
-    callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1])
-  }
+    destination:function(req, file, callback){
+        callback(null, 'public/img');
+    },
+    filename:function(req, file, callback){
+        callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1]);
+    }
 });
 var inputData = {};
 
-var fileFilter = function (req, file, cb) {
-  inputData.filePath = req.file ? req.file.path.replace(/public/, "..") : undefined;
 
-  const filetypes = /.jpeg|.jpg|.png|.gif/g,
-    extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-  if (extname) {
-    console.log('pass');
-    return cb(null, true);
-  }
-  req.errorMsg = "not image";
-  cb(null, false);
-
-};
-
-
-var upload = multer({storage: storage, fileFilter: fileFilter});
+var upload = multer({storage: storage});
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
@@ -128,6 +113,10 @@ router.get('/User/:view', function (req, res) {
 
     if (view === 'left') {
       var user = responseData.user;
+      console.log(user.img);
+      if(user.img===null){
+        user.img = "../img/profile_img1.jpg";
+      }
       res.render('profile', {
         'img': user.img,
         'id': user.id,
@@ -197,11 +186,8 @@ router.post('/User/confirm', function (req, res) {
 });
 
 router.post('/User/img', upload.single('file'), function (req, res) {
-  if (!req.errorMsg) {
-
     id = req.user;
-    const filePath = inputData.filePath;
-    console.log(filePath);
+    const filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
 
     var query = "update user set img='" + filePath + "' where id='" + id + "';";
 
@@ -212,9 +198,6 @@ router.post('/User/img', upload.single('file'), function (req, res) {
         res.send("change success");
       }
     });
-  } else {
-    res.send(req.errorMsg);
-  }
 });
 
 module.exports = router;

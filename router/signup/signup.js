@@ -28,7 +28,8 @@ var fileFilter = function(req, file, cb) {
     inputData.password = req.body.password,
     inputData.email = req.body.email,
     inputData.filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
-
+    console.log(req.file);
+    
     const checkIdQuery = connection.query('SELECT * FROM user WHERE id=?',inputData.id, function(err,rows) {
         if(err) {throw err}
 
@@ -93,6 +94,7 @@ router.get('/', function (req, res) {
 
 
 router.post('/', upload.single('file'), function(req,res){
+    console.log(req.file);
     if(!req.errorMsg) {
         const sql = {
             'id': inputData.id,
@@ -106,11 +108,13 @@ router.post('/', upload.single('file'), function(req,res){
                 throw new Error("error while saving")
             }
             else {
-                res.send("signup success");
+                res.send("signup success")
             }
         })
     }
     else{res.send(req.errorMsg);}
+
+
 });
 
 module.exports = router;
