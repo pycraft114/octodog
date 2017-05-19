@@ -12,7 +12,6 @@ function Tetris(data) {
 	this.goToNextLevel = null;
 	this.lose = false;
 	this.interval = null;
-	this.renderInterval = null;
 	this.curr = null;
 	this.next = null;
 	this.currIdx = null;
@@ -86,7 +85,7 @@ Tetris.prototype = {
 		}
 
 		this.nextContext.clearRect(0, 0, this.nW, this.nH);
-		this.nextContext.strokeStyle = 'black';
+		this.nextContext.strokeStyle = "black";
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
@@ -101,6 +100,7 @@ Tetris.prototype = {
 			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
 			this.nextContext.clearRect(0, 0, this.nW, this.nH);
 		}
+		requestAnimationFrame(this.render);
 	},	
 
 	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
@@ -147,6 +147,7 @@ Tetris.prototype = {
 
 	//재귀호출되면서 게임진행을 해주는 함수
 	tick: function() {
+		if(this.pause || !this.playOn) return;
 		if(this.valid(0,1)) {
 			this.currY++;
 		}else{
@@ -154,9 +155,8 @@ Tetris.prototype = {
 			this.clearLines();
 			if(this.lose) {
 				this.render();
-				clearInterval(this.interval);
-				clearInterval(this.renderInterval);
-				this.postScore();
+				clearTimeout(this.interval);
+				if(this.score !== 0) this.postScore();
 				util.sendAjax("GET", "/game/" + 10, null, "application/json", function () {
 					rankResister.ajaxResponseHandler(rankResister.verifier.bind(rankResister), this.responseText);
     			});
@@ -165,13 +165,14 @@ Tetris.prototype = {
 				return false;
 			}
 			if(this.goToNextLevel <= 0 && this.currLevel <= 10) {
-				clearInterval(this.interval);
+				//clearTimeout(this.interval);
 				this.goToNextLevel = 10;
 				this.currLevel++;
-				this.interval = setInterval(this.tick.bind(this), this.ms - 20 * this.currLevel);
 			} 
 			this.newShape();
 		}
+		this.render();
+		this.interval = setTimeout(this.tick.bind(this), this.ms - (20 * (this.currLevel - 1)));
 	},
 
 	//내려오던 블럭이 바닥이나 이미 정지해 있는 블럭과 닿으면 정지시켜줌
@@ -234,46 +235,43 @@ Tetris.prototype = {
 	keyPress: function(key) {
 		if(key !== "pause" && this.pause === true) return;
  		switch(key) {
-			case 'left':
+			case "left":
 				//valid(-1)은 현재블럭의 왼쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(-1)) {
 					this.currX--;
 				}
 				break;
-			case 'right':
+			case "right":
 				//valid(1)은 현재블럭의 오른쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(1)) {
 					this.currX++;
 				}
 				break;
-			case 'down':
+			case "down":
 				//valid(0, 1)은 현재블럭의 아래쪽이 비었으면 true 아니면 false를 반환
 				if(this.valid(0, 1)) {
 					this.currY++;
 				}
 				break;
-			case 'powerDown':
+			case "powerDown":
 				//case 'down'에서 if를 while로 변경해서 바로 이동가능한 만큼 아래로 이동시킴
 				while(this.valid(0, 1)) {
 					this.currY++;
 				}
 				break;
-			case 'rotate':
+			case "rotate":
 				const rotated = this.rotate();
 				if(this.valid(0, 0, rotated)) {
 					this.curr = rotated;
 				}
 				break;
-			case 'pause':
-				if(this.pause === false) {
-					clearInterval(this.interval);
-					clearInterval(this.renderInterval);	
-				}else{
-					this.interval = setInterval(this.tick.bind(this), this.ms - (20 * this.currLevel));
-					this.renderInterval = setInterval(this.render.bind(this), 30);
-				}
+			case "pause":
 				this.pause = !this.pause;
-
+				if(this.pause === true) {
+					clearTimeout(this.interval);
+				}else{
+					this.tick();
+				}
 				break;
 		}
 	},
@@ -314,12 +312,14 @@ Tetris.prototype = {
 		this.playOn = true;
 		this.init();
 		this.newShape();
-		clearInterval(this.interval);
-		clearInterval(this.renderInterval);
+		clearTimeout(this.interval);
+		//cancelAnimationFrame(this.render);
 		this.pause = false;
 		this.lose = false;
-		this.interval = setInterval(this.tick.bind(this), this.ms);
-		this.renderInterval = setInterval(this.render.bind(this), 30);
+		//requestAnimationFrame(this.render);
+		this.tick();
+		this.render();
+		//this.renderInterval = setInterval(this.render.bind(this), 30);
 
 	},
 
@@ -329,6 +329,7 @@ Tetris.prototype = {
 			uid:util.$(".user-id a").innerText,
 			score:this.score
 		};
+		//data = JSON.stringify(data);
 		console.log(data);
 		util.sendAjax("POST", "/score", data, "application/json", function(){
 			return;
@@ -338,15 +339,15 @@ Tetris.prototype = {
 	addEvent: function() {
 		const that = this;
 		const keys = {
-			37: 'left',
-			39: 'right',
-			40: 'down',
-			38: 'rotate',
-			32: 'powerDown',
-			27: 'pause'
+			37: "left",
+			39: "right",
+			40: "down",
+			38: "rotate",
+			32: "powerDown",
+			27: "pause"
 		};
 		document.addEventListener("keydown", function(evt){
-			if(typeof keys[evt.keyCode] !== 'undefined' && (that.interval)) {
+			if(typeof keys[evt.keyCode] !== "undefined") {
 				if(that.playOn === true) evt.preventDefault();
 				that.keyPress(keys[evt.keyCode]);
 				that.render();
