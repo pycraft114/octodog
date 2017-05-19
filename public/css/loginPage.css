@@ -143,11 +143,15 @@ button{
 
 .warning-list{
     width:74%;
-    height:118px;
     text-align:center;
     padding-top:40px;
 }
-
+#login-warning{
+    height:118px;
+}
+#modal-warning{
+    height:84px;
+}
 .warning-list ul li{
     color:red;
 }
