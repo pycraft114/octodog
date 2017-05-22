@@ -346,7 +346,6 @@ Tetris.prototype = {
 			score:this.score
 		};
 		data = JSON.stringify(data);
-		console.log(data);
 		util.sendAjax("POST", "/score", data, "application/json", function(){
 			return;
 		});

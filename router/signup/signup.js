@@ -11,7 +11,6 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 
 
-
 var storage = multer.diskStorage({
     destination:function(req, file, callback){
         callback(null, 'public/img')
@@ -20,47 +19,8 @@ var storage = multer.diskStorage({
         callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1])
     }
 });
-var inputData = {};
 
-var fileFilter = function(req, file, cb) {
-    inputData.data = req.body,
-    inputData.id = req.body.id,
-    inputData.password = req.body.password,
-    inputData.email = req.body.email,
-    inputData.filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
-    console.log(req.body.file);
-
-    const checkIdQuery = connection.query('SELECT * FROM user WHERE id=?',inputData.id, function(err,rows) {
-        if(err) {throw err}
-
-        if(rows.length) {
-            req.errorMsg ="id in use";
-            return cb(null,false);
-        }else {
-            const checkEmailQuery = connection.query('SELECT * FROM user WHERE email=?', inputData.email, function(err,rows) {
-                if(err) {throw err}
-
-                if(rows.length) {
-                    req.errorMsg = "email in use";
-                    return cb(null,false);
-                }
-
-                const filetypes = /.jpeg|.jpg|.png|.gif/g,
-                      extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-                if (extname) {
-                    console.log('pass');
-                    return cb(null, true);
-                }
-                req.errorMsg = "not image";
-                cb(null, false);
-            })
-        }
-    })
-};
-
-
-var upload = multer({storage: storage, fileFilter: fileFilter});
+var upload = multer({storage: storage});
 
 var mysqlData = {
     host: options.storageConfig.HOST,
@@ -94,27 +54,35 @@ router.get('/', function (req, res) {
 
 
 router.post('/', upload.single('file'), function(req,res){
-    if(!req.errorMsg) {
-        const sql = {
-            'id': inputData.id,
-            'password': inputData.password,
-            'email': inputData.email,
-            'img': req.file.path
-        };
-        console.log(sql);
-        const saveQuery = connection.query('INSERT INTO user SET ?', sql, function (err, rows) {
-            if (err) {
-                throw new Error("error while saving")
-            }
-            else {
-                res.send("signup success")
-            }
-        })
-    }
-    else{res.send(req.errorMsg);}
+
+    const data = req.body,
+          id = data.id,
+          password = data.password,
+          email = data.email,
+          filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
 
 
+    const checkIdQuery = connection.query('select * from user where id=?', id, function(err,rows) {
+        if(err) {throw new Error("error while checking id")}
+
+        if(rows.length) {
+            res.send("id in use")
+        }else {
+            const checkEmailQuery = connection.query('select * from user where email=?', email, function(err,rows) {
+                if(err) {throw new Error("error while checking email")}
+
+                if(rows.length) {
+                    res.send("email in use")
+                }else{
+                    const sql = {'id': id, 'password': password, 'email': email, 'img' : filePath};
+                    const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
+                        if(err) {throw new Error("error while saving")}
+                        else{res.send("signup success")}
+                    })
+                }
+            })
+        }
+    })
 });
 
 module.exports = router;
-

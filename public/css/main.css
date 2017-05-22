@@ -40,7 +40,8 @@ header .hd-left, header .hd-right {
 
 header .hd-left img {
     float: left;
-    height: 100%;
+    height: 36px;
+    width:36px;
     margin-right: 1rem;
     border-radius: 100%;
     border: 2px solid gray;
@@ -445,6 +446,17 @@ footer h1 {
 .modal-content .warning{
     color: #fd4c88;
     font-size: 0.8rem;
+    text-align: center;
+}
+
+.modal-content .change-image{
+    color: #fd4c88;
+    font-family: arial;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #fd4c88;
+}
+
+.modal-content .btn-wrap{
     text-align: center;
 }
 
