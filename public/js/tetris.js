@@ -273,9 +273,12 @@ Tetris.prototype = {
 				}
 				break;
 			case "rotate":
+				const tempIdx = this.currRotateIdx;
 				const rotated = this.rotate();
 				if(this.valid(0, 0, rotated)) {
 					this.curr = rotated;
+				}else {
+					this.currRotateIdx = tempIdx;
 				}
 				break;
 			case "pause":
