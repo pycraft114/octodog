@@ -168,9 +168,10 @@ const octoDog = function(){
         if(this.checkEmptyInput([this.loginId, this.loginPassword])){
             this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.noContent);
         }else {
-            const data = {};
+            let data = {};
             data['id'] = this.loginId.value;
             data['password'] = this.loginPassword.value;
+            data = JSON.stringify(data);
             sendAjax("POST","/login",data,"application/json", function() {
                 loginPage.ajaxResponseHandler(loginPage.verifier.bind(loginPage), this.responseText);
                 //bind안하면 verifier함수내의 this가 window를 가르킴
@@ -200,6 +201,7 @@ const octoDog = function(){
             formData.append('password',this.signUpPassword.value);
             formData.append('email',this.signUpEmail.value);
             formData.append('file',this.imgInputTag.files[0]);
+            console.log(this.imgInputTag.files[0]);
             sendAjax('POST','/signup',formData, null ,function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
                 //단순 warning List node inner html 바꾸는 역할 하는 함수랑

@@ -28,6 +28,7 @@ var fileFilter = function(req, file, cb) {
     inputData.password = req.body.password,
     inputData.email = req.body.email,
     inputData.filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
+    console.log(req.body.file);
 
     const checkIdQuery = connection.query('SELECT * FROM user WHERE id=?',inputData.id, function(err,rows) {
         if(err) {throw err}
@@ -98,8 +99,9 @@ router.post('/', upload.single('file'), function(req,res){
             'id': inputData.id,
             'password': inputData.password,
             'email': inputData.email,
-            'img': inputData.filePath
+            'img': req.file.path
         };
+        console.log(sql);
         const saveQuery = connection.query('INSERT INTO user SET ?', sql, function (err, rows) {
             if (err) {
                 throw new Error("error while saving")

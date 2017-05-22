@@ -100,17 +100,20 @@ Tetris.prototype = {
 			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
 			this.nextContext.clearRect(0, 0, this.nW, this.nH);
 		}
+		//아래코드는 뭔가 생각대로 작동이 안된다 
 		requestAnimationFrame(this.render);
 	},	
 
 	// 다음블록을 현재블록에 넣어주고 다음블록을 새로 생성한다. 
 	newShape: function() {
+		this.currRotateIdx = 0;
 		if(this.nextIdx !== null) {
 			this.curr = this.next;
 			this.currIdx = this.nextIdx;
 			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}else{
 			this.currIdx = Math.floor(Math.random() * this.shapes.length);
+			/* shapeMap.js 쪽에서 처리함
 			let currShape = this.shapes[this.currIdx][0].split("");
 			currShape = currShape.map(function(val){
 				return Number(val);
@@ -118,8 +121,11 @@ Tetris.prototype = {
 			this.curr = currShape.map(function(val){
 				return val === 0 ? val : (val + this.currIdx);
 			}.bind(this));
+			*/
+			this.curr = this.shapes[this.currIdx][this.currRotateIdx];
 			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}
+		/* shapeMap.js 쪽에서 처리함
 		let nextShape = this.shapes[this.nextIdx][0].split("");
 		nextShape = nextShape.map(function(val){
 			return Number(val);
@@ -127,7 +133,8 @@ Tetris.prototype = {
 		this.next = nextShape.map(function(val){
 			return val === 0 ? val : (val + this.nextIdx);
 		}.bind(this));
-		this.currRotateIdx = 0;
+		*/
+		this.next = this.shapes[this.nextIdx][0];
 		this.currX = 5;
 		this.currY = 0;
 	},
@@ -157,7 +164,9 @@ Tetris.prototype = {
 				this.render();
 				clearTimeout(this.interval);
 				if(this.score !== 0) this.postScore();
-				util.sendAjax("GET", "/game/" + 10, null, "application/json", function () {
+				rankResister.range = 10;
+				util.sendAjax("GET", "/game/" + rankResister.range, null, "application/json", function () {
+					console.log(this.responseText);
 					rankResister.ajaxResponseHandler(rankResister.verifier.bind(rankResister), this.responseText);
     			});
 				util.$(".ranking").scrollTop = 0;
@@ -193,15 +202,19 @@ Tetris.prototype = {
 		}else{
 			this.currRotateIdx = 0;
 		}
+		//shapeMap.js에서 처리함
 		/*split 전까지 변수로 담아서 사용할것
 		map에서 리턴되는 값이 NaN이 나옴 
 		-> map의 콜백에서의 this를 bind해줌으로 해결
 		*/ 
+		/*
 		let newCurr = this.shapes[this.currIdx][this.currRotateIdx].split("");
 		newCurr = newCurr.map(function(val){
 			return Number(val) === 0 ? Number(val) : (Number(val) + this.currIdx);
 		}.bind(this));
 		return newCurr;
+		*/
+		return this.shapes[this.currIdx][this.currRotateIdx];
 	},
 
 	//열이 블럭으로 가득차면 지워주는 함수
@@ -329,7 +342,7 @@ Tetris.prototype = {
 			uid:util.$(".user-id").innerText,
 			score:this.score
 		};
-		//data = JSON.stringify(data);
+		data = JSON.stringify(data);
 		console.log(data);
 		util.sendAjax("POST", "/score", data, "application/json", function(){
 			return;
@@ -365,85 +378,13 @@ Tetris.prototype = {
 };
 	
 document.addEventListener("DOMContentLoaded", function(){
-	//shapeMap과 data는 추후 외부 파일로 분리 할 것
-	const shapeMap = [];
-
-	/*[0]
-	0000 1000 1110 0010
-	0100 1100 0100 0110
-	1110 1000 0000 0010
-	0000 0000 0000 0000
+	/*
+	shapeMap과 data는 추후 외부 파일로 분리 할 것
+	shapeMap분리완료, data안의 property들이 DOM탐색이 필요한 요소들이
+	있어서 data는 그대로둠
+	DOMContentLoaded부분을 따로 js파일 만들어서 분리시켜야 할듯한데
+	팀원과 조율이 필요할듯
 	*/
-	shapeMap[0] = [
-		"0000010011100000",
-		"1000110010000000",
-		"1110010000000000",
-		"0010011000100000"
-	];
-	/*[1]
-	1100 0010
-	0110 0110
-	0000 0100
-	0000 0000
-	*/
-	shapeMap[1] = [
-		"1100011000000000",
-		"0010011001000000"
-	];
-	/*[2]
-	0110 0100
-	1100 0110
-	0000 0010
-	0000 0000
-	*/
-	shapeMap[2] = [
-		"0110110000000000",
-		"0100011000100000"
-	];
-	/* [3]
-	0100 0000
-	0100 1111
-	0100 0000
-	0100 0000
-	*/
-	shapeMap[3] = [
-		"0100010001000100",
-		"0000111100000000"
-	];
-	/*[4] 
-	1000 1110 0110 0000
-	1000 1000 0010 0010
-	1100 0000 0010 1110
-	0000 0000 0000 0000
-	*/
-	shapeMap[4] = [
-		"1000100011000000",
-		"1110100000000000",
-		"0110001000100000",
-		"0000001011100000"
-	];
-	/*[5]
-	0010 0000 1100 1110 
-	0010 1000 1000 0010 
-	0110 1110 1000 0000 
-	0000 0000 0000 0000	
-	*/
-	shapeMap[5] = [
-		"0010001001100000",
-		"0000100011100000",
-		"1100100010000000",
-		"1110001000000000"
-	];
-	/*[6]
-	1100
-	1100
-	0000
-	0000
-	*/
-	shapeMap[6] = [ 
-		"1100110000000000"
-	];
-
 	const data = {
 		startBtn: util.$(".start"),
 		gameCanvas: util.$(".game canvas"),
@@ -452,7 +393,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
-		shapes: shapeMap,
+		//shapes는 shapeMap.js 에서 가져옴
+		shapes: shapes,
 		colors: [
 			"rgba(255, 0, 0, 0.6)", 
 			"rgba(255, 99, 132, 0.6)", 
