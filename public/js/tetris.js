@@ -21,6 +21,7 @@ function Tetris(data) {
 	this.currX = null;
 	this.currY = null;
 	this.playOn = false;
+	this.preventKey = false;
 }
 
 Tetris.prototype = {
@@ -193,6 +194,7 @@ Tetris.prototype = {
 				this.gameBoard[y + this.currY][x + this.currX] = this.curr[i];
 			}
 		}
+		this.preventKey = false;
 	},
 
 	//현재 블럭을 회전시켜주는 함수
@@ -246,7 +248,7 @@ Tetris.prototype = {
 
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
 	keyPress: function(key) {
-		if(key !== "pause" && this.pause === true) return;
+		if(key !== "pause" && this.pause === true || this.preventKey === true) return;
  		switch(key) {
 			case "left":
 				//valid(-1)은 현재블럭의 왼쪽이 비었으면 true 아니면 false를 반환
@@ -271,6 +273,7 @@ Tetris.prototype = {
 				while(this.valid(0, 1)) {
 					this.currY++;
 				}
+				this.preventKey = true;
 				break;
 			case "rotate":
 				const tempIdx = this.currRotateIdx;
