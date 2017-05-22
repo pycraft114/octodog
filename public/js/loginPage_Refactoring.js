@@ -180,9 +180,10 @@ const octoDog = function(){
     }.bind(loginPage));
 
     loginPage.anonymous.addEventListener("click",function(evt){
-        const dummyData = {};
+        let dummyData = {};
         dummyData['id'] = 'id';
         dummyData['password'] = 'password';
+        dummyData = JSON.stringify(dummyData);
         sendAjax('POST','/anonymous',dummyData,'application/json', function(){
             console.log(this.responseText);
             location.href = '/game';

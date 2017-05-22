@@ -273,6 +273,7 @@ Tetris.prototype = {
 				while(this.valid(0, 1)) {
 					this.currY++;
 				}
+				//블럭이 바닥에 닿기 직전 키입력에 의해 움직이는것을 막기위한 변수
 				this.preventKey = true;
 				break;
 			case "rotate":
@@ -332,14 +333,10 @@ Tetris.prototype = {
 		this.init();
 		this.newShape();
 		clearTimeout(this.interval);
-		//cancelAnimationFrame(this.render);
 		this.pause = false;
 		this.lose = false;
-		//requestAnimationFrame(this.render);
 		this.tick();
 		this.render();
-		//this.renderInterval = setInterval(this.render.bind(this), 30);
-
 	},
 
 	//점수를 db에 등록
