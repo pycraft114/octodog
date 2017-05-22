@@ -568,6 +568,6 @@ button.start {
     margin-top : 1vh;
 }
 
-canvas {
-    background-color: rgba(200, 240, 40, 0.2)
+.tetris-wrap canvas {
+    background-color: rgba(200, 240, 40, 0.2);
 }
