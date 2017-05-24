@@ -26,6 +26,13 @@ const rankResister = function () {
       rankPage.range += 10;
   };
 
+  rankPage.renderAfterPostScore = function() {
+    rankPage.range = 10;
+    sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
+      rankPage.ajaxResponseHandler(rankPage.renderRank.bind(rankPage), this.responseText);
+    });
+  };
+
 
   const headerContent = {
     headerTag: $("#header")
@@ -60,6 +67,7 @@ const rankResister = function () {
   document.addEventListener("DOMContentLoaded", function () {
     sendAjax("get", "/game/header", null, "application/json", function () {
       header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
+      rankPage.uid = $(".user-id").innerText;
     });
     sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
       rankPage.ajaxResponseHandler(rankPage.renderRank.bind(rankPage), this.responseText);

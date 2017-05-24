@@ -165,11 +165,14 @@ Tetris.prototype = {
 				this.render();
 				clearTimeout(this.interval);
 				if(this.score !== 0) this.postScore();
+				/*
 				rankResister.range = 10;
 				util.sendAjax("GET", "/game/" + rankResister.range, null, "application/json", function () {
 					console.log(this.responseText);
 					rankResister.ajaxResponseHandler(rankResister.verifier.bind(rankResister), this.responseText);
     			});
+				*/
+				rankResister.renderAfterPostScore();
 				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
 				return false;
@@ -342,7 +345,7 @@ Tetris.prototype = {
 	//점수를 db에 등록
 	postScore: function() {
 		let data = {
-			uid:util.$(".user-id").innerText,
+			uid:rankResister.uid,
 			score:this.score
 		};
 		data = JSON.stringify(data);
@@ -350,6 +353,7 @@ Tetris.prototype = {
 			return;
 		});
 	},
+
 	//이벤트 등록
 	addEvent: function() {
 		const that = this;
@@ -391,7 +395,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		startBtn: util.$(".start"),
 		gameCanvas: util.$(".game canvas"),
 		nextCanvas: util.$(".next canvas"),
-		userId: util.$(".user-id").innerText,
 		COLS: 10,
 		ROWS: 20,
 		ms: 300,
