@@ -9,6 +9,7 @@ var options = require('../option');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
 var multer = require('multer');
+var fs = require('fs');
 
 
 
@@ -20,23 +21,25 @@ var storage = multer.diskStorage({
         callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1])
     }
 });
-var inputData = {};
+
+
 
 var fileFilter = function(req, file, cb) {
-    inputData.data = req.body,
-    inputData.id = req.body.id,
-    inputData.password = req.body.password,
-    inputData.email = req.body.email,
-    inputData.filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
+    console.log('filefilter called');
 
-    const checkIdQuery = connection.query('SELECT * FROM user WHERE id=?',inputData.id, function(err,rows) {
+    req.filecheck = true;
+
+    var id = req.body.id,
+        email = req.body.email;
+
+    var checkIdQuery = connection.query('SELECT * FROM user WHERE id=?', id ,function(err,rows) {
         if(err) {throw err}
 
         if(rows.length) {
             req.errorMsg ="id in use";
             return cb(null,false);
         }else {
-            const checkEmailQuery = connection.query('SELECT * FROM user WHERE email=?', inputData.email, function(err,rows) {
+            var checkEmailQuery = connection.query('SELECT * FROM user WHERE email=?', email, function(err,rows) {
                 if(err) {throw err}
 
                 if(rows.length) {
@@ -44,8 +47,8 @@ var fileFilter = function(req, file, cb) {
                     return cb(null,false);
                 }
 
-                const filetypes = /.jpeg|.jpg|.png|.gif/g,
-                      extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+                var filetypes = /.jpeg|.jpg|.png|.gif/g,
+                    extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
                 if (extname) {
                     console.log('pass');
@@ -59,7 +62,10 @@ var fileFilter = function(req, file, cb) {
 };
 
 
-var upload = multer({storage: storage, fileFilter: fileFilter});
+
+
+var upload = multer({storage:storage , fileFilter: fileFilter});
+
 
 var mysqlData = {
     host: options.storageConfig.HOST,
@@ -75,6 +81,7 @@ var connection = mysql.createConnection({
     database: 'octodog',
     multipleStatements: true
 });
+
 connection.connect(err => {
     if (err) {
         throw new Error('Mysql connect failed');
@@ -92,27 +99,80 @@ router.get('/', function (req, res) {
 });
 
 
+
 router.post('/', upload.single('file'), function(req,res){
-    if(!req.errorMsg) {
-        const sql = {
-            'id': inputData.id,
-            'password': inputData.password,
-            'email': inputData.email,
-            'img': inputData.filePath
+    console.log('postcalled');
+    var data = req.body,
+        id = data.id,
+        password = data.password,
+        email = data.email;
+
+    if(req.filecheck){
+        console.log("line 111 called");
+        if(!req.errorMsg) {
+
+            var sql = {
+                'id': id,
+                'password': password,
+                'email': email,
+                'img': req.file.path.replace(/public/,"..")
+            };
+
+            console.log(sql);
+
+            var saveQuery = connection.query('INSERT INTO user SET ?', sql, function (err, rows) {
+                if (err) {
+                    throw new Error("error while saving")
+                }
+                else {
+                    res.send("signup success")
+                }
+            })
+        }
+
+        else{
+            res.send(req.errorMsg);
+        }
+
+    }else if(!req.filecheck) {
+        var sql = {
+            'id': id,
+            'password': password,
+            'email': email,
+            'img': undefined
         };
-        const saveQuery = connection.query('INSERT INTO user SET ?', sql, function (err, rows) {
-            if (err) {
-                throw new Error("error while saving")
-            }
-            else {
-                res.send("signup success")
+
+        var checkIdQuery = connection.query('SELECT * FROM user WHERE id=?', id ,function(err,rows){
+            if(err){throw err}
+
+            if(rows.length) {
+                res.send("id in use");
+            }else{
+                var checkEmailQuery = connection.query('SELECT * FROM user WHERE email=?', email, function(err,rows) {
+                    if(err){throw err}
+
+                    if(rows.length){
+                        res.send("email in use")
+                    }else{
+                        var saveQuery = connection.query('INSERT INTO user SET ?', sql, function (err, rows) {
+                            if(err){throw err}
+
+                            res.send("signup success")
+                        })
+                    }
+                })
             }
         })
     }
-    else{res.send(req.errorMsg);}
+
 
 
 });
 
 module.exports = router;
 
+/*const sql = {'id': id, 'password': password, 'email': email};
+ const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
+ if(err) {throw new Error("error while saving")}
+ else{res.send("signup success");}
+ })*/

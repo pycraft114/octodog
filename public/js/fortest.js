@@ -1,8 +1,3 @@
-function smth(bool){
-    if(bool){
-        return console.log("hi");
-    }
-    console.log("hello");
-}
+var smth = parseInt("20");
 
-smth(true);
+console.log(parseInt("20"));

@@ -5,30 +5,10 @@
 const octoDog = function(){
     const octoDog = {};
 
-    //const $ = util.$;
-    //
-    // const sendAjax = util.sendAjax;
-    function sendAjax(method, url, data, type, func) {
+    const $ = util.$;
 
-        let xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        if (type) {
-            xhr.setRequestHeader("Content-Type", type);
-        }
+    const sendAjax = util.sendAjax;
 
-        if (data !== undefined) {
-            //data = JSON.stringify(data);
-            xhr.send(data);
-        } else {
-            xhr.send();
-        }
-
-        xhr.addEventListener("load", func);
-    }
-
-    function $(selector){
-        return document.querySelector(selector);
-    }
 
     //-------------------Page class---------------------------
     function Page(objectContent){
@@ -134,7 +114,7 @@ const octoDog = function(){
                 },
                 "signup success" : function(){
                     alert("회원가입이 완료되었습니다.");
-                    location.href = '/login';
+                    console.log("success");
                 },
                 "not image" : function(){
                     this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.notImageFile);
@@ -168,9 +148,10 @@ const octoDog = function(){
         if(this.checkEmptyInput([this.loginId, this.loginPassword])){
             this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.noContent);
         }else {
-            const data = {};
+            let data = {};
             data['id'] = this.loginId.value;
             data['password'] = this.loginPassword.value;
+            data = JSON.stringify(data);
             sendAjax("POST","/login",data,"application/json", function() {
                 loginPage.ajaxResponseHandler(loginPage.verifier.bind(loginPage), this.responseText);
                 //bind안하면 verifier함수내의 this가 window를 가르킴
@@ -179,9 +160,10 @@ const octoDog = function(){
     }.bind(loginPage));
 
     loginPage.anonymous.addEventListener("click",function(evt){
-        const dummyData = {};
+        let dummyData = {};
         dummyData['id'] = 'id';
         dummyData['password'] = 'password';
+        dummyData = JSON.stringify(dummyData);
         sendAjax('POST','/anonymous',dummyData,'application/json', function(){
             console.log(this.responseText);
             location.href = '/game';
@@ -199,7 +181,9 @@ const octoDog = function(){
             formData.append('id',this.signUpId.value);
             formData.append('password',this.signUpPassword.value);
             formData.append('email',this.signUpEmail.value);
-            formData.append('file',this.imgInputTag.files[0]);
+            formData.append('file', this.imgInputTag.files[0]);
+            console.log(this.imgInputTag.files[0]);
+
             sendAjax('POST','/signup',formData, null ,function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
                 //단순 warning List node inner html 바꾸는 역할 하는 함수랑

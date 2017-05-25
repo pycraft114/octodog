@@ -14,7 +14,6 @@ Util.prototype ={
 
     sendAjax : function(method, url, data, type, func) {
         const oReq = new XMLHttpRequest();
-        let result;
 
         oReq.open(method, "http://localhost:3000" + url);
         if(type){
