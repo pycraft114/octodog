@@ -5,30 +5,10 @@
 const octoDog = function(){
     const octoDog = {};
 
-    //const $ = util.$;
-    //
-    // const sendAjax = util.sendAjax;
-    function sendAjax(method, url, data, type, func) {
+    const $ = util.$;
 
-        let xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        if (type) {
-            xhr.setRequestHeader("Content-Type", type);
-        }
+    const sendAjax = util.sendAjax;
 
-        if (data !== undefined) {
-            //data = JSON.stringify(data);
-            xhr.send(data);
-        } else {
-            xhr.send();
-        }
-
-        xhr.addEventListener("load", func);
-    }
-
-    function $(selector){
-        return document.querySelector(selector);
-    }
 
     //-------------------Page class---------------------------
     function Page(objectContent){
@@ -93,7 +73,7 @@ const octoDog = function(){
                 },
                 "login success" : function(){
                     this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.loginSuccess);
-                    location.href = '/game'
+                    location.href = '/game';
                 },
                 default : function(){
                     console.log("login page verifier called");
@@ -201,7 +181,7 @@ const octoDog = function(){
             formData.append('id',this.signUpId.value);
             formData.append('password',this.signUpPassword.value);
             formData.append('email',this.signUpEmail.value);
-            formData.append('file',this.imgInputTag.files[0]);
+            formData.append('file', this.imgInputTag.files[0]);
             console.log(this.imgInputTag.files[0]);
             sendAjax('POST','/signup',formData, null ,function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);

@@ -86,6 +86,7 @@ router.get('/:searchRankRange', function (req, res) {
   });
 });
 
+
 router.post('/User/confirm', function (req, res) {
   var id = req.user;
   var responseText = {};
