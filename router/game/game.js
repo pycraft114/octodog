@@ -52,7 +52,7 @@ router.get('/header', function (req, res) {
 
   connection.query(query, function(err,rows){
     userImg = rows[0].img;
-    if(userImg!==undefined){
+    if(userImg!==null){
       img = userImg;
     }
     res.render('header', {
