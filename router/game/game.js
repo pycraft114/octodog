@@ -51,7 +51,8 @@ router.get('/header', function (req, res) {
 }
 
   connection.query(query, function(err,rows){
-    if(rows[0].img!==null){
+    
+    if(rows[0]!==undefined){
       img = rows[0].img;
     }
     res.render('header', {
