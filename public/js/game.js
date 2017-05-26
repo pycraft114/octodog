@@ -33,6 +33,10 @@ const rankResister = function () {
     });
   };
 
+  rankPage.getUid = function() {
+    return rankPage.uid;
+  }
+
 
   const headerContent = {
     headerTag: $("#header")
@@ -73,5 +77,8 @@ const rankResister = function () {
       rankPage.ajaxResponseHandler(rankPage.renderRank.bind(rankPage), this.responseText);
     });
   });
-  return rankPage;
+  return {
+    uid: rankPage.getUid,
+    renderRank: rankPage.renderAfterPostScore
+  };
 }();
