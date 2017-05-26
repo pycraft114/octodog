@@ -172,7 +172,7 @@ Tetris.prototype = {
 					rankResister.ajaxResponseHandler(rankResister.verifier.bind(rankResister), this.responseText);
     			});
 				*/
-				rankResister.renderAfterPostScore();
+				rankResister.renderRank();
 				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
 				return false;
@@ -345,7 +345,7 @@ Tetris.prototype = {
 	//점수를 db에 등록
 	postScore: function() {
 		let data = {
-			uid:rankResister.uid,
+			uid:rankResister.uid(),
 			score:this.score
 		};
 		data = JSON.stringify(data);
