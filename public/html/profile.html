@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Rubik+Mono+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
+    <script type="text/javascript" src="../js/util.js"></script>
+    <script type="text/javascript" src="../js/SubmitPageClass.js"></script>
+    <title>Octodog</title>
+</head>
+
+<body>
+    <div class="container">
+        <header id="header">
+            <div class="hd-left">
+                <img src="../img/profile_img1.jpg">
+                <div class="user-id">
+                    <a href="http://localhost:3000/profile"></a>
+                </div>
+            </div>
+            <div class="hd-center">
+                <h1><a href="http://localhost:3000/game">Octodog</a></h1>
+            </div>
+            <div class="hd-right">
+                <h1><a href="http://localhost:3000/logout">Logout</a></h1>
+            </div>
+        </header>
+        <section>
+            <article class="left">
+
+            </article>
+            <article class="right">
+                <div class="right-content">
+                    <div class="chart-wrap">
+                        <div>
+                            <h1>YOUR SCORE!</h1>
+                        </div>
+                        <canvas id="myChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p class="modal-haeder">Change Password</p>
+                <form class="content">
+                    <div class="form-row">
+                        <input type="password" class="input-text" id="Mpw" placeholder="Original Password" />
+                        <label class="label-helper" for="Mpw">Original Password</label>
+                    </div>
+
+                    <div class="form-row">
+                        <input type="password" class="input-text" id="Mrepw" placeholder="Change Password" />
+                        <label class="label-helper" for="Mrepw">Change Password</label>
+                    </div>
+
+                    <div class="form-row">
+                        <input type="password" class="input-text" id="Mrerepw" placeholder="Change Password confirm" />
+                        <label class="label-helper" for="Mrerepw">Change Password  Confirm</label>
+                    </div>
+                    <div class="warning"></div>
+                </form>
+                <!-- end .content -->
+            </div>
+        </div>
+        <div id="imgModal" class="modal">
+
+            <div class="modal-content">
+                <span id="img-modal-close" class="close">&times;</span>
+                <p class="modal-haeder">Change image</p>
+                    <div class="form-row">
+                        <div class="change-image">change-image</div><br>
+                        <input type="file" id="change-image">
+                    </div>
+                    <div class="btn-wrap">
+                        <button id="change-image-btn" class="btn">변경</button>    
+                    </div>
+                <!-- end .content -->
+            </div>
+        </div>
+        <footer>
+            <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
+        </footer>
+    </div>
+    <script type="text/javascript" src="../js/profile.js"></script>
+</body>
+
+</html>

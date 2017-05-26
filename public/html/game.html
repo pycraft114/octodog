@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+   <link rel="stylesheet" href="../css/reset.css">
+   <link rel="stylesheet" href="../css/main.css">
+   <link href="https://fonts.googleapis.com/css?family=Rubik+Mono+One" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400" rel="stylesheet">
+   <script type="text/javascript" src="../js/util.js"></script>
+   <script type="text/javascript" src="../js/SubmitPageClass.js"></script>
+   <title>Octodog</title>
+</head>
+<body>
+    <div class="container">
+        <header id="header">
+          <div class="hd-left">
+                <img src="../img/profile_img1.jpg">
+                <div class="user-id"></div>
+          </div>
+          <div class="hd-center"><h1><a href="http://localhost:3000/game">Octodog</a></h1></div>
+          <div class="hd-right"><h1><a href="http://localhost:3000/logout">Logout</a></h1></div>
+        </header>
+        <section>
+            <article class="left">
+                <div class="tetris-wrap">
+                    <div class="game">
+                        <canvas></canvas>
+                    </div>
+                    <div class="game-right">
+                        <div class="next">
+                                <canvas></canvas>
+                        </div>
+                        <button class="start btn">시작</button>
+                    </div>
+                </div>
+            </article>
+            <article class="right">
+                <div class="ranking">
+                  <h1>Ranking</h1>
+                  <div class="rank-wrap">
+                    <div class="rank-list"></div>
+                    <div class="load-wrap"><p class="rank-load">랭킹 더보기</p></div>
+                  </div>
+                </div>
+            </article>
+        </section>
+        <footer>
+           <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
+        </footer>
+    </div>
+    <script src="../js/game.js"></script>
+    <script src="../js/shapeMap.js"></script>
+    <script src="../js/tetris.js"></script>
+</body>
+</html>

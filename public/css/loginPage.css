@@ -1,0 +1,202 @@
+*{
+    /outline: 1px solid green;
+    box-sizing: border-box;
+}
+
+body{
+    height: 100vh;
+    overflow:hidden;
+    background-image: url('../img/tetris-image.jpg');
+    background-size : cover;
+}
+/*--------The Login page---------------------*/
+section{
+    padding-top:155px;
+    display:block;
+    margin:auto;
+}
+
+.octoDog{
+    text-align:center;
+    font-size:110px;
+    font-weight:bold;
+}
+
+.input-form, .main-button{
+    display:block;
+    margin:auto;
+    width:300px;
+    height:39px;
+    border-radius:5px;
+}
+.input-form{
+    border:1px solid #cccccc;
+    margin-bottom:17px;
+    font-size:14px;
+}
+.main-button{
+    margin-bottom:10px;
+    border:0;
+    font-size:19px;
+    cursor:pointer;
+}
+.main-button#login,.main-button#submit{
+    background-color: #399CDD;
+    color:#ffffff;
+}
+.main-button#anonymous{
+    background-color: #d3d3d3;
+}
+
+#signup{
+    display:block;
+    text-align:center;
+    font-weight:bold;
+    margin:auto;
+}
+
+footer{
+    text-align:center;
+}
+
+
+/*input{
+    display:block;
+    margin:auto;
+    width:300px;
+    height: 39px;
+    border-radius: 5px;
+    border:1px solid #cccccc;
+    text-align: -webkit-center;
+    font-size:14px;
+
+}
+.idInput{
+    margin-top:25px;
+    margin-bottom:15px;
+}
+button{
+    width:300px;
+    height: 39px;
+    display: block;
+    margin:auto;
+    border: none;
+    color: white;
+    padding: 10px 32px;
+    border-radius: 5px;
+    border:0px;
+    font-size:19px;
+}*/
+/*----------------The modal-----------------*/
+#modal{
+    transform:scale(0);
+    z-index: 1;
+    position:fixed;
+    width:100%;
+    height:100vh;
+    padding-top:114px;
+    background-color:rgba(0,0,0,0.5);
+}
+
+#modal.on{
+    animation : unfoldIn 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+#modal.off{
+    transform:scale(1);
+    animation: unfoldOut 1s 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+#modal-content{
+    background-color: #ffffff;
+    width:410px;
+    margin:auto;
+    transform:scale(0);
+    padding-top:32px;
+    height:495px;
+    border:1px solid darkgrey;
+    border-radius:6px;
+}
+
+#modal-content.on{
+    animation: zoomIn 0.5s 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+#modal-content.off{
+    transform:scale(1);
+    animation: zoomOut 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+#modal-content p{
+    color: #399CDD;
+    font-weight: bold;
+}
+
+.signup-input,.warning-list{
+    display:block;
+    margin:auto;
+}
+
+.signup-input{
+    width:300px;
+}
+
+.warning-list{
+    width:74%;
+    text-align:center;
+    padding-top:40px;
+}
+#login-warning{
+    height:118px;
+}
+#modal-warning{
+    height:84px;
+}
+.warning-list ul li{
+    color:red;
+}
+
+
+/*------------------modal animation------------*/
+@keyframes unfoldIn {
+    0% {
+        transform: scaleY(0) scaleX(0);
+    }
+    50% {
+        transform: scaleY(0.005) scaleX(1);
+    }
+    100% {
+        transform: scaleY(1) scaleX(1);
+    }
+}
+
+@keyframes unfoldOut {
+    0% {
+        transform: scaleY(1) scaleX(1);
+    }
+    50% {
+        transform: scaleY(0.005) scaleX(1);
+    }
+    100% {
+        transform: scaleY(0) scaleX(0);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+
+        transform: scale(1);
+    }
+}
+
+@keyframes zoomOut {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}

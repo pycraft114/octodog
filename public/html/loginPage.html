@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/loginPage.css">
+    <title>Octodog</title>
+</head>
+<body>
+    <div id="modal">
+        <div id="modal-content">
+            <div class="signup-input">
+                <p>ID</p>
+                <input type="text" class="input-form" id="signup-id" name="signup-id">
+            </div>
+
+            <div class="signup-input">
+                <p>Password</p>
+                <input type="text" class="input-form" id="signup-password" name="signup-password">
+            </div>
+
+            <div class="signup-input">
+                <p>Password confirm</p>
+                <input type="text" class="input-form" id="signup-confirm">
+            </div>
+
+            <div class="signup-input">
+                <p>Email</p>
+                <input type="text" class="input-form" id="signup-email">
+            </div>
+            <div class="signup-input">
+                <p>Profile Image</p>
+                <input type="file" id="signup-image">
+            </div>
+            <div class="warning-list" id="modal-warning">
+                <ul></ul>
+            </div>
+
+            <button class="main-button" id="submit">Submit</button>
+        </div>
+    </div>
+    <div class="container">
+        <section>
+            <h1 class='octoDog'>octoDog</h1>
+
+            <input type="text" placeholder="아이디" class="input-form" id="login-id">
+
+            <input type="text" placeholder="비밀번호" class="input-form" id="login-password">
+
+            <button class="main-button" id="login">Login</button>
+
+            <button class="main-button" id="anonymous">anonymous</button>
+            <a id="signup">회원가입</a>
+
+            <div class="warning-list" id="login-warning">
+                <ul></ul>
+            </div>
+        </section>
+        <footer>
+            <h1>COPYRIGHT© 2017 BY KOREA OCTODOG TETRIS GAME</h1>
+        </footer>
+    </div>
+    <script src="../js/util.js"></script>
+    <script src="../js/loginPage_Refactoring.js"></script>
+</body>
+</html>
