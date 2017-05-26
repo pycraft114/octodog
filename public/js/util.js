@@ -14,12 +14,12 @@ Util.prototype ={
 
     sendAjax : function(method, url, data, type, func) {
         const oReq = new XMLHttpRequest();
-        let result;
 
         oReq.open(method, "http://localhost:3000" + url);
-        oReq.setRequestHeader('Content-Type', type);
+        if(type){
+            oReq.setRequestHeader('Content-Type', type);
+        }
         if (data !== null) {
-            data = JSON.stringify(data);
             oReq.send(data);
         } else {
             oReq.send();

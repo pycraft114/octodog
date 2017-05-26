@@ -1,0 +1,14 @@
+<% templateData.forEach(function(val){ %>
+<div class="rank">
+    <ul>
+        <li class="numbering"><%= val.num%></li>
+        <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
+        <li class="name">
+            <p><%= val.uid%></p>
+        </li>
+        <li class="score">
+            <p><%= val.score%></p>
+        </li>
+    </ul>
+</div>
+<% }); %>
