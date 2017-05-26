@@ -73,7 +73,7 @@ const octoDog = function(){
                 },
                 "login success" : function(){
                     this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.loginSuccess);
-                    location.href = '/game'
+                    location.href = '/game';
                 },
                 default : function(){
                     console.log("login page verifier called");
@@ -114,7 +114,7 @@ const octoDog = function(){
                 },
                 "signup success" : function(){
                     alert("회원가입이 완료되었습니다.");
-                    console.log("success");
+                    location.href = '/login';
                 },
                 "not image" : function(){
                     this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.notImageFile);
