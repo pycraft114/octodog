@@ -1,4 +1,8 @@
-//Qunit을 통한 테스트 가능한 코드로 리팩토링 setInterval보다는 setTimeout이나 requestAnimationFrame을 사용할 것
+/*Qunit을 통한 테스트 가능한 코드로 리팩토링 
+-현재 코드에서 테스트코드를 짜기에는 좀 무리가 있어보임
+setInterval보다는 setTimeout이나 requestAnimationFrame을 사용할 것
+-setTimeout으로 변경완료
+*/
 function Tetris(data) {
 	for(let props in data) {
 		this[props] = data[props];
@@ -25,13 +29,12 @@ function Tetris(data) {
 }
 
 Tetris.prototype = {
+
 	//창크기 변경시 실행될 함수
 	resize: function() {
-
 		this.H = this.gameCanvas.parentElement.clientHeight;
 		this.W = (this.H * 0.5);
 		this.gameCanvas.parentElement.setAttribute("width", this.W + "px");
-		//this.nW = this.nextCanvas.parentElement.clientWidth;
 		this.nH = this.nextCanvas.parentElement.clientHeight;
 		this.nW = this.nH * 0.7;
 		this.nextCanvas.parentElement.setAttribute("width", this.nW + "px");
@@ -42,6 +45,7 @@ Tetris.prototype = {
 		this.blockWidth = this.W / this.COLS;
 		this.blockHeight = this.H / this.ROWS;
 	},
+
 	//정사각형 블럭을 그려주는함수
 	drawBlock: function(context, x, y) {
 		context.strokeStyle = "grey";
@@ -49,16 +53,19 @@ Tetris.prototype = {
 		context.strokeRect(this.blockWidth * x, this.blockHeight * y, this.blockWidth - 1, this.blockHeight - 1);
 	},
 
-	//drawBlock함수를 이용해 캔버스에 그려주는 함수
-	render: function() {
-		if(!this.playOn) return;
-		this.gameContext.clearRect(0, 0, this.W, this.H);
-		this.gameContext.font = this.blockWidth * 0.7 + "px Verdana";
+	//캔버스 text의 gradient값 설정
+	setGradient: function() {
 		const gradient = this.gameContext.createLinearGradient(0, 0, this.W, 0);
 		gradient.addColorStop("0","magenta");
 		gradient.addColorStop("0.5","blue");
 		gradient.addColorStop("1.0","red");
 		this.gameContext.fillStyle = gradient;
+		return gradient;
+	},
+
+	//점수 레벨 남은블록 일시정지 텍스트 표시
+	renderScoreLv: function() {
+		this.gameContext.font = this.blockWidth * 0.7 + "px Verdana";
 
 		if(this.pause) {
 			this.gameContext.fillText("PAUSE", this.blockWidth * 4, this.blockHeight * 10);
@@ -67,24 +74,10 @@ Tetris.prototype = {
 		this.gameContext.fillText("Lv  " + this.currLevel, this.blockWidth * 7, this.blockHeight);
 		this.gameContext.fillText("Next  -" + this.goToNextLevel, this.blockWidth * 6, this.blockHeight * 2);
 
-		for(let x = 0; x < this.COLS; x++) {
-			for(let y = 0; y < this.ROWS; y++) {
-				if(this.gameBoard[y][x]) {
-					this.gameContext.fillStyle = this.colors[this.gameBoard[y][x] - 1];
-					this.drawBlock(this.gameContext, x, y);
-				}
-			}
-		}
-
-		this.gameContext.fillStyle = this.colors[this.currIdx];
-		for(let i = 0; i < 16; i++) {
-			const x = i % 4;
-			const y = (i - x) / 4;
-			if(this.curr[i]) {
-				this.drawBlock(this.gameContext, this.currX + x, this.currY + y);
-			}
-		}
-
+	},
+	
+	//다음블럭 표시
+	renderNext: function() {
 		this.nextContext.clearRect(0, 0, this.nW, this.nH);
 		this.nextContext.strokeStyle = "black";
 		for(let i = 0; i < 16; i++) {
@@ -95,12 +88,52 @@ Tetris.prototype = {
 				this.drawBlock(this.nextContext, x + 1, y + 1);
 			} 
 		}
+	},
+	
+	//게임오버 메시지 표시
+	renderGameOver: function(gradient) {
 		if(this.lose) {
 			this.gameContext.fillStyle = gradient;
 			this.gameContext.font = this.blockWidth  + "px Verdana";
 			this.gameContext.fillText("GAME OVER", this.blockWidth * 2, this.blockHeight * 10);
 			this.nextContext.clearRect(0, 0, this.nW, this.nH);
 		}
+	},
+
+	//현재블럭을 제외한 이미고정된 블럭 표시
+	renderBoard: function() {
+		for(let x = 0; x < this.COLS; x++) {
+			for(let y = 0; y < this.ROWS; y++) {
+				if(this.gameBoard[y][x]) {
+					this.gameContext.fillStyle = this.colors[this.gameBoard[y][x] - 1];
+					this.drawBlock(this.gameContext, x, y);
+				}
+			}
+		}
+	},
+	
+	//현재블럭표시
+	renderCurr: function() {
+		this.gameContext.fillStyle = this.colors[this.currIdx];
+		for(let i = 0; i < 16; i++) {
+			const x = i % 4;
+			const y = (i - x) / 4;
+			if(this.curr[i]) {
+				this.drawBlock(this.gameContext, this.currX + x, this.currY + y);
+			}
+		}
+	},
+
+	//drawBlock함수를 이용해 캔버스에 그려주는 함수
+	render: function() {
+		if(!this.playOn) return;
+		this.gameContext.clearRect(0, 0, this.W, this.H);
+		const gradient = this.setGradient();
+		this.renderScoreLv();
+		this.renderBoard();
+		this.renderCurr();
+		this.renderNext();
+		this.renderGameOver(gradient);
 		//아래코드는 뭔가 생각대로 작동이 안된다 
 		requestAnimationFrame(this.render);
 	},	
@@ -114,27 +147,9 @@ Tetris.prototype = {
 			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}else{
 			this.currIdx = Math.floor(Math.random() * this.shapes.length);
-			/* shapeMap.js 쪽에서 처리함
-			let currShape = this.shapes[this.currIdx][0].split("");
-			currShape = currShape.map(function(val){
-				return Number(val);
-			});
-			this.curr = currShape.map(function(val){
-				return val === 0 ? val : (val + this.currIdx);
-			}.bind(this));
-			*/
 			this.curr = this.shapes[this.currIdx][this.currRotateIdx];
 			this.nextIdx = Math.floor(Math.random() * this.shapes.length);
 		}
-		/* shapeMap.js 쪽에서 처리함
-		let nextShape = this.shapes[this.nextIdx][0].split("");
-		nextShape = nextShape.map(function(val){
-			return Number(val);
-		});
-		this.next = nextShape.map(function(val){
-			return val === 0 ? val : (val + this.nextIdx);
-		}.bind(this));
-		*/
 		this.next = this.shapes[this.nextIdx][0];
 		this.currX = 5;
 		this.currY = 0;
@@ -165,13 +180,6 @@ Tetris.prototype = {
 				this.render();
 				clearTimeout(this.interval);
 				if(this.score !== 0) this.postScore();
-				/*
-				rankResister.range = 10;
-				util.sendAjax("GET", "/game/" + rankResister.range, null, "application/json", function () {
-					console.log(this.responseText);
-					rankResister.ajaxResponseHandler(rankResister.verifier.bind(rankResister), this.responseText);
-    			});
-				*/
 				rankResister.renderRank();
 				util.$(".ranking").scrollTop = 0;
 				this.playOn = false;
@@ -207,18 +215,6 @@ Tetris.prototype = {
 		}else{
 			this.currRotateIdx = 0;
 		}
-		//shapeMap.js에서 처리함
-		/*split 전까지 변수로 담아서 사용할것
-		map에서 리턴되는 값이 NaN이 나옴 
-		-> map의 콜백에서의 this를 bind해줌으로 해결
-		*/ 
-		/*
-		let newCurr = this.shapes[this.currIdx][this.currRotateIdx].split("");
-		newCurr = newCurr.map(function(val){
-			return Number(val) === 0 ? Number(val) : (Number(val) + this.currIdx);
-		}.bind(this));
-		return newCurr;
-		*/
 		return this.shapes[this.currIdx][this.currRotateIdx];
 	},
 
@@ -245,8 +241,6 @@ Tetris.prototype = {
 				y++;
 			}
 		}
-
-		
 	},
 
 	//키입력에 따라 현재블럭을 이동시켜주는 함수
@@ -299,9 +293,7 @@ Tetris.prototype = {
 		}
 	},
 
-	/*블럭이 이동할수 있는지 검사해주는 함수
-
-	*/
+	//블럭이동가능, 회전가능한지 유효성 검사 게임오버 검사
 	valid: function(offsetX, offsetY, newCurr) {
 		offsetX = offsetX || 0;
 		offsetY = offsetY || 0;
@@ -312,7 +304,6 @@ Tetris.prototype = {
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
-			//중첩된 if 문은 제거 할 수 있다. valid는 분리해봐야 할 듯. Qunit을 통한 test code로 리팩토링.
 			if(newCurr[i]) {
 				if(typeof this.gameBoard[y + offsetY] === "undefined"
 				|| typeof this.gameBoard[y + offsetY][x + offsetX] === "undefined"
