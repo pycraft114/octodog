@@ -12,13 +12,12 @@ const octoDog = function(){
 
         let xhr = new XMLHttpRequest();
         xhr.open(method, url);
-        if (type !== undefined) {
-            // 타입이 많아지면 switch-case문으로 전환 고려.
+        if (type) {
             xhr.setRequestHeader("Content-Type", type);
         }
 
         if (data !== undefined) {
-            data = JSON.stringify(data);
+            //data = JSON.stringify(data);
             xhr.send(data);
         } else {
             xhr.send();
@@ -116,11 +115,13 @@ const octoDog = function(){
         signUpEmail : $("#signup-email"),
         warningListNode : $("#modal-warning ul"),
         submitButton : $("#submit"),
+        imgInputTag : $("#signup-image"),
         warningMessage : {
             noContent: "<li>내용을 입력하세요</li>",
             passwordUnconfirm: "<li>비밀번호가 일치하지 않습니다.</li>",
             idInUse: "<li>이미 사용중인 아이디 입니다.</li>",
-            emailInUse: "<li>이미 사용중인 이메일 입니다.</li>"
+            emailInUse: "<li>이미 사용중인 이메일 입니다.</li>",
+            notImageFile: "<li>이미지 파일을 업로드 해주세요.</li>"
         },
 
         verifier : function(responseText){
@@ -135,11 +136,11 @@ const octoDog = function(){
                     alert("회원가입이 완료되었습니다.");
                     location.href = '/login';
                 },
-                default : function(){
-                    console.log("modal verifier called");
+                "not image" : function(){
+                    this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.notImageFile);
                 }
             };
-            (cases[responseText].bind(this) || cases["default"])();
+            cases[responseText].bind(this)();
         }
     };
 
@@ -167,9 +168,10 @@ const octoDog = function(){
         if(this.checkEmptyInput([this.loginId, this.loginPassword])){
             this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.noContent);
         }else {
-            const data = {};
+            let data = {};
             data['id'] = this.loginId.value;
             data['password'] = this.loginPassword.value;
+            data = JSON.stringify(data);
             sendAjax("POST","/login",data,"application/json", function() {
                 loginPage.ajaxResponseHandler(loginPage.verifier.bind(loginPage), this.responseText);
                 //bind안하면 verifier함수내의 this가 window를 가르킴
@@ -178,9 +180,10 @@ const octoDog = function(){
     }.bind(loginPage));
 
     loginPage.anonymous.addEventListener("click",function(evt){
-        const dummyData = {};
+        let dummyData = {};
         dummyData['id'] = 'id';
         dummyData['password'] = 'password';
+        dummyData = JSON.stringify(dummyData);
         sendAjax('POST','/anonymous',dummyData,'application/json', function(){
             console.log(this.responseText);
             location.href = '/game';
@@ -194,12 +197,13 @@ const octoDog = function(){
         }else if(this.signUpPassword.value !== this.signUpConfirm.value){
             this.changeAttribute(this.warningListNode, "innerHTML", this.warningMessage.passwordUnconfirm);
         }else {
-            const data = {};
-            data['id'] = this.signUpId.value;
-            data['password'] = this.signUpPassword.value;
-            data['email'] = this.signUpEmail.value;
-
-            sendAjax('POST','/signup',data,'application/json',function(){
+            let formData = new FormData();
+            formData.append('id',this.signUpId.value);
+            formData.append('password',this.signUpPassword.value);
+            formData.append('email',this.signUpEmail.value);
+            formData.append('file',this.imgInputTag.files[0]);
+            console.log(this.imgInputTag.files[0]);
+            sendAjax('POST','/signup',formData, null ,function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
                 //단순 warning List node inner html 바꾸는 역할 하는 함수랑
                 //실질적으로 로그인이나 회원가입 성공했을때 어떤 기능을하는 함수랑 분리
@@ -222,3 +226,8 @@ const octoDog = function(){
     return octoDog;
 }();
 
+/*
+* multer사용 한다 했을때 formdata를 보낼때 stringify 하면 안된다는거랑
+* content type을 수동적으로 multipart/form-data로 지정해줄경우 boundary not found라는 오류가 발생한다는것
+* formdata는 보낼때 자동적으로 json형태로 보내지는가?
+ */

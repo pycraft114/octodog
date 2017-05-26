@@ -40,7 +40,8 @@ header .hd-left, header .hd-right {
 
 header .hd-left img {
     float: left;
-    height: 100%;
+    height: 36px;
+    width:36px;
     margin-right: 1rem;
     border-radius: 100%;
     border: 2px solid gray;
@@ -57,12 +58,10 @@ header .hd-left .user-id {
     transform: translateY(-50%);
     float: left;
     color: aliceblue;
-}
-
-header .hd-left .user-id a{
     font-size: 1.2rem;
     text-decoration: none;
     color:white;
+    cursor: pointer;
 }
 
 header .hd-center {
@@ -450,6 +449,17 @@ footer h1 {
     text-align: center;
 }
 
+.modal-content .change-image{
+    color: #fd4c88;
+    font-family: arial;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #fd4c88;
+}
+
+.modal-content .btn-wrap{
+    text-align: center;
+}
+
 
 /*game page*/
 
@@ -520,7 +530,10 @@ footer h1 {
   width:30%;
 }
 
-.rank ul li p{
+.rank-wrap .load-wrap .rank-load{
+    text-align:center;
+    color: gray;
+    margin:25px auto;
 }
 
 .tetris-wrap {
@@ -553,4 +566,8 @@ footer h1 {
 
 button.start {
     margin-top : 1vh;
+}
+
+.tetris-wrap canvas {
+    background-color: rgba(200, 240, 40, 0.2);
 }
