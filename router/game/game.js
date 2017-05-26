@@ -1,5 +1,5 @@
 var express = require('express');
-var app= express();
+var app = express();
 var path = require('path');
 var router = express.Router();
 var options = require('../option');
@@ -25,64 +25,79 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
-router.get('/', function(req, res){
+router.get('/', function (req, res) {
   var id = req.user;
   console.log(id);
-  if(!id) {
+  if (!id) {
     res.redirect("/login");
   }
   res.sendFile(path.join(__dirname, '../../public/html/game.html'));
 });
 
-router.get('/header', function(req, res){
+router.get('/header', function (req, res) {
   var id = req.user;
+  var img = "../img/profile_img1.jpg";
+  var query = "select `img` from user where id='" + id + "';";
 
-  if(id==="anonymous"){
-    let random =  Math.floor((Math.random() * 1000) + 1);
+  if (id === "anonymous") {
+    let random = Math.floor((Math.random() * 1000) + 1);
     id = "개굴#";
     id += random;
-  }
-  
-  res.render('header',{'id' : id});
-});
 
-router.get('/:searchRankRange',function(req, res){
-  var responseData = {msg:CONFIRM_MESSAGE};
-  var uid = [];
-  var score = [];
-  var range = req.params.searchRankRange;
-  var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit "+range;
+    res.render('header', {
+    'id': id,
+    'img': img
+  });
+}
 
   connection.query(query, function(err,rows){
-      if(err){
-        responseData.msg = ERR_MESSAGE;
-        res.json(responseData);
-      }
+    userImg = rows[0].img;
+    if(userImg!==undefined){
+      img = userImg;
+    }
+    res.render('header', {
+    'id': id,
+    'img': img
+    });
+  });
 
-      for(let i = 0; i < rows.length; i++){
-        uid.push(rows[i].uid);
-        score.push(rows[i].score);
-      }
+  
+});
 
-      responseData.uid = uid;
-      responseData.score = score;
+router.get('/:searchRankRange', function (req, res) {
+  var templateData = [];
+  var range = req.params.searchRankRange;
+  var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit " + range;
 
-      JSON.stringify(responseData);
-      res.json(responseData);
+  connection.query(query, function (err, rows) {
+
+    for (let i = 0; i < rows.length; i++) {
+      let data = {
+        num: i + 1,
+        uid: rows[i].uid,
+        score: rows[i].score
+      };
+      templateData.push(data);
+    }
+
+    res.render('ranklist', {
+      'templateData': templateData
+    });
   });
 });
 
-router.post('/User/confirm', function(req, res){
+
+router.post('/User/confirm', function (req, res) {
   var id = req.user;
   var responseText = {};
 
-  if(id==="anonymous"){
+  if (id === "anonymous") {
     responseText.msg = "anonymous";
-  }else{
+  } else {
     responseText.msg = "comfirm ok";
   }
   res.json(responseText);
 
 });
 
-module.exports =  router;
+module.exports = router;

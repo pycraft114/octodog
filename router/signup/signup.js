@@ -12,7 +12,6 @@ var multer = require('multer');
 var fs = require('fs');
 
 
-
 var storage = multer.diskStorage({
     destination:function(req, file, callback){
         callback(null, 'public/img')
@@ -21,8 +20,6 @@ var storage = multer.diskStorage({
         callback(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.split('/')[1])
     }
 });
-
-
 
 var fileFilter = function(req, file, cb) {
     console.log('filefilter called');
@@ -60,9 +57,6 @@ var fileFilter = function(req, file, cb) {
         }
     })
 };
-
-
-
 
 var upload = multer({storage:storage , fileFilter: fileFilter});
 
@@ -164,15 +158,13 @@ router.post('/', upload.single('file'), function(req,res){
             }
         })
     }
-
-
-
 });
-
-module.exports = router;
 
 /*const sql = {'id': id, 'password': password, 'email': email};
  const saveQuery = connection.query('insert into user set ?', sql, function(err,rows){
  if(err) {throw new Error("error while saving")}
  else{res.send("signup success");}
  })*/
+
+module.exports = router;
+

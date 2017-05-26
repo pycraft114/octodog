@@ -183,7 +183,6 @@ const octoDog = function(){
             formData.append('email',this.signUpEmail.value);
             formData.append('file', this.imgInputTag.files[0]);
             console.log(this.imgInputTag.files[0]);
-
             sendAjax('POST','/signup',formData, null ,function(){
                 modal.ajaxResponseHandler(modal.verifier.bind(modal), this.responseText);
                 //단순 warning List node inner html 바꾸는 역할 하는 함수랑

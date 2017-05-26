@@ -75,6 +75,7 @@ const Profile = function () {
 
             const cases = {
                 "ok": function () {
+                    data = JSON.stringify(data);
                     sendAjax("put", "/profile/User/pw", data, "application/json", function () {
                         modalPage.ajaxResponseHandler(modalPage.verifier.bind(modalPage), this.responseText);
                     });
@@ -88,7 +89,9 @@ const Profile = function () {
                     this.modalChangePw.value = '';
                     this.modalChangePwConfirm.value = '';
                     this.warning.innerHTML = '';
-                    setTimeout(function(){ alert("비밀번호가 변경되었습니다!"); }, 100);
+                    setTimeout(function () {
+                        alert("비밀번호가 변경되었습니다!");
+                    }, 100);
                 },
                 "change error": function () {
                     this.changeAttribute(this.warning, "innerHTML", this.warningMessage.failChange);
@@ -141,26 +144,31 @@ const Profile = function () {
         }.bind(modalPage));
     }
 
-
-    const profilePageContent = {
-        modal: $('#myModal'),
-        leftContent: $(".left"),
-
-        warningMessage: {
-            loadError: "LOAD RANKING ERR!"
-        },
+    const imgModal = {
+        imgModal: $('#imgModal'),
+        btnClose: $("#img-modal-close"),
+        btnSubmit: $("#change-image-btn"),
+        imgInput: $("#change-image"),
 
         verifier: function (responseText) {
             responseText = JSON.parse(responseText);
-            let msg = responseText.msg;
+            let msg = responseText.msg
 
             const cases = {
-                "ok": function () {
-                    profilePage.leftSideRender(responseText);
-                    profilePage.rightSideRender(responseText, chartData);
+                "change ok": function () {
+                    profilePage.imgModal.style.display = "none";
+                    setTimeout(function () {
+                        alert("사진이 변경되었습니다!");
+                    }, 100);
+                    sendAjax("get", "/profile/User/left", null, "application/json", function () {
+                        profilePage.ajaxResponseHandler(profilePage.leftSideRender.bind(profilePage), this.responseText);
+                    });
                 },
-                "error": function () {
-                    alert(warningMessage.loadError);
+                "change error": function () {
+                    profilePage.imgModal.style.display = "none";
+                    setTimeout(function () {
+                        alert("사진 변경이 실패 했습니다!");
+                    }, 100);
                 },
                 default: function () {
                     console.log("modal verifier called");
@@ -170,40 +178,50 @@ const Profile = function () {
         }
     };
 
+    const imgModalPage = new SubmitPage(imgModal);
+
+    imgModalPage.btnClose.addEventListener("click", function () {
+        this.imgModal.style.display = "none";
+    }.bind(imgModalPage));
+
+    imgModalPage.btnSubmit.addEventListener("click", function () {
+        let formData = new FormData();
+        formData.append('file', this.imgInput.files[0]);
+        console.log(formData.file);
+
+        sendAjax('POST', '/profile/User/img', formData, null, function () {
+            imgModalPage.ajaxResponseHandler(imgModal.verifier.bind(imgModal), this.responseText);
+        });
+    }.bind(imgModalPage));
+
+    const profilePageContent = {
+        modal: $('#myModal'),
+        imgModal: $('#imgModal'),
+        leftContent: $(".left")
+    };
+
     //initiate loginPage
     const profilePage = new SubmitPage(profilePageContent);
 
     profilePage.onBtnEvent = function () {
         let btnPw = $(".pw-change");
+        let btnImg = $(".img-change");
         btnPw.addEventListener("click", function () {
             profilePage.modal.style.display = "block";
         });
+        btnImg.addEventListener("click", function () {
+            profilePage.imgModal.style.display = "block";
+        });
     };
 
-    profilePage.leftSideRender = function (resultData) {
-        let user = resultData.user,
-            chartScore = resultData.chartscore,
-            template = `<div class="left-content">
-                    <img id="profile-img" src="../img/profile_img1.jpg" width="20%">
-                    <div id="id"><h1>${user.id}</h1></div>
-                    <div class="user-information">
-                        <p>email</p> <div id="email">${user.email}</div>
-                        <p>play</p> <div id="play">${user.play}</div>
-                        <p>rank</p> <div id="rank">${user.rank}</div>
-                        <p>topscore</p> <div id="topscore">${user.topscore}</div>
-                        <p>totalscore</p> <div id="totalscore">${user.totalscore}</div>
-                    </div>
-                    <div class="button-wrap">
-                        <button class="btn img-change">프로필사진 변경</button>
-                        <button class="btn pw-change">비밀번호 변경</button>
-                    </div>
-                    </div>`;
-
-        this.leftContent.innerHTML = template;
+    profilePage.leftSideRender = function (responseText) {
+        this.leftContent.innerHTML = responseText;
         this.onBtnEvent();
     };
 
-    profilePage.rightSideRender = function (resultData, chartObj) {
+    profilePage.rightSideRender = function (chartObj, resultData) {
+        resultData = JSON.parse(resultData);
+
         let score = resultData.chartscore.reverse(),
             dataSets = chartObj.data.datasets[0],
             comp_data = dataSets.data;
@@ -240,8 +258,11 @@ const Profile = function () {
         sendAjax("get", "/game/header", null, "application/json", function () {
             header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
         });
-        sendAjax("get", "/profile/User", null, "application/json", function () {
-            profilePage.ajaxResponseHandler(profilePage.verifier.bind(profilePage), this.responseText);
+        sendAjax("get", "/profile/User/right", null, "application/json", function () {
+            profilePage.ajaxResponseHandler(profilePage.rightSideRender.bind(profilePage, chartData), this.responseText);
+        });
+        sendAjax("get", "/profile/User/left", null, "application/json", function () {
+            profilePage.ajaxResponseHandler(profilePage.leftSideRender.bind(profilePage), this.responseText);
         });
     });
 

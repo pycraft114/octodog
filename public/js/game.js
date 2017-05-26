@@ -7,28 +7,7 @@ const rankResister = function () {
   const rankPageContent = {
     range: 10,
     load: $(".rank-load"),
-
-    warningMessage: {
-      loadError: "LOAD RANKING ERR!"
-    },
-
-    verifier: function (responseText) {
-      responseText = JSON.parse(responseText);
-      let msg = responseText.msg;
-
-      const cases = {
-        "ok": function () {
-          rankPage.renderRank(responseText);
-        },
-        "error": function () {
-          alert(warningMessage.loadError);
-        },
-        default: function () {
-          console.log("modal verifier called");
-        }
-      };
-      (cases[msg].bind(this) || cases["default"])();
-    }
+    wrap : $(".rank-list"),
   };
 
   //initiate loginPage
@@ -36,30 +15,27 @@ const rankResister = function () {
 
   rankPage.load.addEventListener("click", function () {
     sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
-      rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
+      rankPage.ajaxResponseHandler(rankPage.renderRank.bind(rankPage), this.responseText);
     });
   });
 
   rankPage.renderRank = function (responseText) {
-    let uid = responseText.uid,
-      score = responseText.score,
-      template = "",
-      wrap = $(".rank-list");
+      template = responseText;
 
-    for (let i = 0; i < uid.length; i++) {
-      template += `<div class="rank">
-                  <ul>
-                    <li class="numbering">${i+1}</li>
-                    <li class="rank-img"><img src="../img/profile_img1.jpg" alt=""></li>
-                    <li class="name"><p>${uid[i]}</p></li>
-                    <li class="score"><p>${score[i]}</p></li>
-                  </ul>
-                  </div>`;
-    }
-
-    wrap.innerHTML = template;
-    rankPage.range += 10;
+      this.wrap.innerHTML = template;
+      rankPage.range += 10;
   };
+
+  rankPage.renderAfterPostScore = function() {
+    rankPage.range = 10;
+    sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
+      rankPage.ajaxResponseHandler(rankPage.renderRank.bind(rankPage), this.responseText);
+    });
+  };
+
+  rankPage.getUid = function() {
+    return rankPage.uid;
+  }
 
 
   const headerContent = {
@@ -95,10 +71,14 @@ const rankResister = function () {
   document.addEventListener("DOMContentLoaded", function () {
     sendAjax("get", "/game/header", null, "application/json", function () {
       header.ajaxResponseHandler(header.renderHeader.bind(header), this.responseText);
+      rankPage.uid = $(".user-id").innerText;
     });
     sendAjax("get", "/game/" + rankPage.range, null, "application/json", function () {
-      rankPage.ajaxResponseHandler(rankPage.verifier.bind(rankPage), this.responseText);
+      rankPage.ajaxResponseHandler(rankPage.renderRank.bind(rankPage), this.responseText);
     });
   });
-  return rankPage;
+  return {
+    uid: rankPage.getUid,
+    renderRank: rankPage.renderAfterPostScore
+  };
 }();
