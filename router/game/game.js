@@ -51,13 +51,12 @@ router.get('/header', function (req, res) {
 }
 
   connection.query(query, function(err,rows){
-    userImg = rows[0].img;
-    if(userImg!==null){
-      img = userImg;
+    if(rows[0]!==undefined){
+      img = rows[0].img;
     }
     res.render('header', {
-    'id': id,
-    'img': img
+      'id': id,
+      'img': img
     });
   });
 
