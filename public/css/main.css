@@ -520,6 +520,7 @@ footer h1 {
 .rank .rank-img img{
   width: 100%;
   border-radius: 50%;
+  border:1px solid gray;
 }
 
 .rank .name{

@@ -66,18 +66,35 @@ router.get('/header', function (req, res) {
 router.get('/:searchRankRange', function (req, res) {
   var templateData = [];
   var range = req.params.searchRankRange;
-  var query = "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit " + range;
+  var query = "select `id`, `img` from user;"+
+            "select `score`, `uid`,(select count(*)+1 from scoreboard where score>t.score) AS rank from scoreboard AS t ORDER BY rank asc limit " + range+ ";";
+              
 
   connection.query(query, function (err, rows) {
+    // console.log(rows[0]);
+    var imgList = {};
 
-    for (let i = 0; i < rows.length; i++) {
+    rows[0].forEach(function(val){
+      imgList[val.id] = val.img;
+    });
+    console.log(imgList);
+
+    for (let i = 0; i < rows[1].length; i++) {
       let data = {
         num: i + 1,
-        uid: rows[i].uid,
-        score: rows[i].score
+        uid: rows[1][i].uid,
+        score: rows[1][i].score
       };
+
+      if(imgList[data.uid]===null){
+        data.img = "../img/profile_img1.jpg";
+      }else{
+        data.img = imgList[data.uid];
+      }
+      
       templateData.push(data);
     }
+    console.log(templateData);
 
     res.render('ranklist', {
       'templateData': templateData
