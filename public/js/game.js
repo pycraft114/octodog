@@ -35,7 +35,7 @@ const rankResister = function () {
 
   rankPage.getUid = function() {
     return rankPage.uid;
-  }
+  };
 
 
   const headerContent = {
