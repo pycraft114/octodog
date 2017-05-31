@@ -518,7 +518,8 @@ footer h1 {
 }
 
 .rank .rank-img img{
-  width: 100%;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border:1px solid gray;
 }

@@ -27,7 +27,6 @@ connection.connect();
 
 router.get('/', function (req, res) {
   var id = req.user;
-  console.log(id);
   if (!id) {
     res.redirect("/login");
   }
@@ -71,13 +70,11 @@ router.get('/:searchRankRange', function (req, res) {
               
 
   connection.query(query, function (err, rows) {
-    // console.log(rows[0]);
     var imgList = {};
 
     rows[0].forEach(function(val){
       imgList[val.id] = val.img;
     });
-    console.log(imgList);
 
     for (var i = 0; i < rows[1].length; i++) {
       var data = {
@@ -88,15 +85,15 @@ router.get('/:searchRankRange', function (req, res) {
 
       if(imgList[data.uid]===null){
         data.img = "../img/profile_img1.jpg";
-      }else if(typeof imgList[data.uid] === "undefined") {
-        data.img = "../img/profile_img2.jpg";
+      }
+      else if(imgList[data.uid]===undefined){
+        data.img = "../img/flog.png";
       }else{
         data.img = imgList[data.uid];
       }
       
       templateData.push(data);
     }
-    console.log(templateData);
 
     res.render('ranklist', {
       'templateData': templateData
