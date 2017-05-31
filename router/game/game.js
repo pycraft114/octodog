@@ -36,7 +36,7 @@ router.get('/', function (req, res) {
 
 router.get('/header', function (req, res) {
   var id = req.user;
-  var img = "../img/profile_img1.jpg";
+  var img = "../img/profile_img2.jpg";
   var query = "select `img` from user where id='" + id + "';";
 
   if (id === "anonymous") {
@@ -88,6 +88,8 @@ router.get('/:searchRankRange', function (req, res) {
 
       if(imgList[data.uid]===null){
         data.img = "../img/profile_img1.jpg";
+      }else if(typeof imgList[data.uid] === "undefined") {
+        data.img = "../img/profile_img2.jpg";
       }else{
         data.img = imgList[data.uid];
       }
