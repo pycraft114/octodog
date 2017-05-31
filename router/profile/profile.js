@@ -186,7 +186,7 @@ router.post('/User/confirm', function (req, res) {
 });
 
 router.post('/User/img', upload.single('file'), function (req, res) {
-    let responseText = {};
+    var responseText = {};
     id = req.user;
     const filePath = req.file ? req.file.path.replace(/public/,"..") : undefined;
 

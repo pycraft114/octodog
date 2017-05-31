@@ -40,7 +40,7 @@ router.get('/header', function (req, res) {
   var query = "select `img` from user where id='" + id + "';";
 
   if (id === "anonymous") {
-    let random = Math.floor((Math.random() * 1000) + 1);
+    var random = Math.floor((Math.random() * 1000) + 1);
     id = "개굴#";
     id += random;
 
@@ -79,8 +79,8 @@ router.get('/:searchRankRange', function (req, res) {
     });
     console.log(imgList);
 
-    for (let i = 0; i < rows[1].length; i++) {
-      let data = {
+    for (var i = 0; i < rows[1].length; i++) {
+      var data = {
         num: i + 1,
         uid: rows[1][i].uid,
         score: rows[1][i].score
