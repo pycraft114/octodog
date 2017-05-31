@@ -79,7 +79,6 @@ Tetris.prototype = {
 	//다음블럭 표시
 	renderNext: function() {
 		this.nextContext.clearRect(0, 0, this.nW, this.nH);
-		this.nextContext.strokeStyle = "black";
 		for(let i = 0; i < 16; i++) {
 			const x = i % 4;
 			const y = (i - x) / 4;
@@ -186,7 +185,6 @@ Tetris.prototype = {
 				return false;
 			}
 			if(this.goToNextLevel <= 0 && this.currLevel <= 10) {
-				//clearTimeout(this.interval);
 				this.goToNextLevel = 10;
 				this.currLevel++;
 			} 
@@ -210,11 +208,14 @@ Tetris.prototype = {
 
 	//현재 블럭을 회전시켜주는 함수
 	rotate: function() {
+		this.shapes[this.currIdx][this.currRotateIdx + 1] ? this.currRotateIdx++ : this.currRotateIdx = 0;
+		/*
 		if(this.shapes[this.currIdx][this.currRotateIdx + 1]) {
 			this.currRotateIdx++;
 		}else{
 			this.currRotateIdx = 0;
 		}
+		*/
 		return this.shapes[this.currIdx][this.currRotateIdx];
 	},
 
