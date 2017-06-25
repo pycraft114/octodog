@@ -64,5 +64,6 @@
 ###### [백로그](https://docs.google.com/spreadsheets/d/1oPLFLu_U_ucES-F0btmBFMH5qA_QX_94bG3SrktzNlM/edit#gid=0 "백로그").
 ---
 Demo
-![octodog-demo](https://user-images.githubusercontent.com/24728657/27514311-f1f452cc-59c1-11e7-9178-55c4bd60fabb.gif)
+![demo1](https://user-images.githubusercontent.com/24728657/27514355-0fb4a7b6-59c3-11e7-988a-d0de77d9c1d3.gif)
+
 
