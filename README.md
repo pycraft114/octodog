@@ -63,3 +63,6 @@
 
 ###### [백로그](https://docs.google.com/spreadsheets/d/1oPLFLu_U_ucES-F0btmBFMH5qA_QX_94bG3SrktzNlM/edit#gid=0 "백로그").
 ---
+Demo
+![octodog-demo](https://user-images.githubusercontent.com/24728657/27514311-f1f452cc-59c1-11e7-9178-55c4bd60fabb.gif)
+
